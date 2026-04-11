@@ -14,13 +14,13 @@ You can build a valid Commander deck with confidence — the app tells you in re
 
 <!-- Shipped and confirmed valuable. -->
 
-(None yet — ship to validate)
+- [x] Create, rename, and delete multiple decks — Validated in Phase 1: Foundation & Deck Management
+- [x] All deck data persisted in browser storage — Validated in Phase 1: Foundation & Deck Management
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Create, rename, and delete multiple decks
 - [ ] Select a commander for each deck
 - [ ] Search cards by name, type, text, and color via Scryfall API
 - [ ] Browse cards with image art, name, mana cost, type, and color
@@ -28,7 +28,7 @@ You can build a valid Commander deck with confidence — the app tells you in re
 - [ ] View deck as visual card grid or categorized text list (toggle)
 - [ ] Live validation checklist: exactly 100 cards, color identity, singleton, banned list
 - [ ] Export/import deck lists in standard text format
-- [ ] All deck data persisted in browser storage
+- [ ] All deck data persisted in browser storage (partially validated — IndexedDB layer shipped in Phase 1)
 
 ### Out of Scope
 
@@ -57,8 +57,8 @@ You can build a valid Commander deck with confidence — the app tells you in re
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Scryfall API for card data | Free, comprehensive, well-documented, includes images and legality | — Pending |
-| Browser storage (IndexedDB) | No backend requirement, works offline, user controls their data | — Pending |
+| Browser storage (IndexedDB) | No backend requirement, works offline, user controls their data | Validated (Phase 1) |
 | Card image + basics display | Visual-first browsing matches how players think about cards | — Pending |
 
 ---
-*Last updated: 2026-04-11 after initial project definition*
+*Last updated: 2026-04-11 after Phase 1 completion*
