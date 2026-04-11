@@ -1,8 +1,11 @@
+import { Layout } from './components/Layout'
+import { DeckList } from './components/DeckList'
+
 function App() {
   return (
-    <div className="min-h-screen bg-background text-text-primary">
-      <h1 className="text-2xl font-bold p-4">EDH Deck Builder</h1>
-    </div>
+    <Layout>
+      <DeckList />
+    </Layout>
   )
 }
 export default App
