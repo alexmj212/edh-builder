@@ -7,18 +7,19 @@
 
 **Goal:** Scaffold the project and implement deck CRUD with persistent storage. User can create, rename, delete, and switch between decks.
 
-**Requirements:** DECK-01 through DECK-07, UI-01, UI-03
+**Requirements:** DECK-01 through DECK-08, UI-01, UI-03
 
 **Key decisions:**
 - React 19 + Vite 8 + TypeScript (strict)
 - Tailwind CSS v4 with dark mode default
-- Dexie.js v4 for IndexedDB (two stores: `decks` + `deckCards`)
+- Dexie.js v4 for IndexedDB (three stores: `decks` + `deckCards` + `deckChanges`)
 - Zustand 5 for state management
 - Vitest for testing
 
 **Deliverables:**
 - Vite project scaffold with React, TypeScript, Tailwind v4
-- Dexie database with v1 schema (decks + deckCards stores)
+- Dexie database with v1 schema (decks + deckCards + deckChanges stores)
+- `deckChanges` store schema ready for v2 history features (type, deckId, cardName, timestamp)
 - Zustand store with deck slice
 - Deck list page: create, rename, delete, select
 - Dark/light mode toggle
@@ -70,11 +71,13 @@
 
 **Goal:** User can add/remove cards and view the deck in grid or list format.
 
-**Requirements:** BUILD-01 through BUILD-07, UI-02, UI-04
+**Requirements:** BUILD-01 through BUILD-08, DECK-09, UI-02, UI-04
 
 **Deliverables:**
 - Add card to deck from search results
 - Remove card from deck
+- Every add/remove writes a changelog entry to `deckChanges` store (v2 history foundation)
+- Card references include `originalReleaseDate` from earliest Scryfall printing (v2 age analysis foundation)
 - Singleton enforcement (prevent duplicate non-basics, allow multiple basics)
 - Visual card grid view with lazy-loaded images and skeleton placeholders
 - Categorized list view (grouped by type: creatures, instants, sorceries, artifacts, enchantments, lands, planeswalkers)
@@ -89,6 +92,8 @@
 - List view groups cards by type with card count per category
 - Toggle between views preserves scroll position
 - Commander art is prominent at deck top
+- Every card add/remove creates a `deckChanges` record
+- Card references include `originalReleaseDate`
 
 ---
 
@@ -145,14 +150,14 @@
 
 | Phase | Name | Requirements | Count |
 |-------|------|-------------|-------|
-| 1 | Foundation & Deck Management | DECK-01–07, UI-01, UI-03 | 9 |
+| 1 | Foundation & Deck Management | DECK-01–08, UI-01, UI-03 | 10 |
 | 2 | Commander & Card Search | CMDR-01–05, SRCH-01–07 | 12 |
-| 3 | Deck Building & Card Display | BUILD-01–07, UI-02, UI-04 | 9 |
+| 3 | Deck Building & Card Display | BUILD-01–08, DECK-09, UI-02, UI-04 | 11 |
 | 4 | Live Validation Checklist | VALID-01–08 | 8 |
 | 5 | Import/Export & Polish | IO-01–04 | 4 |
-| **Total** | | | **42** |
+| **Total** | | | **45** |
 
-Note: UI requirements are distributed across phases where they naturally fit (dark mode in Phase 1, lazy loading in Phase 3).
+Note: UI requirements are distributed across phases where they naturally fit (dark mode in Phase 1, lazy loading in Phase 3). v2 foundations (deckChanges store, originalReleaseDate) are baked into Phases 1 and 3 to avoid retrofit.
 
 ---
 
