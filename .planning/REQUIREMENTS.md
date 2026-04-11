@@ -90,12 +90,45 @@ Deferred to future release. Tracked but not in current roadmap.
 - **THEME-05**: Theme breakdown shows which cards match which theme and why (keyword, type, or oracle text match)
 - **THEME-06**: Tribal theme auto-detects creature types from commander and counts matching creatures in deck
 
+### Card Suggestions & Staples
+
+- **SUGG-01**: Card suggestions for a commander sorted by EDHREC rank from Scryfall (order:edhrec)
+- **SUGG-02**: Staples checklist — flag missing format staples for the deck's color identity (Sol Ring, Command Tower, etc.)
+- **SUGG-03**: Staples list is user-customizable — add/remove cards from what counts as a "staple"
+
+### Power Level / Bracket Assessment
+
+- **PWR-01**: Commander bracket estimate (1-4 + Game Changers) based on deck contents
+- **PWR-02**: Count cards on the Game Changers list and surface them prominently
+- **PWR-03**: Detect known infinite combo pairs/packages in the deck
+- **PWR-04**: Factor tutor density, fast mana count, and interaction density into bracket estimate
+- **PWR-05**: Summary display suitable for Rule 0 conversation ("This deck is estimated Bracket 3 with 2 Game Changers and 1 known combo")
+
+### Draw Probability
+
+- **DRAW-01**: Hypergeometric probability display — chance of drawing at least 1 of a card type by turn N
+- **DRAW-02**: Breakdown by category (land, creature, removal, ramp, draw) per turn
+- **DRAW-03**: Opening hand analysis — probability of a "keepable" hand (e.g., 2-4 lands + at least 1 ramp or draw)
+
+### Set / Card Age Analysis
+
+- **AGE-01**: Show original printing date for each card (earliest release via oracle_id, ignoring reprints)
+- **AGE-02**: Deck age summary — average card age, distribution by era (e.g., pre-Modern, Modern era, recent sets)
+- **AGE-03**: "Deck trends newer/older" indicator — quick read for table talk ("mostly cards from the last 3 years")
+
+### Deck History & Snapshots
+
+- **HIST-01**: Automatic change log — every add/remove records a timestamped entry
+- **HIST-02**: History view showing summarized changes ("You added 10 cards, removed 3")
+- **HIST-03**: Milestone snapshots — auto-snapshot when deck first meets minimum criteria (100 cards, all validations pass)
+- **HIST-04**: Manual version tagging — user can label a point in history (e.g., "v2 — swapped combo package")
+- **HIST-05**: Revert to a previous snapshot
+
 ### Enhanced Features
 
 - **ENH-01**: Card autocomplete suggestions while typing in search (via /cards/autocomplete)
 - **ENH-02**: Bulk data cache for offline card search
 - **ENH-03**: Deck comparison — side-by-side view of two decks
-- **ENH-04**: Card recommendations based on commander and existing cards (EDHREC rank sorting)
 
 ## Out of Scope
 
@@ -109,7 +142,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Social features (sharing, comments) | No backend — requires server infrastructure |
 | Mobile-native app | Web-first, responsive design covers tablet |
 | Companion zone support | Rare edge case with significant complexity (Lutri special case) — defer |
-| Game Changers / Bracket display | Informational only, not a legality concern — defer |
+| Game Changers / Bracket display | Moved to v2 as PWR-01 through PWR-05 |
 
 ## Traceability
 

@@ -33,7 +33,7 @@ You can build a valid Commander deck with confidence — the app tells you in re
 ### Out of Scope
 
 - Server-side storage / accounts — local-only for v1, keeps things simple
-- Deck statistics / mana curve analysis — nice-to-have, not core
+- Deck statistics / mana curve analysis — planned for v2 (MANA-01 through MANA-04)
 - Price tracking / budget tools — adds API complexity, defer
 - Playtesting / goldfish mode — large feature, separate project
 - Social features (sharing, comments) — no backend
