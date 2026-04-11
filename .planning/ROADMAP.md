@@ -12,8 +12,8 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold Vite/React/TS project, Tailwind v4 dark theme, Dexie database with v1 schema (decks + deckCards + deckChanges)
-- [ ] 01-02-PLAN.md — Zustand deck store with CRUD, responsive layout shell, dark/light toggle, deck list UI
+- [x] 01-01-PLAN.md — Scaffold Vite/React/TS project, Tailwind v4 dark theme, Dexie database with v1 schema (decks + deckCards + deckChanges)
+- [x] 01-02-PLAN.md — Zustand deck store with CRUD, responsive layout shell, dark/light toggle, deck list UI
 
 **Key decisions:**
 - React 19 + Vite 8 + TypeScript (strict)
