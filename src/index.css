@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: oklch(0.15 0.01 250);
+  --color-surface: oklch(0.20 0.01 250);
+  --color-surface-hover: oklch(0.25 0.01 250);
+  --color-text-primary: oklch(0.93 0.01 250);
+  --color-text-secondary: oklch(0.70 0.01 250);
+  --color-accent: oklch(0.65 0.15 250);
+  --color-accent-hover: oklch(0.70 0.15 250);
+  --color-danger: oklch(0.65 0.20 25);
+  --color-danger-hover: oklch(0.70 0.20 25);
+  --color-success: oklch(0.65 0.15 145);
+  --color-border: oklch(0.30 0.01 250);
+}
