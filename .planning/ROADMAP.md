@@ -9,6 +9,12 @@
 
 **Requirements:** DECK-01 through DECK-08, UI-01, UI-03
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold Vite/React/TS project, Tailwind v4 dark theme, Dexie database with v1 schema (decks + deckCards + deckChanges)
+- [ ] 01-02-PLAN.md — Zustand deck store with CRUD, responsive layout shell, dark/light toggle, deck list UI
+
 **Key decisions:**
 - React 19 + Vite 8 + TypeScript (strict)
 - Tailwind CSS v4 with dark mode default
@@ -177,4 +183,4 @@ Note: UI requirements are distributed across phases where they naturally fit (da
 
 ---
 *Roadmap created: 2026-04-11*
-*Last updated: 2026-04-11 after initial definition*
+*Last updated: 2026-04-11 after Phase 1 planning*
