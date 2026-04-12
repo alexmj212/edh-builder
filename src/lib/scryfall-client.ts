@@ -129,6 +129,49 @@ export async function fetchCardById(
   return (await res.json()) as ScryfallCard.Any;
 }
 
+import { detectPartnerType } from './partner-detection';
+
+export async function searchCommanders(fragment: string, signal?: AbortSignal): Promise<ScryfallList> {
+  const q = buildCommanderSearchQuery({ nameFragment: fragment });
+  const sp = new URLSearchParams({ q, unique: 'cards', order: 'edhrec', page: '1' });
+  const res = await scryfallFetch(`/cards/search?${sp}`, signal);
+  if (res.status === 404) return { object: 'list', data: [], has_more: false, total_cards: 0 };
+  if (!res.ok) throw new Error(`Scryfall error ${res.status}`);
+  return ScryfallListSchema.parse(await res.json()) as ScryfallList;
+}
+
+export async function searchPartnersFor(
+  primary: ScryfallCard.Any,
+  fragment: string,
+  signal?: AbortSignal,
+): Promise<ScryfallList> {
+  const kind = detectPartnerType(primary);
+  let qBase: string;
+  switch (kind.kind) {
+    case 'generic':
+      qBase = '(o:"Partner") -o:"Partner with" f:commander';
+      break;
+    case 'friendsForever':
+      qBase = 'o:"Friends forever" f:commander';
+      break;
+    case 'chooseBackground':
+      qBase = 't:Background f:commander';
+      break;
+    case 'named':
+      qBase = `!"${kind.partnerName.replace(/"/g, '')}"`;
+      break;
+    default:
+      return { object: 'list', data: [], has_more: false, total_cards: 0 };
+  }
+  const frag = fragment.trim();
+  const q = frag ? `${qBase} ${encodeFragment(frag) ? `n:${encodeFragment(frag)}` : ''}`.trim() : qBase;
+  const sp = new URLSearchParams({ q, unique: 'cards', order: 'edhrec', page: '1' });
+  const res = await scryfallFetch(`/cards/search?${sp}`, signal);
+  if (res.status === 404) return { object: 'list', data: [], has_more: false, total_cards: 0 };
+  if (!res.ok) throw new Error(`Scryfall error ${res.status}`);
+  return ScryfallListSchema.parse(await res.json()) as ScryfallList;
+}
+
 export function getImageUri(
   card: ScryfallCard.Any,
   size: 'normal' | 'art_crop' | 'small',
