@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 1
-status: Executing Phase 02
-last_updated: "2026-04-12T04:18:34.227Z"
+current_plan: 2
+status: Executing Phase 02.1
+last_updated: "2026-04-12T12:57:34.338Z"
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 1
-  total_plans: 8
-  completed_plans: 7
-  percent: 88
+  total_plans: 11
+  completed_plans: 8
+  percent: 73
 ---
 
 # Project State: EDH Deck Builder
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** You can build a valid Commander deck with confidence — the app tells you in real time whether your deck meets every format rule.
-**Current focus:** Phase 02 — commander-selection-card-search
+**Current focus:** Phase 02.1 — partner-persistence
 
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
-- **Active phase:** 02-commander-selection-card-search
-- **Current Plan:** 1
+- **Active phase:** 02.1-partner-persistence
+- **Current Plan:** 2
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -64,6 +64,8 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02]: URLSearchParams encodes spaces as '+' not '%20' — test URL assertions need .replace(/\+/g, ' ') before decodeURIComponent
 - [Phase 02]: CommanderSearch fires searchCommanders('') on mount to show EDHREC default list without typing
 - [Phase 02]: Partner compatibility gate in CommanderSearch.handleSelect is defense-in-depth (searchPartnersFor already pre-filters)
+- [Phase 02.1]: Dexie v3 migration is additive-only (no upgrade callback): v2 rows read back with partner fields as undefined
+- [Phase 02.1]: Partner fields typed string | null | undefined to distinguish never-set (legacy), explicitly-cleared (null), and populated states
 
 ## Performance Metrics
 
@@ -74,6 +76,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02 | 03 | 3 min | 2/2 | 4 |
 | 02 | 04 | 3 min | 2/2 | 6 |
 | 02 | 05 | 6 min | 3/3 | 11 |
+| 02.1 | 01 | 1 min | 2/2 | 3 |
 
 ## Session Log
 
@@ -86,6 +89,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02-04: Wave 3 Routing & DeckWorkspace Shell |
 | 2026-04-12 | Completed 02-05: Wave 4 Commander Selection UX (CommanderPanel, CommanderSearch, ColorIdentityChip, useDebouncedValue) |
 | 2026-04-12 | Phase 02 human-verify checkpoint found gap: partner not persisted to Dexie — inserted Phase 02.1 |
+| 2026-04-12 | Completed 02.1-01: Deck type + Dexie v3 additive schema + migration tests |
 
 ## Accumulated Context
 
