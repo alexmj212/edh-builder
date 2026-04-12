@@ -21,20 +21,20 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Commander Selection
 
-- [ ] **CMDR-01**: User can search for a valid commander (legendary creature or "can be your commander")
+- [x] **CMDR-01**: User can search for a valid commander (legendary creature or "can be your commander")
 - [ ] **CMDR-02**: User can set a commander for a deck
 - [ ] **CMDR-03**: User can change the commander of an existing deck (triggers re-validation)
-- [ ] **CMDR-04**: User can select two partner commanders (generic partner, partner with, friends forever, choose a background)
-- [ ] **CMDR-05**: Partner pairing is validated — only compatible partner types can be paired
+- [x] **CMDR-04**: User can select two partner commanders (generic partner, partner with, friends forever, choose a background)
+- [x] **CMDR-05**: Partner pairing is validated — only compatible partner types can be paired
 
 ### Card Search
 
-- [ ] **SRCH-01**: User can search cards by name via Scryfall API
-- [ ] **SRCH-02**: User can filter search by card type, color, and text
-- [ ] **SRCH-03**: Search results automatically filter to commander's color identity (id<= operator)
-- [ ] **SRCH-04**: Search results show card image (normal size), name, mana cost, type, and color
+- [x] **SRCH-01**: User can search cards by name via Scryfall API
+- [x] **SRCH-02**: User can filter search by card type, color, and text
+- [x] **SRCH-03**: Search results automatically filter to commander's color identity (id<= operator)
+- [x] **SRCH-04**: Search results show card image (normal size), name, mana cost, type, and color
 - [ ] **SRCH-05**: Search input is debounced (300-500ms) with AbortController for stale requests
-- [ ] **SRCH-06**: Scryfall API rate limiting is enforced (100ms minimum between requests)
+- [x] **SRCH-06**: Scryfall API rate limiting is enforced (100ms minimum between requests)
 - [ ] **SRCH-07**: Search results paginate (175 per page via Scryfall), with load-more
 
 ### Deck Building
@@ -162,17 +162,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DECK-07 | Phase 1 | Pending |
 | DECK-08 | Phase 1 | Pending |
 | DECK-09 | Phase 3 | Pending |
-| CMDR-01 | Phase 2 | Pending |
+| CMDR-01 | Phase 2 | Complete |
 | CMDR-02 | Phase 2 | Pending |
 | CMDR-03 | Phase 2 | Pending |
-| CMDR-04 | Phase 2 | Pending |
-| CMDR-05 | Phase 2 | Pending |
-| SRCH-01 | Phase 2 | Pending |
-| SRCH-02 | Phase 2 | Pending |
-| SRCH-03 | Phase 2 | Pending |
-| SRCH-04 | Phase 2 | Pending |
+| CMDR-04 | Phase 2 | Complete |
+| CMDR-05 | Phase 2 | Complete |
+| SRCH-01 | Phase 2 | Complete |
+| SRCH-02 | Phase 2 | Complete |
+| SRCH-03 | Phase 2 | Complete |
+| SRCH-04 | Phase 2 | Complete |
 | SRCH-05 | Phase 2 | Pending |
-| SRCH-06 | Phase 2 | Pending |
+| SRCH-06 | Phase 2 | Complete |
 | SRCH-07 | Phase 2 | Pending |
 | BUILD-01 | Phase 3 | Pending |
 | BUILD-02 | Phase 3 | Pending |
