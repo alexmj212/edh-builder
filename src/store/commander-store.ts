@@ -52,8 +52,9 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
         try {
           partner = await fetchCardById(deck.partnerCommanderId);
           await cacheCard(partner);
-        } catch {
+        } catch (err) {
           // Partner hydration failure must not abort primary load.
+          console.warn('[commander-store] partner hydration failed, clearing slot', err);
           partner = null;
         }
       }
