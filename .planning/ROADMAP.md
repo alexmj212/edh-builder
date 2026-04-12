@@ -46,13 +46,26 @@ Plans:
 
 **Requirements:** CMDR-01 through CMDR-05, SRCH-01 through SRCH-07
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Wave 0: install react-router-dom, declare CachedCard type, bump Dexie to v2 with `cards` store, create RED test scaffolds (6 files) for Wave 1-3 modules
+- [ ] 02-02-PLAN.md — Pure libraries: partner-detection (4 variants), scryfall-client (rate-limited HTTP + query builder + zod envelope), card-cache (read-through 7-day TTL)
+- [ ] 02-03-PLAN.md — Zustand stores: commander-store (primary + partner + Dexie persistence) and card-search-store (abortable search + pagination + cache side effect)
+- [ ] 02-04-PLAN.md — Routing shell: BrowserRouter with `/` and `/decks/:id`, WorkspaceHeader with back link, DeckWorkspace skeleton with three section placeholders
+- [ ] 02-05-PLAN.md — Commander selection UI: useDebouncedValue hook, ColorIdentityChip, CommanderSearch (primary + partner modes), CommanderPanel wired into DeckWorkspace
+- [ ] 02-06-PLAN.md — Card search UI: CardResultCell (image + hover overlay), CardSearchSection (filter row + results grid + pagination), human-verify checkpoint for end-to-end flow
+
 **Key decisions:**
 - Scryfall API direct from browser (CORS supported, no proxy)
 - 100ms rate limiter at HTTP layer
-- 300-500ms debounce on search input
+- 400ms debounce on search input (shared via `useDebouncedValue` hook)
 - AbortController for stale request cancellation
-- Card images at `normal` size (488x680)
+- Card images at `normal` size (488×680)
 - `id<=` operator for color identity filtering
+- BrowserRouter (declarative) over RouterProvider
+- Dedicated commander panel in workspace (two-slot side-by-side for partners)
+- Read-through card cache in Dexie v2 (`cards` store keyed by `oracle_id`, 7-day TTL)
 
 **Deliverables:**
 - Scryfall API client with rate limiting and request cancellation
@@ -177,10 +190,11 @@ Note: UI requirements are distributed across phases where they naturally fit (da
 | Styling | Tailwind CSS | v4.2 |
 | State | Zustand | 5.x |
 | Storage | Dexie.js (IndexedDB) | v4 |
+| Routing | react-router-dom | 7.x |
 | API Types | @scryfall/api-types | 1.0.0-alpha |
 | Validation | Zod | 4.x |
 | Testing | Vitest + React Testing Library | latest |
 
 ---
 *Roadmap created: 2026-04-11*
-*Last updated: 2026-04-11 after Phase 1 planning*
+*Last updated: 2026-04-11 after Phase 2 planning*
