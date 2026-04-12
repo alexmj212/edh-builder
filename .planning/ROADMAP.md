@@ -94,11 +94,11 @@ Plans:
 
 **Depends on:** Phase 02
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [x] 02.1-01-PLAN.md — Dexie v3 additive migration + Deck type optional partner fields + migration tests
-- [ ] 02.1-02-PLAN.md — commander-store partner persistence wiring (setPartner/clearPartner/loadForDeck/auto-clear) + store tests
+- [x] 02.1-02-PLAN.md — commander-store partner persistence wiring (setPartner/clearPartner/loadForDeck/auto-clear) + store tests
 - [ ] 02.1-03-PLAN.md — CommanderPanel round-trip component tests (Remove-partner persists; remount rehydrates)
 
 Deliverables:

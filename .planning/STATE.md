@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2
+current_plan: 3
 status: Executing Phase 02.1
-last_updated: "2026-04-12T12:57:34.338Z"
+last_updated: "2026-04-12T13:02:09.373Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 11
-  completed_plans: 8
-  percent: 73
+  completed_plans: 9
+  percent: 82
 ---
 
 # Project State: EDH Deck Builder
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.1-partner-persistence
-- **Current Plan:** 2
+- **Current Plan:** 3
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -66,6 +66,9 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02]: Partner compatibility gate in CommanderSearch.handleSelect is defense-in-depth (searchPartnersFor already pre-filters)
 - [Phase 02.1]: Dexie v3 migration is additive-only (no upgrade callback): v2 rows read back with partner fields as undefined
 - [Phase 02.1]: Partner fields typed string | null | undefined to distinguish never-set (legacy), explicitly-cleared (null), and populated states
+- [Phase 02.1]: setPartner/clearPartner arity expanded to (deckId, card)/(deckId) returning Promise<void>; method names preserved
+- [Phase 02.1]: setCommander auto-clear merges partner nulling into the single db.decks.update call (one atomic write, no observer race)
+- [Phase 02.1]: loadForDeck wraps partner fetchCardById in inner try/catch — transient Scryfall failure degrades to partnerCommander:null instead of aborting primary load
 
 ## Performance Metrics
 
@@ -77,6 +80,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02 | 04 | 3 min | 2/2 | 6 |
 | 02 | 05 | 6 min | 3/3 | 11 |
 | 02.1 | 01 | 1 min | 2/2 | 3 |
+| 02.1 | 02 | 2 min | 2/2 | 3 |
 
 ## Session Log
 
@@ -90,6 +94,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02-05: Wave 4 Commander Selection UX (CommanderPanel, CommanderSearch, ColorIdentityChip, useDebouncedValue) |
 | 2026-04-12 | Phase 02 human-verify checkpoint found gap: partner not persisted to Dexie — inserted Phase 02.1 |
 | 2026-04-12 | Completed 02.1-01: Deck type + Dexie v3 additive schema + migration tests |
+| 2026-04-12 | Completed 02.1-02: commander-store partner persistence (setPartner/clearPartner Dexie writes, loadForDeck hydration, reload round-trip test) |
 
 ## Accumulated Context
 
