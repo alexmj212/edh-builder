@@ -12,11 +12,9 @@ export async function createDeck(page: Page, name: string): Promise<void> {
   await page.getByRole('button', { name: 'New Deck' }).first().click();
   await page.getByPlaceholder('Deck name...').fill(name);
   await page.getByRole('button', { name: 'Create' }).click();
-  await page
-    .locator('div')
-    .filter({ has: page.getByRole('heading', { level: 3, name }) })
-    .first()
-    .click();
+  // Click the h3 heading directly — click events bubble up to the DeckCardItem div's onClick.
+  // Avoids .first() selecting an outer wrapper div that has no onClick handler.
+  await page.getByRole('heading', { level: 3, name }).click();
   await expect(page).toHaveURL(/\/decks\/\d+$/);
 }
 
