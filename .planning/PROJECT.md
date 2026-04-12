@@ -16,12 +16,12 @@ You can build a valid Commander deck with confidence — the app tells you in re
 
 - [x] Create, rename, and delete multiple decks — Validated in Phase 1: Foundation & Deck Management
 - [x] All deck data persisted in browser storage — Validated in Phase 1: Foundation & Deck Management
+- [x] Select a commander for each deck (incl. Partner pairs, survives reload) — Validated in Phases 02 + 02.1 + 02.2
+- [x] Playwright E2E harness runs locally and in CI (TEST-01) — Validated in Phase 02.2
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-
-- [ ] Select a commander for each deck
 - [ ] Search cards by name, type, text, and color via Scryfall API
 - [ ] Browse cards with image art, name, mana cost, type, and color
 - [ ] Add/remove cards from a deck
@@ -79,4 +79,4 @@ can be marked complete.
   gate; other specs do not enforce the console policy by default (D-15).
 
 ---
-*Last updated: 2026-04-11 after Phase 1 completion*
+*Last updated: 2026-04-12 after Phase 02.2 completion — Playwright E2E harness live, Phase 02.1 UAT backfilled, standing rule established for Phase 3+*
