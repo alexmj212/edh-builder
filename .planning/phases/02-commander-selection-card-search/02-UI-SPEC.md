@@ -56,9 +56,11 @@ Declared values (must be multiples of 4):
 | Body | 14px | 400 | 1.5 | Card oracle text snippet, filter label text, meta text |
 | Label | 14px | 600 | 1.4 | Card name in result cell, filter field labels, chip text |
 | Heading | 20px | 600 | 1.2 | Workspace section headings ("Commander", "Card Search") |
-| Display | 24px | 700 | 1.2 | Deck name in workspace header (matches `text-2xl font-bold` from Layout) |
+| Display | 24px | 600 | 1.2 | Deck name in workspace header (`font-semibold text-2xl`) |
 
-**Weights declared: 400 (regular) and 600 (semibold). Font is system-ui — no custom loading.**
+**Weights declared: 400 (regular) and 600 (semibold) — exactly two weights. Phase 2 introduces no font weight beyond {400, 600}. Font is system-ui — no custom loading.**
+
+Note: `Layout.tsx` uses `font-bold` on the app-level header; that is Phase 1 scope and is not part of this phase's design contract. The workspace deck-name (Display role above) uses `font-semibold`, not `font-bold`.
 
 **Source:** Inferred from Phase 1 `DeckList.tsx` (`font-semibold`, `text-sm`, `text-lg`) and `Layout.tsx` (`text-xl font-bold sm:text-2xl`)
 
@@ -86,6 +88,7 @@ All tokens are from `src/index.css` `@theme` block. Dark-by-default — all valu
 3. "Back to decks" link text
 4. "Load More" button (secondary page action)
 5. Commander slot selected-state ring (`ring-2 ring-accent` — matches DeckList active deck pattern)
+6. Active color-pip toggle ring in CardSearchSection filter row (`ring-2 ring-accent` — consistent with selected/active-input pattern across the workspace)
 
 **Source:** `src/index.css` @theme block. Pattern from `DeckList.tsx` (`ring-2 ring-accent`, `text-accent hover:text-accent-hover`, `bg-accent hover:bg-accent-hover text-background`)
 
@@ -105,10 +108,12 @@ CardSearchSection      — filters + locked chip + results grid
 DeckPlaceholder        — "Deck building coming in Phase 3" stub
 ```
 
+**Primary focal point:** CommanderPanel art banner (full-width, 160px desktop / 120px mobile) — draws the eye before all other content; reinforces the commander-as-deck-anchor mental model.
+
 ### 2. WorkspaceHeader
 
 - Left: `←` + "Back to decks" link — `text-accent hover:text-accent-hover text-sm font-medium`
-- Center/Right: Deck name in `text-2xl font-bold text-text-primary`
+- Center/Right: Deck name in `text-2xl font-semibold text-text-primary`
 - Bottom border: `border-b border-border` to visually separate from content
 - Height: 56px (`py-4` with header text)
 - Back link uses `<Link to="/">` from react-router-dom
@@ -125,7 +130,7 @@ Container: `rounded-lg bg-surface border border-border p-4` (matches DeckList ca
 **Selected state (single commander):**
 - Art area: `<img>` using `image_uris.art_crop` — `object-cover w-full h-40 sm:h-48 rounded-t-lg`
 - Below art: commander name in `text-label font-semibold`, mana cost in monospace letters, type line in `text-text-secondary text-sm`
-- "Change" button: `text-sm text-text-secondary hover:text-text-primary` — replaces the search input
+- "Change commander" button: `text-sm text-text-secondary hover:text-text-primary` — replaces the search input
 
 **Partner layout (two-slot, side-by-side, D-03):**
 - `grid grid-cols-2 gap-4`
@@ -138,7 +143,7 @@ Container: `rounded-lg bg-surface border border-border p-4` (matches DeckList ca
 
 ### 4. CommanderSearch
 
-Shown below art area when in empty or "Change" state.
+Shown below art area when in empty or "Change commander" state.
 
 - Input: full-width `bg-background border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary`
 - Placeholder: "Search for a commander..."
@@ -157,7 +162,7 @@ Always visible above card search results. Never hidden.
 
 - Container: `flex items-center gap-2 mb-4`
 - Copy: "Color identity:" in `text-sm text-text-secondary`
-- Identity display: one colored square per pip — `w-5 h-5 rounded-sm text-xs font-bold flex items-center justify-center`
+- Identity display: one colored square per pip — `w-5 h-5 rounded-sm text-xs font-semibold flex items-center justify-center`
   - W = bg white, text-gray-800: "W"
   - U = bg-blue-600, text-white: "U"
   - B = bg-gray-800 border border-gray-600, text-white: "B"
@@ -183,7 +188,7 @@ Section heading: "Card Search" — `text-xl font-semibold text-text-primary mb-4
 - Name input: placeholder "Card name..."
 - Type input: placeholder "Card type..."
 - Text input: placeholder "Oracle text..."
-- Color filter: `flex gap-2 items-center` — five toggle buttons (W/U/B/R/G) matching ColorIdentityChip pip styles, toggled on = ring-2 ring-accent
+- Color filter: `flex gap-2 items-center` — five toggle buttons (W/U/B/R/G) matching ColorIdentityChip pip styles, toggled on = `ring-2 ring-accent` (accent use #6 — active color-pip toggle)
 
 **Disabled state (no commander, D-07):**
 - All filter inputs: `opacity-50 pointer-events-none`
@@ -221,8 +226,8 @@ Section heading: "Card Search" — `text-xl font-semibold text-text-primary mb-4
 | Empty input (card search) | Above results grid area | No message — show nothing (search hasn't fired) |
 | Loading | Above results (spinner) | `flex items-center gap-2 text-text-secondary text-sm py-4`: spinning SVG + "Searching..." |
 | Zero results | Where grid would appear | `text-text-secondary text-sm text-center py-8`: "No cards match your filters." |
-| API error | Above results | `border-l-4 border-danger bg-surface rounded-r-lg p-3 flex items-start gap-3`: error icon + message text + "Retry" `text-accent` button |
-| Network offline | Above results | Same banner pattern: "You appear to be offline. Check your connection and try again." + "Retry" button |
+| API error | Above results | `border-l-4 border-danger bg-surface rounded-r-lg p-3 flex items-start gap-3`: error icon + message text + "Try again" `text-accent` button |
+| Network offline | Above results | Same banner pattern: "You appear to be offline. Check your connection and try again." + "Try again" button |
 | Deck not found | Full workspace area | `text-text-secondary text-center py-16`: "Deck not found." + "← Back to decks" `text-accent` link |
 
 **Loading spinner:** 20px inline SVG circle with `animate-spin`, `text-text-secondary`. No third-party spinner library.
@@ -257,7 +262,7 @@ Stub section below card search for Phase 3.
 4. If commander has `Partner`/`Friends Forever`/`Choose a Background` in keywords/oracle_text:
    - Partner slot activates (opacity-50 removed, becomes interactive)
    - Partner slot search input appears pre-filtered to valid pairings only
-5. User can click "Change" to return to search input (clears partner slot too if one was set)
+5. User can click "Change commander" to return to search input (clears partner slot too if one was set)
 
 ### Card Search Flow
 
@@ -298,13 +303,13 @@ Stub section below card search for Phase 3.
 | Card search zero results | "No cards match your filters." |
 | Card search API error | "Something went wrong fetching cards. Check your connection and try again." |
 | Network offline | "You appear to be offline. Check your connection and try again." |
-| Retry button | "Retry" |
+| Retry button | "Try again" |
 | Load more button | "Load more results" |
 | Add stub tooltip | "Add to deck — coming in Phase 3" |
 | Deck not found | "Deck not found." |
 | Deck placeholder | "Deck cards will appear here." |
 | Back link | "← Back to decks" |
-| Change commander button | "Change" |
+| Change commander button | "Change commander" |
 
 **No destructive actions in Phase 2.** Changing a commander is not destructive — it clears the partner slot silently (no confirmation needed in Phase 2; Phase 3 will warn if the deck has cards outside the new color identity).
 
