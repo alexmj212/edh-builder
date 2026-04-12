@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useDeckStore } from '../store/deck-store'
 import { useCommanderStore } from '../store/commander-store'
 import { WorkspaceHeader } from './WorkspaceHeader'
+import { CommanderPanel } from './CommanderPanel'
 
 export function DeckWorkspace() {
   const { id } = useParams<{ id: string }>()
@@ -45,7 +46,8 @@ export function DeckWorkspace() {
         data-testid="commander-panel"
         className="mt-6"
       >
-        <p className="text-text-secondary">Commander panel placeholder</p>
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Commander</h2>
+        <CommanderPanel deckId={numericId} />
       </section>
       <section
         aria-label="Card Search"
