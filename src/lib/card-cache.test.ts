@@ -25,7 +25,7 @@ describe('card-cache', () => {
   it('getCard returns cached JSON when within TTL (7 days)', async () => {
     const card = fakeCard('oracle-fresh');
     // Write directly to db with a fresh cachedAt
-    await db.cards.put({ oracle_id: 'oracle-fresh', cardJson: card as never, cachedAt: Date.now() });
+    await db.cards.put({ oracle_id: 'oracle-fresh', cardJson: card, cachedAt: Date.now() });
     const result = await getCard('oracle-fresh');
     expect(result).not.toBeNull();
     expect((result as Card & { oracle_id: string }).oracle_id).toBe('oracle-fresh');
@@ -33,7 +33,7 @@ describe('card-cache', () => {
 
   it('getCard returns null when cache entry older than 7 days', async () => {
     const staleAt = Date.now() - CACHE_TTL_MS - 1;
-    await db.cards.put({ oracle_id: 'oracle-stale', cardJson: fakeCard('oracle-stale') as never, cachedAt: staleAt });
+    await db.cards.put({ oracle_id: 'oracle-stale', cardJson: fakeCard('oracle-stale'), cachedAt: staleAt });
     const result = await getCard('oracle-stale');
     expect(result).toBeNull();
   });

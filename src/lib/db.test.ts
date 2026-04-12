@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import type { ScryfallCard } from '@scryfall/api-types'
+import type { Card } from './scryfall'
 import { EDHBuilderDB } from './db'
 
 describe('EDHBuilderDB', () => {
@@ -102,7 +102,7 @@ describe('Dexie v2 migration', () => {
     const cachedAt = Date.now()
     await db.cards.put({
       oracle_id: 'test-oracle-1',
-      cardJson: {} as ScryfallCard.Any,
+      cardJson: {} as Card,
       cachedAt,
     })
     const card = await db.cards.get('test-oracle-1')
@@ -113,12 +113,12 @@ describe('Dexie v2 migration', () => {
   it('cards store supports where(cachedAt) range queries for TTL eviction', async () => {
     await db.cards.put({
       oracle_id: 'old-card',
-      cardJson: {} as ScryfallCard.Any,
+      cardJson: {} as Card,
       cachedAt: 1000,
     })
     await db.cards.put({
       oracle_id: 'new-card',
-      cardJson: {} as ScryfallCard.Any,
+      cardJson: {} as Card,
       cachedAt: 2000,
     })
     const staleCards = await db.cards.where('cachedAt').below(1500).toArray()

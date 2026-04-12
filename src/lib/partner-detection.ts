@@ -1,4 +1,4 @@
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from './scryfall';
 
 export type PartnerType =
   | { kind: 'none' }
@@ -7,23 +7,23 @@ export type PartnerType =
   | { kind: 'friendsForever' }
   | { kind: 'chooseBackground' };
 
-function keywordsOf(card: ScryfallCard.Any): string[] {
-  return 'keywords' in card && Array.isArray(card.keywords) ? card.keywords : [];
+function keywordsOf(card: Card): string[] {
+  return card.keywords;
 }
 
-function oracleTextOf(card: ScryfallCard.Any): string {
-  if ('oracle_text' in card && typeof card.oracle_text === 'string') return card.oracle_text;
-  if ('card_faces' in card && Array.isArray(card.card_faces)) {
-    return card.card_faces.map((f: { oracle_text?: string }) => f.oracle_text ?? '').join('\n');
+function oracleTextOf(card: Card): string {
+  if (typeof card.oracle_text === 'string') return card.oracle_text;
+  if (card.card_faces && card.card_faces.length > 0) {
+    return card.card_faces.map(f => f.oracle_text ?? '').join('\n');
   }
   return '';
 }
 
-function typeLineOf(card: ScryfallCard.Any): string {
-  return 'type_line' in card && typeof card.type_line === 'string' ? card.type_line : '';
+function typeLineOf(card: Card): string {
+  return card.type_line;
 }
 
-export function detectPartnerType(card: ScryfallCard.Any): PartnerType {
+export function detectPartnerType(card: Card): PartnerType {
   const keywords = keywordsOf(card).map(k => k.toLowerCase());
   const oracle = oracleTextOf(card);
 
@@ -43,22 +43,19 @@ export function detectPartnerType(card: ScryfallCard.Any): PartnerType {
   return { kind: 'none' };
 }
 
-export function isValidBackground(card: ScryfallCard.Any): boolean {
+export function isValidBackground(card: Card): boolean {
   const typeLine = typeLineOf(card);
   return /Legendary/i.test(typeLine) && /Background/i.test(typeLine);
 }
 
-export function areCompatiblePartners(
-  primary: ScryfallCard.Any,
-  secondary: ScryfallCard.Any
-): boolean {
+export function areCompatiblePartners(primary: Card, secondary: Card): boolean {
   const primaryType = detectPartnerType(primary);
   const secondaryType = detectPartnerType(secondary);
   switch (primaryType.kind) {
     case 'generic':
       return secondaryType.kind === 'generic';
     case 'named':
-      return 'name' in secondary && secondary.name === primaryType.partnerName;
+      return secondary.name === primaryType.partnerName;
     case 'friendsForever':
       return secondaryType.kind === 'friendsForever';
     case 'chooseBackground':

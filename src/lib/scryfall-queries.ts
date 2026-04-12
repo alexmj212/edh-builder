@@ -48,10 +48,7 @@ export function buildCommanderSearchQuery(params: { nameFragment?: string }): st
 }
 
 export function buildPartnerQuery(primary: Card, fragment: string): string | null {
-  // partner-detection.ts is still typed against ScryfallCard.Any in this plan
-  // (retype deferred to plan 02.3-03). The `as never` silences the structural
-  // mismatch without touching the underlying module.
-  const kind = detectPartnerType(primary as never);
+  const kind = detectPartnerType(primary);
   let qBase: string;
   switch (kind.kind) {
     case 'generic':

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from './scryfall';
 import {
   detectPartnerType,
   areCompatiblePartners,
@@ -10,8 +10,16 @@ function card(overrides: Partial<{
   oracle_text: string;
   type_line: string;
   keywords: string[];
-}>): ScryfallCard.Any {
-  return { ...overrides } as unknown as ScryfallCard.Any;
+}>): Card {
+  // Provide the three REQUIRED fields on GameplayCard by default so direct
+  // field access in partner-detection helpers doesn't crash on minimal fixtures.
+  return {
+    keywords: [],
+    name: '',
+    type_line: '',
+    color_identity: [],
+    ...overrides,
+  } as unknown as Card;
 }
 
 describe('partner-detection', () => {
