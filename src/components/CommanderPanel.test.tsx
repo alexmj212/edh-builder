@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CommanderPanel } from './CommanderPanel';
 import { useCommanderStore } from '../store/commander-store';
 import { db } from '../lib/db';
@@ -119,14 +119,13 @@ describe('CommanderPanel', () => {
     const removeBtn = screen.getByRole('button', { name: /Remove partner/i });
     fireEvent.click(removeBtn);
 
-    // Allow the async clearPartner promise to settle.
-    // clearPartner awaits db.decks.update, then calls set() — two microtask turns is plenty.
-    await Promise.resolve();
-    await Promise.resolve();
-
-    const deck = await db.decks.get(deckId);
-    expect(deck?.partnerCommanderId).toBeNull();
-    expect(deck?.partnerCommanderName).toBeNull();
+    // clearPartner is fired void from the event handler; poll until Dexie persists
+    // the cleared partner fields rather than relying on a fixed number of microtask turns.
+    await waitFor(async () => {
+      const deck = await db.decks.get(deckId);
+      expect(deck?.partnerCommanderId).toBeNull();
+      expect(deck?.partnerCommanderName).toBeNull();
+    });
     expect(useCommanderStore.getState().partnerCommander).toBeNull();
   });
 
