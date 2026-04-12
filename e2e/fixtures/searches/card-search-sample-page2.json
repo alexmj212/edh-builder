@@ -1,0 +1,49 @@
+{
+  "object": "list",
+  "total_cards": 4,
+  "has_more": false,
+  "data": [
+    {
+      "object": "card",
+      "id": "55555555-5555-5555-5555-555555555555",
+      "oracle_id": "66666666-6666-6666-6666-666666666666",
+      "name": "Command Tower",
+      "layout": "normal",
+      "type_line": "Land",
+      "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
+      "mana_cost": "",
+      "color_identity": [],
+      "keywords": [],
+      "image_uris": {
+        "normal": "https://example.com/command-tower-normal.jpg",
+        "small":  "https://example.com/command-tower-small.jpg",
+        "large":  "https://example.com/command-tower-large.jpg",
+        "art_crop": "https://example.com/command-tower-art.jpg",
+        "border_crop": "https://example.com/command-tower-border.jpg",
+        "png": "https://example.com/command-tower.png"
+      },
+      "legalities": { "commander": "legal" }
+    },
+    {
+      "object": "card",
+      "id": "77777777-7777-7777-7777-777777777777",
+      "oracle_id": "88888888-8888-8888-8888-888888888888",
+      "name": "Exotic Orchard",
+      "layout": "normal",
+      "type_line": "Land",
+      "oracle_text": "{T}: Add one mana of any color a commander shares with a land an opponent controls.",
+      "mana_cost": "",
+      "color_identity": [],
+      "keywords": [],
+      "image_uris": {
+        "normal": "https://example.com/exotic-orchard-normal.jpg",
+        "small":  "https://example.com/exotic-orchard-small.jpg",
+        "large":  "https://example.com/exotic-orchard-large.jpg",
+        "art_crop": "https://example.com/exotic-orchard-art.jpg",
+        "border_crop": "https://example.com/exotic-orchard-border.jpg",
+        "png": "https://example.com/exotic-orchard.png"
+      },
+      "legalities": { "commander": "legal" }
+    }
+  ]
+}
