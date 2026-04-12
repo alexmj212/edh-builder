@@ -49,7 +49,7 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Wave 0: install react-router-dom, declare CachedCard type, bump Dexie to v2 with `cards` store, create RED test scaffolds (6 files) for Wave 1-3 modules
+- [x] 02-01-PLAN.md — Wave 0: install react-router-dom, declare CachedCard type, bump Dexie to v2 with `cards` store, create RED test scaffolds (6 files) for Wave 1-3 modules
 - [ ] 02-02-PLAN.md — Pure libraries: partner-detection (4 variants), scryfall-client (rate-limited HTTP + query builder + zod envelope), card-cache (read-through 7-day TTL)
 - [ ] 02-03-PLAN.md — Zustand stores: commander-store (primary + partner + Dexie persistence) and card-search-store (abortable search + pagination + cache side effect)
 - [ ] 02-04-PLAN.md — Routing shell: BrowserRouter with `/` and `/decks/:id`, WorkspaceHeader with back link, DeckWorkspace skeleton with three section placeholders

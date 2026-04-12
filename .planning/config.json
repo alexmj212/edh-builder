@@ -7,5 +7,9 @@
   "executor_model": "sonnet",
   "checker_model": "sonnet",
   "roadmapper_model": "sonnet",
-  "synthesizer_model": "sonnet"
+  "synthesizer_model": "sonnet",
+  "workflow": {
+    "_auto_chain_active": false,
+    "use_worktrees": false
+  }
 }
