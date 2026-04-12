@@ -35,6 +35,9 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
+      - name: Typecheck (src + e2e)
+        run: npm run typecheck && npm run typecheck:e2e
+
       - name: Install Playwright browsers (chromium only)
         run: npx playwright install --with-deps chromium
 
