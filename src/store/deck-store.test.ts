@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { db } from '../lib/db'
 import { useDeckStore } from './deck-store'
 
@@ -7,7 +7,11 @@ beforeEach(async () => {
   // Reset store state and database before each test
   await db.delete()
   await db.open()
-  useDeckStore.setState({ decks: [], activeDeckId: null, loading: true })
+  useDeckStore.setState({ decks: [], activeDeckId: null, loading: true, error: null })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe('useDeckStore', () => {
@@ -138,6 +142,26 @@ describe('useDeckStore', () => {
       expect(state.decks).toHaveLength(2)
       expect(state.decks[0].name).toBe('Newest Deck')
       expect(state.decks[1].name).toBe('Oldest Deck')
+    })
+  })
+
+  describe('loadDecks — error path', () => {
+    it('sets a user-facing error when the database read throws', async () => {
+      // Force orderBy().reverse().toArray() to reject
+      vi.spyOn(db.decks, 'orderBy').mockImplementation(() => {
+        return {
+          reverse: () => ({
+            toArray: () => Promise.reject(new Error('indexeddb exploded')),
+          }),
+        } as unknown as ReturnType<typeof db.decks.orderBy>
+      })
+
+      await useDeckStore.getState().loadDecks()
+
+      const state = useDeckStore.getState()
+      expect(state.loading).toBe(false)
+      expect(state.error).toBe('Failed to load decks. Please reload.')
+      expect(state.decks).toEqual([])
     })
   })
 
