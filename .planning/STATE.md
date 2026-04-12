@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-last_updated: "2026-04-12T13:11:46.171Z"
+current_plan: 1
+status: Executing Phase 02.2
+last_updated: "2026-04-12T15:15:46.676Z"
 progress:
-  total_phases: 6
+  total_phases: 9
   completed_phases: 2
-  total_plans: 11
-  completed_plans: 10
-  percent: 91
+  total_plans: 16
+  completed_plans: 11
+  percent: 69
 ---
 
 # Project State: EDH Deck Builder
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** You can build a valid Commander deck with confidence — the app tells you in real time whether your deck meets every format rule.
-**Current focus:** Phase 02.1 — partner-persistence
+**Current focus:** Phase 02.2 — playwright-e2e-harness
 
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.1-partner-persistence (COMPLETE)
-- **Current Plan:** Not started
+- **Current Plan:** 1
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -70,6 +70,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.1]: setCommander auto-clear merges partner nulling into the single db.decks.update call (one atomic write, no observer race)
 - [Phase 02.1]: loadForDeck wraps partner fetchCardById in inner try/catch — transient Scryfall failure degrades to partnerCommander:null instead of aborting primary load
 - [Phase 02.1]: [Phase 02.1] CommanderPanel partner round-trip regression coverage: Remove-partner UI persists null partner fields to Dexie; deck row with partnerCommanderId rehydrates FullCard on remount — closes Phase 02 human-verify gap
+- [Phase 02.2]: chromium-only in v1 for speed; tsconfig.e2e.json stands alone outside tsconfig references; allowImportingTsExtensions overridden to false for Playwright runner; no postinstall hook for browser download
 
 ## Performance Metrics
 
@@ -83,6 +84,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02.1 | 01 | 1 min | 2/2 | 3 |
 | 02.1 | 02 | 2 min | 2/2 | 3 |
 | 02.1 | 03 | ~2 min | 1/1 | 1 |
+| Phase 02.2 P01 | 3 min | 4 tasks | 7 files |
 
 ## Session Log
 
