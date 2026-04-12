@@ -1,14 +1,23 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import 'fake-indexeddb/auto';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CommanderPanel } from './CommanderPanel';
 import { useCommanderStore } from '../store/commander-store';
+import { db } from '../lib/db';
+import * as scryfallClient from '../lib/scryfall-client';
 
 function fakeCard(overrides: { id?: string; name?: string; type_line?: string; keywords?: string[]; oracle_text?: string; color_identity?: string[]; image_uris?: Record<string, string>; card_faces?: Array<{ image_uris?: Record<string, string> }> } = {}): any {
   return { id: 'c-1', oracle_id: 'o-1', name: 'Fake', type_line: 'Legendary Creature — Human', image_uris: { art_crop: 'art-x', normal: 'normal-x' }, color_identity: ['W'], ...overrides };
 }
 
-beforeEach(() => {
+beforeEach(async () => {
+  await db.delete();
+  await db.open();
   useCommanderStore.setState({ primaryCommander: null, partnerCommander: null, loading: false, error: null });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('CommanderPanel', () => {
@@ -83,5 +92,73 @@ describe('CommanderPanel', () => {
     render(<CommanderPanel deckId={42} />);
     fireEvent.click(screen.getByRole('button', { name: /Change commander/i }));
     expect(clearCommander).toHaveBeenCalledWith(42);
+  });
+
+  it('Remove partner button calls clearPartner with deckId and persists null partner fields to Dexie', async () => {
+    const deckId = (await db.decks.add({
+      name: 'Partner Panel Test',
+      commanderId: 'primary-id',
+      commanderName: 'Primary',
+      colorIdentity: ['G', 'U'],
+      partnerCommanderId: 'partner-id',
+      partnerCommanderName: 'Partner Card',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })) as number;
+
+    // Seed in-memory so the partner FullCard branch renders
+    const primary = fakeCard({ id: 'primary-id', name: 'Primary', keywords: ['Partner'] });
+    const partner = fakeCard({ id: 'partner-id', name: 'Partner Card', keywords: ['Partner'] });
+    useCommanderStore.setState({
+      primaryCommander: primary as any,
+      partnerCommander: partner as any,
+    });
+
+    render(<CommanderPanel deckId={deckId} />);
+
+    const removeBtn = screen.getByRole('button', { name: /Remove partner/i });
+    fireEvent.click(removeBtn);
+
+    // Allow the async clearPartner promise to settle.
+    // clearPartner awaits db.decks.update, then calls set() — two microtask turns is plenty.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const deck = await db.decks.get(deckId);
+    expect(deck?.partnerCommanderId).toBeNull();
+    expect(deck?.partnerCommanderName).toBeNull();
+    expect(useCommanderStore.getState().partnerCommander).toBeNull();
+  });
+
+  it('loadForDeck rehydrates partner and CommanderPanel renders the restored partner FullCard on remount', async () => {
+    const deckId = (await db.decks.add({
+      name: 'Rehydrate Test',
+      commanderId: 'primary-id',
+      commanderName: 'Primary',
+      colorIdentity: ['G', 'U'],
+      partnerCommanderId: 'partner-id',
+      partnerCommanderName: 'Restored Partner',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })) as number;
+
+    vi.spyOn(scryfallClient, 'fetchCardById').mockImplementation(async (id: string) => {
+      if (id === 'primary-id') {
+        return fakeCard({ id: 'primary-id', name: 'Primary', keywords: ['Partner'] }) as any;
+      }
+      if (id === 'partner-id') {
+        return fakeCard({ id: 'partner-id', name: 'Restored Partner', keywords: ['Partner'] }) as any;
+      }
+      throw new Error(`Unexpected id: ${id}`);
+    });
+
+    // Simulate the DeckWorkspace mount path: loadForDeck runs before the panel renders
+    await useCommanderStore.getState().loadForDeck(deckId);
+
+    render(<CommanderPanel deckId={deckId} />);
+
+    // Partner FullCard renders with the restored name and Remove-partner button
+    expect(screen.getByText('Restored Partner')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Remove partner/i })).toBeInTheDocument();
   });
 });
