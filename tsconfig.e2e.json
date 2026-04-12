@@ -5,9 +5,7 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "noEmit": true,
     "resolveJsonModule": true,
-    "allowImportingTsExtensions": false,
-    "verbatimModuleSyntax": false,
-    "erasableSyntaxOnly": false
+    "allowImportingTsExtensions": false
   },
   "include": ["e2e/**/*", "playwright.config.ts"],
   "exclude": ["node_modules", "dist", "playwright-report", "test-results"]
