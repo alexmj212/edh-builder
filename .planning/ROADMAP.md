@@ -109,6 +109,26 @@ Deliverables:
 - `setCommander` auto-clear path also nulls Dexie partner fields
 - Tests: store persistence + restore round-trip, v2→v3 migration, component wiring
 
+### Phase 02.2: Playwright E2E infrastructure and Phase 02.1 backfill (INSERTED)
+
+**Goal:** Stand up Playwright so interactive UAT steps can be self-verified going forward, and retroactively cover Phase 02.1's browser-side flows. Establishes standing rule that every subsequent phase ships E2E coverage before completion.
+
+**Requirements:** CMDR-04 (browser-side acceptance), TEST-01 (new: Playwright E2E harness exists and runs locally + in CI)
+
+**Depends on:** Phase 02.1
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 02.2 to break down)
+
+Deliverables:
+- Playwright installed and configured (headless, Vite dev-server fixture, `npm run e2e`, CI-friendly)
+- `e2e/` folder structure with conventions documented (README or CONTRIBUTING note)
+- Cold-start smoke spec: app boots, no unexpected console errors (known `storage.ts:5` warning allowlisted), empty deck state loads
+- Phase 02.1 backfill specs: partner slot activates on Partner-keyword primary; partner selection renders card + Remove button; partner survives `page.reload()`; remove-partner persists through reload; changing primary to non-partner auto-clears partner in UI and IndexedDB; clearing primary clears partner too
+- Standing rule: from Phase 3 onward, every phase plan must include an E2E spec task before the phase is marked complete
+
 ## Phase 3: Deck Building & Card Display
 
 **Goal:** User can add/remove cards and view the deck in grid or list format.
