@@ -60,5 +60,23 @@ You can build a valid Commander deck with confidence — the app tells you in re
 | Browser storage (IndexedDB) | No backend requirement, works offline, user controls their data | Validated (Phase 1) |
 | Card image + basics display | Visual-first browsing matches how players think about cards | — Pending |
 
+## Standing Rules
+
+Rules applying to all planning and execution for this project. Downstream
+planners (from Phase 3 onward) MUST read this section before writing any
+phase plan.
+
+### E2E Coverage (established Phase 02.2, 2026-04-12)
+
+From Phase 3 onward, every phase plan must include at least one E2E spec
+task covering the phase's user-facing acceptance flows before the phase
+can be marked complete.
+
+- E2E specs live under `e2e/specs/` (Playwright).
+- See `e2e/README.md` for conventions (fixture policy, role/name locators,
+  UI-driven setup).
+- The smoke spec (`e2e/specs/00-smoke.spec.ts`) is the project's console
+  gate; other specs do not enforce the console policy by default (D-15).
+
 ---
 *Last updated: 2026-04-11 after Phase 1 completion*

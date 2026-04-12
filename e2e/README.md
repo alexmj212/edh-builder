@@ -59,8 +59,13 @@ opt in explicitly.
 
 ## Standing Rule for Phase 3+
 
-<!-- PLACEHOLDER — Plan 05 (this phase) fills this section in with the
-verbatim D-16 standing-rule text and cross-links PROJECT.md. -->
+> From Phase 3 onward, every phase plan must include at least one E2E
+> spec task covering the phase's user-facing acceptance flows before
+> the phase can be marked complete.
+
+See `.planning/PROJECT.md` §Standing Rules for the canonical statement.
+Phase planners MUST surface this rule in any plan that introduces
+user-facing behavior.
 
 ## Adding a New Spec
 
