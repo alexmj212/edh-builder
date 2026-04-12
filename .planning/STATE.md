@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 1
 status: Executing Phase 02.2
-last_updated: "2026-04-12T15:27:03.451Z"
+last_updated: "2026-04-12T15:32:56.967Z"
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 16
-  completed_plans: 13
-  percent: 81
+  completed_plans: 14
+  percent: 88
 ---
 
 # Project State: EDH Deck Builder
@@ -73,6 +73,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.2]: chromium-only in v1 for speed; tsconfig.e2e.json stands alone outside tsconfig references; allowImportingTsExtensions overridden to false for Playwright runner; no postinstall hook for browser download
 - [Phase 02.2]: satisfies ScryfallCard.Any not viable for JSON imports (string literal widening); FixtureCardShape intermediate type used; tsconfig.e2e.json disables verbatimModuleSyntax+erasableSyntaxOnly for @scryfall/api-types .ts source compatibility
 - [Phase 02.2-03]: No deviations from plan — cold-start smoke spec written exactly as canonical RESEARCH.md skeleton; installConsoleGate before page.goto ordering is enforced by acceptance criteria grep
+- [Phase 02.2]: [Phase 02.2-04]: createDeck helper clicks h3 directly (bubbles to DeckCardItem onClick); IDB assertions use raw indexedDB.open() inside page.evaluate() against 'EDHBuilder' DB; null partner fields use toBeNull() per Phase 02.1 explicit-null decision
 
 ## Performance Metrics
 
@@ -89,6 +90,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.2 P01 | 3 min | 4 tasks | 7 files |
 | Phase 02.2 P02 | 15 | 3 tasks | 10 files |
 | Phase 02.2 P03 | 1 | 1 tasks | 1 files |
+| Phase 02.2 P04 | 3 | 3 tasks | 7 files |
 
 ## Session Log
 

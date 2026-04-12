@@ -117,13 +117,13 @@ Deliverables:
 
 **Depends on:** Phase 02.1
 
-**Plans:** 1/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 - [x] 02.2-01-PLAN.md — Harness install & config (devDep, playwright.config.ts, tsconfig.e2e.json, port pin, gitignore, e2e/README.md skeleton)
 - [x] 02.2-02-PLAN.md — Shared fixtures & helpers (stubScryfall auto-fixture, Scryfall JSON fixtures, commanderFlows, consoleGate)
-- [ ] 02.2-03-PLAN.md — Cold-start smoke spec (console gate, harness self-test)
-- [ ] 02.2-04-PLAN.md — Phase 02.1 backfill specs (six flows: activation, selection, reload, remove, autoclear, cascade)
+- [x] 02.2-03-PLAN.md — Cold-start smoke spec (console gate, harness self-test)
+- [x] 02.2-04-PLAN.md — Phase 02.1 backfill specs (six flows: activation, selection, reload, remove, autoclear, cascade)
 - [ ] 02.2-05-PLAN.md — CI workflow + standing rule (GitHub Actions e2e.yml, PROJECT.md + e2e/README.md standing rule, final green-suite verification)
 
 Deliverables:
