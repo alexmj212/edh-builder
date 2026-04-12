@@ -4,6 +4,8 @@ export interface Deck {
   commanderId: string | null;
   commanderName: string | null;
   colorIdentity: string[];
+  partnerCommanderId?: string | null;
+  partnerCommanderName?: string | null;
   createdAt: number;
   updatedAt: number;
 }
