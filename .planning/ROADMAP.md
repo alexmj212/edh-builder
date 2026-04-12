@@ -141,14 +141,14 @@ Deliverables:
 
 **Depends on:** Phase 02.2
 
-**Plans:** TBD during /gsd-plan-phase — sketch below is a starting point, not locked.
+**Plans:** 5 plans
 
-Sketch (subject to discuss/plan refinement):
-- [ ] 02.3-01 — Spike & go/no-go gate: install `scryfall-api`, verify browser/Vite compat, check `Card` field parity against our 11 usage sites, confirm AbortSignal support or design a wrapper. **Has BLOCK authority** — if compat or cancellation gaps cannot be resolved, abort migration and fall back to hand-written types.
-- [ ] 02.3-02 — Migrate call sites in `src/lib/scryfall-client.ts` consumers (`src/store/card-search-store.ts`, `src/store/commander-store.ts`, `src/lib/card-cache.ts`)
-- [ ] 02.3-03 — Replace `import type { ScryfallCard } from '@scryfall/api-types'` with equivalent `scryfall-api` `Card` type across `src/types/`, `src/lib/partner-detection.ts`, `src/components/*` (Commander*, Card*), tests
-- [ ] 02.3-04 — Build pipeline cleanup: restore `tsc -b && vite build`, drop `verbatimModuleSyntax: false` / `erasableSyntaxOnly: false` overrides in `tsconfig.e2e.json`, verify `typecheck` green; update `stubScryfall.ts` and e2e fixtures if `Card` shape requires adjustment
-- [ ] 02.3-05 — Delete `src/lib/scryfall-client.ts` + `src/lib/scryfall-client.test.ts`; Playwright spec per standing rule (regression over CMDR flows); unit-test coverage for any new wrapper code; REVIEW + VERIFICATION
+Plans:
+- [ ] 02.3-01-PLAN.md — Spike & go/no-go gate (BLOCK authority: install scryfall-api side-by-side, live Scryfall probe verifying D-07 field parity, D-08 abort path, D-09 throttle ≥100ms, D-10 partner query)
+- [ ] 02.3-02-PLAN.md — Create `src/lib/scryfall-queries.ts` + `src/lib/scryfall.ts` wrapper (Zod validation boundary, `abortable()` promise-race, `SearchResult` with opaque `MagicPageResult` handle); migrate `card-search-store`, `commander-store`, `card-cache` to new wrapper
+- [ ] 02.3-03-PLAN.md — Sweep `ScryfallCard`/`@scryfall/api-types` from `src/types/`, `partner-detection.ts`, and the 4 consumer components; delete `commander-store` helpers and eliminate all `as unknown as` casts
+- [ ] 02.3-04-PLAN.md — Restore `tsc -b && vite build`; drop `verbatimModuleSyntax`/`erasableSyntaxOnly` overrides in `tsconfig.e2e.json`; migrate `stubScryfall.ts` to `Pick<Card, ...>` fixture typing; add `Typecheck` step to `.github/workflows/e2e.yml`
+- [ ] 02.3-05-PLAN.md — Delete `src/lib/scryfall-client.ts` + tests; uninstall `@scryfall/api-types`; add `e2e/specs/07-card-search.spec.ts` per Phase 02.2-05 standing rule; run full suite and write phase SUMMARY (WR-01 closed)
 
 Deliverables:
 - `scryfall-api@^4` installed; `@scryfall/api-types` removed from `package.json`
