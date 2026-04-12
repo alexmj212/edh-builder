@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2
+current_plan: 3
 status: Executing Phase 02.3
-last_updated: "2026-04-12T19:40:09.907Z"
+last_updated: "2026-04-12T19:49:43.056Z"
 progress:
   total_phases: 10
   completed_phases: 3
   total_plans: 21
-  completed_plans: 16
-  percent: 76
+  completed_plans: 17
+  percent: 81
 ---
 
 # Project State: EDH Deck Builder
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.2-playwright-e2e-harness (COMPLETE)
-- **Current Plan:** 2
+- **Current Plan:** 3
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -81,6 +81,9 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.3]: D-10 accepted gap: library ships zero query builders; all three stay in src/lib/scryfall-queries.ts (D-03 fallback)
 - [Phase 02.3]: D-08 resolution: promise-race wrapper (D-04 option 3); single abortable() helper in src/lib/scryfall.ts
 - [Phase 02.3]: Build script restoration (tsc -b && vite build) deferred to plan 02.3-05 after scryfall-client.ts deletion
+- [Phase 02.3]: Plan 02.3-02: wrapper src/lib/scryfall.ts is now sole 'scryfall-api' boundary; abortable<T> funnel for all exports; Zod array validation at .next()/byId boundary
+- [Phase 02.3]: Plan 02.3-02: card-search-store pagination flipped from nextPageUrl:string to searchHandle:SearchResult (opaque MagicPageResult handle)
+- [Phase 02.3]: Plan 02.3-02: card-cache.ts uses CachedCard['cardJson'] indexed-type cast instead of importing @scryfall/api-types (retype deferred to 02.3-03)
 
 ## Performance Metrics
 
@@ -100,6 +103,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.2 P04 | 3 | 3 tasks | 7 files |
 | Phase 02.2 P05 | 9 | 3 tasks | 5 files |
 | Phase 02.3 P01 | 3 min | 3/3 tasks | 3 files |
+| Phase 02.3 P02 | 6 min | 3/3 tasks | 10 files |
 
 ## Session Log
 
@@ -117,6 +121,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.1-03: CommanderPanel partner round-trip regression tests — Phase 02.1 COMPLETE, CMDR-04 shipped |
 | 2026-04-12 | Completed 02.2-01 through 02.2-05: Playwright harness, helpers, smoke spec, backfill specs, CI workflow, standing rule — Phase 02.2 COMPLETE, TEST-01 closed |
 | 2026-04-12 | Completed 02.3-01: Spike PASS — scryfall-api@^4.0.5 installed, live probe against api.scryfall.com ratified D-06/D-07/D-08/D-09; D-10 accepted gap |
+| 2026-04-12 | Completed 02.3-02: Wrapper (src/lib/scryfall.ts) + query-builders (src/lib/scryfall-queries.ts) + migrated card-search-store/commander-store/card-cache to the new boundary; 115/115 tests green |
 
 ## Accumulated Context
 
