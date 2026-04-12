@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from '../lib/scryfall';
 import { useCardSearchStore } from '../store/card-search-store';
 import { useCommanderStore } from '../store/commander-store';
-import { buildSearchQuery } from '../lib/scryfall-client';
+import { buildSearchQuery } from '../lib/scryfall-queries';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { ColorIdentityChip } from './ColorIdentityChip';
 import { CardResultCell } from './CardResultCell';
@@ -10,11 +10,10 @@ import { CardResultCell } from './CardResultCell';
 const PIP_ORDER = ['W', 'U', 'B', 'R', 'G'] as const;
 
 function unionIdentity(
-  primary: ScryfallCard.Any | null,
-  partner: ScryfallCard.Any | null,
+  primary: Card | null,
+  partner: Card | null,
 ): string[] {
-  const ci = (c: ScryfallCard.Any | null) =>
-    c ? ((c as unknown as { color_identity?: string[] }).color_identity ?? []) : [];
+  const ci = (c: Card | null) => (c ? c.color_identity : []);
   const combined = new Set<string>([...ci(primary), ...ci(partner)]);
   return PIP_ORDER.filter(l => combined.has(l));
 }
@@ -57,7 +56,7 @@ export function CardSearchSection() {
   const debouncedKey = useDebouncedValue(filterKey, 400);
 
   // Reset results only when primary commander *changes* (not on first mount)
-  const primaryOracleId = (primary as unknown as { oracle_id?: string } | null)?.oracle_id ?? null;
+  const primaryOracleId = primary?.oracle_id ?? null;
   const prevPrimaryOracleId = useRef<string | null>(primaryOracleId);
   useEffect(() => {
     if (prevPrimaryOracleId.current !== primaryOracleId) {
@@ -198,10 +197,9 @@ export function CardSearchSection() {
             aria-busy={status === 'loading'}
             className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
           >
-            {results.map(card => {
-              const id = (card as unknown as { id: string }).id;
-              return <CardResultCell key={id} card={card} />;
-            })}
+            {results.map(card => (
+              <CardResultCell key={card.id} card={card} />
+            ))}
           </div>
           {hasMore && (
             <div className="mt-6 flex justify-center">

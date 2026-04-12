@@ -1,19 +1,15 @@
-import type { ScryfallCard } from '@scryfall/api-types';
-import { getImageUri } from '../lib/scryfall-client';
+import type { Card } from '../lib/scryfall';
+import { getImageUri } from '../lib/scryfall';
 
 export interface CardResultCellProps {
-  card: ScryfallCard.Any;
-}
-
-function get<T>(card: ScryfallCard.Any, key: string): T | undefined {
-  return (card as unknown as Record<string, unknown>)[key] as T | undefined;
+  card: Card;
 }
 
 export function CardResultCell({ card }: CardResultCellProps) {
-  const name = get<string>(card, 'name') ?? '';
-  const manaCost = get<string>(card, 'mana_cost') ?? '';
-  const typeLine = get<string>(card, 'type_line') ?? '';
-  const oracleText = get<string>(card, 'oracle_text') ?? '';
+  const name = card.name;
+  const manaCost = card.mana_cost ?? '';
+  const typeLine = card.type_line;
+  const oracleText = card.oracle_text ?? '';
 
   return (
     <div

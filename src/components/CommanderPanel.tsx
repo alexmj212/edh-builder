@@ -1,32 +1,20 @@
 import { useState } from 'react';
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from '../lib/scryfall';
 import { useCommanderStore } from '../store/commander-store';
 import { detectPartnerType } from '../lib/partner-detection';
 import { CommanderSearch } from './CommanderSearch';
 
 export interface CommanderPanelProps { deckId: number }
 
-function nameOf(c: ScryfallCard.Any): string {
-  return (c as unknown as { name: string }).name;
-}
-function typeLineOf(c: ScryfallCard.Any): string {
-  return (c as unknown as { type_line?: string }).type_line ?? '';
-}
-
-interface FaceImages { image_uris?: Record<string, string> }
-interface CardWithFaces { image_uris?: Record<string, string>; card_faces?: FaceImages[] }
-
 /** Returns the `normal` (full-card) image for a given face index, with fallbacks. */
-function fullCardImageFor(card: ScryfallCard.Any, faceIndex: number): string {
-  const c = card as unknown as CardWithFaces;
-  const face = c.card_faces?.[faceIndex];
-  return face?.image_uris?.normal ?? c.image_uris?.normal ?? '/placeholder-card.jpg';
+function fullCardImageFor(card: Card, faceIndex: number): string {
+  const face = card.card_faces?.[faceIndex];
+  return face?.image_uris?.normal ?? card.image_uris?.normal ?? '/placeholder-card.jpg';
 }
 
-function isDoubleFaced(card: ScryfallCard.Any): boolean {
-  const c = card as unknown as CardWithFaces;
+function isDoubleFaced(card: Card): boolean {
   // A card is "double-faced" for our purposes if it has 2+ faces, each with their own image_uris
-  return !!(c.card_faces && c.card_faces.length >= 2 && c.card_faces[0]?.image_uris && c.card_faces[1]?.image_uris);
+  return !!(card.card_faces && card.card_faces.length >= 2 && card.card_faces[0]?.image_uris && card.card_faces[1]?.image_uris);
 }
 
 function EmptyArt({ label }: { label: string }) {
@@ -38,7 +26,7 @@ function EmptyArt({ label }: { label: string }) {
 }
 
 interface FullCardProps {
-  card: ScryfallCard.Any;
+  card: Card;
   actionLabel: string;
   onAction: () => void;
 }
@@ -50,12 +38,12 @@ function FullCard({ card, actionLabel, onAction }: FullCardProps) {
     <div className="flex flex-col items-center">
       <img
         src={fullCardImageFor(card, faceIndex)}
-        alt={nameOf(card)}
+        alt={card.name}
         loading="lazy"
         className="w-full max-w-[240px] aspect-[63/88] object-contain rounded-lg shadow-md"
       />
-      <p className="text-sm font-semibold text-text-primary mt-2 text-center">{nameOf(card)}</p>
-      <p className="text-xs text-text-secondary text-center">{typeLineOf(card)}</p>
+      <p className="text-sm font-semibold text-text-primary mt-2 text-center">{card.name}</p>
+      <p className="text-xs text-text-secondary text-center">{card.type_line}</p>
       <div className="mt-2 flex items-center gap-3">
         {dfc && (
           <button

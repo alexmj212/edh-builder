@@ -17,19 +17,6 @@ export interface CommanderState {
   clearPartner: (deckId: number) => Promise<void>;
 }
 
-function colorIdentityOf(card: Card): string[] {
-  const ci = (card as unknown as { color_identity?: string[] }).color_identity;
-  return Array.isArray(ci) ? ci : [];
-}
-
-function idOf(card: Card): string {
-  return (card as unknown as { id: string }).id;
-}
-
-function nameOf(card: Card): string {
-  return (card as unknown as { name: string }).name;
-}
-
 export const useCommanderStore = create<CommanderState>((set, get) => ({
   primaryCommander: null,
   partnerCommander: null,
@@ -72,13 +59,11 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
 
   setCommander: async (deckId, card) => {
     const prevPartner = get().partnerCommander;
-    // detectPartnerType is still typed against ScryfallCard.Any — retyping
-    // deferred to plan 02.3-03. `as never` keeps the compile path clean.
-    const newPrimaryKind = detectPartnerType(card as never).kind;
+    const newPrimaryKind = detectPartnerType(card).kind;
     let nextPartner = prevPartner;
     if (newPrimaryKind === 'none') {
       nextPartner = null;
-    } else if (prevPartner && !areCompatiblePartners(card as never, prevPartner as never)) {
+    } else if (prevPartner && !areCompatiblePartners(card, prevPartner)) {
       nextPartner = null;
     }
 
@@ -87,9 +72,9 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       : {};
 
     await db.decks.update(deckId, {
-      commanderId: idOf(card),
-      commanderName: nameOf(card),
-      colorIdentity: colorIdentityOf(card),
+      commanderId: card.id,
+      commanderName: card.name,
+      colorIdentity: card.color_identity,
       updatedAt: Date.now(),
       ...partnerFields,
     });
@@ -112,8 +97,8 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
 
   setPartner: async (deckId, card) => {
     await db.decks.update(deckId, {
-      partnerCommanderId: idOf(card),
-      partnerCommanderName: nameOf(card),
+      partnerCommanderId: card.id,
+      partnerCommanderName: card.name,
       updatedAt: Date.now(),
     });
     await cacheCard(card);

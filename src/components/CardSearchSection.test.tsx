@@ -50,7 +50,7 @@ beforeEach(() => {
     filters: { name: '', type: '', oracleText: '' },
     results: [],
     hasMore: false,
-    nextPageUrl: null,
+    searchHandle: null,
     currentPage: 0,
     status: 'idle',
     error: null,
@@ -159,7 +159,7 @@ describe('CardSearchSection — with commander', () => {
       status: 'success',
       results: [fakeCard('1'), fakeCard('2')],
       hasMore: true,
-      nextPageUrl: 'https://api/next',
+      searchHandle: {} as any,
     } as any);
     render(<CardSearchSection />);
     expect(screen.getByTestId('card-results-grid')).toBeInTheDocument();
@@ -180,7 +180,7 @@ describe('CardSearchSection — with commander', () => {
       status: 'success',
       results: [fakeCard('1')],
       hasMore: true,
-      nextPageUrl: 'x',
+      searchHandle: {} as any,
     } as any);
     render(<CardSearchSection />);
     fireEvent.click(screen.getByRole('button', { name: /Load more results/i }));

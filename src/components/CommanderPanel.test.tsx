@@ -4,10 +4,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CommanderPanel } from './CommanderPanel';
 import { useCommanderStore } from '../store/commander-store';
 import { db } from '../lib/db';
-import * as scryfallClient from '../lib/scryfall-client';
+import * as scryfall from '../lib/scryfall';
 
 function fakeCard(overrides: { id?: string; name?: string; type_line?: string; keywords?: string[]; oracle_text?: string; color_identity?: string[]; image_uris?: Record<string, string>; card_faces?: Array<{ image_uris?: Record<string, string> }> } = {}): any {
-  return { id: 'c-1', oracle_id: 'o-1', name: 'Fake', type_line: 'Legendary Creature — Human', image_uris: { art_crop: 'art-x', normal: 'normal-x' }, color_identity: ['W'], ...overrides };
+  return { id: 'c-1', oracle_id: 'o-1', name: 'Fake', type_line: 'Legendary Creature — Human', image_uris: { art_crop: 'art-x', normal: 'normal-x' }, color_identity: ['W'], keywords: [], ...overrides };
 }
 
 beforeEach(async () => {
@@ -141,7 +141,7 @@ describe('CommanderPanel', () => {
       updatedAt: Date.now(),
     })) as number;
 
-    vi.spyOn(scryfallClient, 'fetchCardById').mockImplementation(async (id: string) => {
+    vi.spyOn(scryfall, 'fetchCardById').mockImplementation(async (id: string) => {
       if (id === 'primary-id') {
         return fakeCard({ id: 'primary-id', name: 'Primary', keywords: ['Partner'] }) as any;
       }

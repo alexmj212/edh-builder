@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ScryfallCard } from '@scryfall/api-types';
-import { searchCommanders, searchPartnersFor, getImageUri } from '../lib/scryfall-client';
+import type { Card } from '../lib/scryfall';
+import { searchCommanders, searchPartnersFor, getImageUri } from '../lib/scryfall';
 import { areCompatiblePartners } from '../lib/partner-detection';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 
 export interface CommanderSearchProps {
   mode: 'primary' | 'partner';
-  primaryForPartner?: ScryfallCard.Any | null;
-  onSelect: (card: ScryfallCard.Any) => void;
+  primaryForPartner?: Card | null;
+  onSelect: (card: Card) => void;
 }
 
 function isAbortError(err: unknown): boolean {
@@ -17,7 +17,7 @@ function isAbortError(err: unknown): boolean {
 export function CommanderSearch({ mode, primaryForPartner, onSelect }: CommanderSearchProps) {
   const [query, setQuery] = useState('');
   const debounced = useDebouncedValue(query, 400);
-  const [results, setResults] = useState<ScryfallCard.Any[]>([]);
+  const [results, setResults] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const ctrlRef = useRef<AbortController | null>(null);
@@ -34,7 +34,7 @@ export function CommanderSearch({ mode, primaryForPartner, onSelect }: Commander
     setError(null);
     const fetchPromise = mode === 'primary'
       ? searchCommanders(debounced, ctrl.signal)
-      : searchPartnersFor(primaryForPartner as ScryfallCard.Any, debounced, ctrl.signal);
+      : searchPartnersFor(primaryForPartner!, debounced, ctrl.signal);
     fetchPromise
       .then(list => {
         if (ctrl.signal.aborted) return;
@@ -49,7 +49,7 @@ export function CommanderSearch({ mode, primaryForPartner, onSelect }: Commander
     return () => ctrl.abort();
   }, [debounced, mode, primaryForPartner]);
 
-  const handleSelect = (card: ScryfallCard.Any) => {
+  const handleSelect = (card: Card) => {
     if (mode === 'partner' && primaryForPartner && !areCompatiblePartners(primaryForPartner, card)) {
       return;
     }
@@ -85,32 +85,27 @@ export function CommanderSearch({ mode, primaryForPartner, onSelect }: Commander
       )}
       {!loading && !error && results.length > 0 && (
         <ul className="mt-3">
-          {results.map(card => {
-            const name = (card as unknown as { name: string }).name;
-            const typeLine = (card as unknown as { type_line?: string }).type_line ?? '';
-            const id = (card as unknown as { id: string }).id;
-            return (
-              <li
-                key={id}
-                onClick={() => handleSelect(card)}
-                className="flex items-center gap-3 py-2 px-3 rounded hover:bg-surface-hover cursor-pointer"
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => { if (e.key === 'Enter') handleSelect(card); }}
-              >
-                <img
-                  src={getImageUri(card, 'art_crop')}
-                  alt=""
-                  className="w-12 h-12 rounded object-cover bg-surface-hover"
-                  loading="lazy"
-                />
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-text-primary truncate">{name}</p>
-                  <p className="text-xs text-text-secondary truncate">{typeLine}</p>
-                </div>
-              </li>
-            );
-          })}
+          {results.map(card => (
+            <li
+              key={card.id}
+              onClick={() => handleSelect(card)}
+              className="flex items-center gap-3 py-2 px-3 rounded hover:bg-surface-hover cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => { if (e.key === 'Enter') handleSelect(card); }}
+            >
+              <img
+                src={getImageUri(card, 'art_crop')}
+                alt=""
+                className="w-12 h-12 rounded object-cover bg-surface-hover"
+                loading="lazy"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-text-primary truncate">{card.name}</p>
+                <p className="text-xs text-text-secondary truncate">{card.type_line}</p>
+              </div>
+            </li>
+          ))}
         </ul>
       )}
     </div>
