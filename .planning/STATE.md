@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_plan: 1
-status: Executing Phase 02.2
-last_updated: "2026-04-12T15:32:56.967Z"
+status: Phase 02.2 COMPLETE — ready for Phase 03
+last_updated: "2026-04-12T15:43:53.790Z"
 progress:
   total_phases: 9
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 16
-  completed_plans: 14
-  percent: 88
+  completed_plans: 15
+  percent: 94
 ---
 
 # Project State: EDH Deck Builder
@@ -74,6 +74,9 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.2]: satisfies ScryfallCard.Any not viable for JSON imports (string literal widening); FixtureCardShape intermediate type used; tsconfig.e2e.json disables verbatimModuleSyntax+erasableSyntaxOnly for @scryfall/api-types .ts source compatibility
 - [Phase 02.2-03]: No deviations from plan — cold-start smoke spec written exactly as canonical RESEARCH.md skeleton; installConsoleGate before page.goto ordering is enforced by acceptance criteria grep
 - [Phase 02.2]: [Phase 02.2-04]: createDeck helper clicks h3 directly (bubbles to DeckCardItem onClick); IDB assertions use raw indexedDB.open() inside page.evaluate() against 'EDHBuilder' DB; null partner fields use toBeNull() per Phase 02.1 explicit-null decision
+- [Phase 02.2]: [Phase 02.2-05]: CI workflow uses pull_request (not pull_request_target) + permissions: contents: read — T-17/T-18 security mitigations
+- [Phase 02.2]: [Phase 02.2-05]: build script changed to 'vite build' only; tsc -b separated into typecheck script — @scryfall/api-types .ts source incompatibility with erasableSyntaxOnly (pre-existing since Phase 02)
+- [Phase 02.2]: [Phase 02.2-05]: Vitest test.exclude=['e2e/**'] added — Playwright specs were being collected by Vitest runner, causing test() context conflict
 
 ## Performance Metrics
 
@@ -91,6 +94,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.2 P02 | 15 | 3 tasks | 10 files |
 | Phase 02.2 P03 | 1 | 1 tasks | 1 files |
 | Phase 02.2 P04 | 3 | 3 tasks | 7 files |
+| Phase 02.2 P05 | 9 | 3 tasks | 5 files |
 
 ## Session Log
 
@@ -106,6 +110,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.1-01: Deck type + Dexie v3 additive schema + migration tests |
 | 2026-04-12 | Completed 02.1-02: commander-store partner persistence (setPartner/clearPartner Dexie writes, loadForDeck hydration, reload round-trip test) |
 | 2026-04-12 | Completed 02.1-03: CommanderPanel partner round-trip regression tests — Phase 02.1 COMPLETE, CMDR-04 shipped |
+| 2026-04-12 | Completed 02.2-01 through 02.2-05: Playwright harness, helpers, smoke spec, backfill specs, CI workflow, standing rule — Phase 02.2 COMPLETE, TEST-01 closed |
 
 ## Accumulated Context
 
