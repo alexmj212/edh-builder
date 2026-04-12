@@ -126,3 +126,66 @@ describe('Dexie v2 migration', () => {
     expect(staleCards[0].oracle_id).toBe('old-card')
   })
 })
+
+describe('Dexie v3 migration', () => {
+  let db: EDHBuilderDB
+
+  beforeEach(async () => {
+    db = new EDHBuilderDB()
+    await db.delete()
+    db = new EDHBuilderDB()
+    await db.open()
+  })
+
+  it('reads v2-shaped deck rows (no partner fields) cleanly under v3', async () => {
+    const id = await db.decks.add({
+      name: 'Legacy v2 Deck',
+      commanderId: 'cmdr-1',
+      commanderName: 'Atraxa',
+      colorIdentity: ['W', 'U', 'B', 'G'],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const deck = await db.decks.get(id)
+    expect(deck).toBeDefined()
+    expect(deck!.commanderName).toBe('Atraxa')
+    expect(deck!.partnerCommanderId).toBeUndefined()
+    expect(deck!.partnerCommanderName).toBeUndefined()
+  })
+
+  it('round-trips partnerCommanderId and partnerCommanderName when set', async () => {
+    const id = await db.decks.add({
+      name: 'Partner Deck',
+      commanderId: 'primary-id',
+      commanderName: 'Thrasios',
+      colorIdentity: ['G', 'U'],
+      partnerCommanderId: 'partner-id',
+      partnerCommanderName: 'Tymna the Weaver',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const deck = await db.decks.get(id)
+    expect(deck?.partnerCommanderId).toBe('partner-id')
+    expect(deck?.partnerCommanderName).toBe('Tymna the Weaver')
+  })
+
+  it('supports explicit null for partner fields (auto-clear path)', async () => {
+    const id = await db.decks.add({
+      name: 'Cleared Partner Deck',
+      commanderId: 'primary-id',
+      commanderName: 'Primary',
+      colorIdentity: ['R'],
+      partnerCommanderId: 'will-be-cleared',
+      partnerCommanderName: 'Will Be Cleared',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    await db.decks.update(id, {
+      partnerCommanderId: null,
+      partnerCommanderName: null,
+    })
+    const deck = await db.decks.get(id)
+    expect(deck?.partnerCommanderId).toBeNull()
+    expect(deck?.partnerCommanderName).toBeNull()
+  })
+})
