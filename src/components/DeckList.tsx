@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useDeckStore } from '../store/deck-store'
 import type { PersistedDeck } from '../types/deck'
 
@@ -119,6 +120,7 @@ function DeckCardItem({ deck, isActive, onSelect, onRename, onDelete }: DeckCard
 export function DeckList() {
   const { decks, activeDeckId, loading, error, loadDecks, createDeck, renameDeck, deleteDeck, setActiveDeck } =
     useDeckStore()
+  const navigate = useNavigate()
 
   const [showCreate, setShowCreate] = useState(false)
   const [newDeckName, setNewDeckName] = useState('')
@@ -214,7 +216,10 @@ export function DeckList() {
               key={deck.id}
               deck={deck}
               isActive={deck.id === activeDeckId}
-              onSelect={() => setActiveDeck(deck.id)}
+              onSelect={() => {
+                setActiveDeck(deck.id)
+                navigate(`/decks/${deck.id}`)
+              }}
               onRename={renameDeck}
               onDelete={deleteDeck}
             />

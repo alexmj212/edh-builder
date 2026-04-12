@@ -2,6 +2,7 @@ import "fake-indexeddb/auto";
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { DeckList } from "./DeckList";
 import { useDeckStore } from "../store/deck-store";
 import { db } from "../lib/db";
@@ -30,19 +31,19 @@ beforeEach(async () => {
 describe("DeckList — status states", () => {
   it('renders "Loading decks..." when loading is true', () => {
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: true });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     expect(screen.getByText("Loading decks...")).toBeInTheDocument();
   });
 
   it("renders error message when error is set", () => {
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false, error: "Boom!" });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     expect(screen.getByText("Boom!")).toBeInTheDocument();
   });
 
   it("shows empty state when no decks exist", async () => {
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     await waitFor(() => {
       expect(screen.getByText(/No decks yet/)).toBeInTheDocument();
     });
@@ -51,7 +52,7 @@ describe("DeckList — status states", () => {
   it("empty state New Deck button opens create form", async () => {
     const user = userEvent.setup();
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     // Only empty-state "New Deck" button is visible (header one is hidden because no decks)
     const newBtns = await screen.findAllByRole("button", { name: "New Deck" });
@@ -66,7 +67,7 @@ describe("DeckList — status states", () => {
       activeDeckId: null,
       loading: false,
     });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     await waitFor(() => {
       expect(screen.getByText("Atraxa Superfriends")).toBeInTheDocument();
       expect(screen.getByText("Krenko Goblins")).toBeInTheDocument();
@@ -78,7 +79,7 @@ describe("DeckList — create flow", () => {
   it("creates a deck via the Create button", async () => {
     const user = userEvent.setup();
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     const newBtns = await screen.findAllByRole("button", { name: "New Deck" });
     await user.click(newBtns[0]);
@@ -99,7 +100,7 @@ describe("DeckList — create flow", () => {
   it("creates a deck when pressing Enter", async () => {
     const user = userEvent.setup();
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     const newBtns = await screen.findAllByRole("button", { name: "New Deck" });
     await user.click(newBtns[0]);
@@ -115,7 +116,7 @@ describe("DeckList — create flow", () => {
   it("does not create a deck when name is empty/whitespace", async () => {
     const user = userEvent.setup();
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     const newBtns = await screen.findAllByRole("button", { name: "New Deck" });
     await user.click(newBtns[0]);
@@ -132,7 +133,7 @@ describe("DeckList — create flow", () => {
   it("Cancel button closes the create form without creating", async () => {
     const user = userEvent.setup();
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     const newBtns = await screen.findAllByRole("button", { name: "New Deck" });
     await user.click(newBtns[0]);
@@ -147,7 +148,7 @@ describe("DeckList — create flow", () => {
   it("Escape key cancels the create form", async () => {
     const user = userEvent.setup();
     useDeckStore.setState({ decks: [], activeDeckId: null, loading: false });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     const newBtns = await screen.findAllByRole("button", { name: "New Deck" });
     await user.click(newBtns[0]);
@@ -182,7 +183,7 @@ describe("DeckList — rename flow", () => {
   it("renames a deck on Enter", async () => {
     const user = userEvent.setup();
     await setupWithOneDeck();
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     await user.click(await screen.findByRole("button", { name: "Rename" }));
 
     const input = screen.getByDisplayValue("Original");
@@ -197,7 +198,7 @@ describe("DeckList — rename flow", () => {
   it("Escape cancels rename without saving", async () => {
     const user = userEvent.setup();
     await setupWithOneDeck();
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     await user.click(await screen.findByRole("button", { name: "Rename" }));
     const input = screen.getByDisplayValue("Original");
@@ -213,7 +214,7 @@ describe("DeckList — rename flow", () => {
   it("does not persist rename when value is unchanged", async () => {
     const user = userEvent.setup();
     await setupWithOneDeck();
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     await user.click(await screen.findByRole("button", { name: "Rename" }));
     const input = screen.getByDisplayValue("Original");
@@ -226,7 +227,7 @@ describe("DeckList — rename flow", () => {
   it("does not persist rename when trimmed value is empty", async () => {
     const user = userEvent.setup();
     await setupWithOneDeck();
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     await user.click(await screen.findByRole("button", { name: "Rename" }));
     const input = screen.getByDisplayValue("Original");
@@ -254,7 +255,7 @@ describe("DeckList — delete flow", () => {
       activeDeckId: null,
       loading: false,
     });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     await user.click(await screen.findByRole("button", { name: "Delete" }));
     expect(screen.getByText("Delete this deck?")).toBeInTheDocument();
@@ -282,7 +283,7 @@ describe("DeckList — delete flow", () => {
       activeDeckId: null,
       loading: false,
     });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     await user.click(await screen.findByRole("button", { name: "Delete" }));
     await user.click(screen.getByRole("button", { name: "No" }));
@@ -315,7 +316,7 @@ describe("DeckList — selection", () => {
       activeDeckId: null,
       loading: false,
     });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     // h3 → flex row → card (the element with onClick)
     const heading = await screen.findByRole("heading", { level: 3, name: "Second" });
@@ -331,7 +332,7 @@ describe("DeckList — selection", () => {
       activeDeckId: 1,
       loading: false,
     });
-    const { container } = render(<DeckList />);
+    const { container } = render(<MemoryRouter><DeckList /></MemoryRouter>);
     await screen.findByText("Active One");
     await waitFor(() => {
       expect(container.querySelector(".ring-2")).not.toBeNull();
@@ -346,7 +347,7 @@ describe("DeckList — selection", () => {
       activeDeckId: null,
       loading: false,
     });
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
 
     await user.click(await screen.findByRole("button", { name: "Rename" }));
     // The card's onClick should not fire because of stopPropagation
@@ -375,26 +376,26 @@ describe("DeckList — relative time display", () => {
 
   it('shows "just now" for very recent updates', async () => {
     await seedBoth("Recent", Date.now() - 1000);
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     expect(await screen.findByText("just now")).toBeInTheDocument();
   });
 
   it('shows "X min ago" for minutes-old updates', async () => {
     await seedBoth("Older", Date.now() - 10 * 60 * 1000);
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     expect(await screen.findByText(/10 min ago/)).toBeInTheDocument();
   });
 
   it('shows "X hours ago" for hours-old updates', async () => {
     await seedBoth("Older", Date.now() - 3 * 60 * 60 * 1000);
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     expect(await screen.findByText(/3 hours ago/)).toBeInTheDocument();
   });
 
   it("shows a locale date for updates older than a day", async () => {
     const updatedAt = Date.now() - 3 * 24 * 60 * 60 * 1000;
     await seedBoth("Ancient", updatedAt);
-    render(<DeckList />);
+    render(<MemoryRouter><DeckList /></MemoryRouter>);
     const expected = new Date(updatedAt).toLocaleDateString();
     expect(await screen.findByText(expected)).toBeInTheDocument();
   });
