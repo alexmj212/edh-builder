@@ -4,6 +4,7 @@ import { useDeckStore } from '../store/deck-store'
 import { useCommanderStore } from '../store/commander-store'
 import { WorkspaceHeader } from './WorkspaceHeader'
 import { CommanderPanel } from './CommanderPanel'
+import { CardSearchSection } from './CardSearchSection'
 
 export function DeckWorkspace() {
   const { id } = useParams<{ id: string }>()
@@ -52,9 +53,8 @@ export function DeckWorkspace() {
       <section
         aria-label="Card Search"
         data-testid="card-search-section"
-        className="mt-8"
       >
-        <p className="text-text-secondary">Card search placeholder</p>
+        <CardSearchSection />
       </section>
       <section
         aria-label="Deck Cards"
