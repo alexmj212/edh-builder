@@ -60,7 +60,12 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
 
       set({ primaryCommander: primary, partnerCommander: partner, loading: false });
     } catch (err) {
-      set({ loading: false, error: (err as Error).message });
+      set({
+        loading: false,
+        error: (err as Error).message,
+        primaryCommander: null,
+        partnerCommander: null,
+      });
     }
   },
 
