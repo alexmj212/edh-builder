@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { db } from '../lib/db';
 import { useCommanderStore } from './commander-store';
-import * as scryfallClient from '../lib/scryfall-client';
+import * as scryfall from '../lib/scryfall';
 
 function fakeCard(overrides: {
   id?: string;
@@ -241,7 +241,7 @@ describe('commander-store', () => {
     useCommanderStore.setState({ primaryCommander: null, partnerCommander: null, loading: false, error: null });
 
     // Mock Scryfall hydration for both primary and partner
-    vi.spyOn(scryfallClient, 'fetchCardById').mockImplementation(async (id: string) => {
+    vi.spyOn(scryfall, 'fetchCardById').mockImplementation(async (id: string) => {
       if (id === 'primary-id') return fakeCard({ id: 'primary-id', name: 'Primary' }) as never;
       if (id === 'partner-reload') return fakeCard({ id: 'partner-reload', name: 'Partner Reload', keywords: ['Partner'] }) as never;
       throw new Error(`Unexpected id: ${id}`);
@@ -257,7 +257,7 @@ describe('commander-store', () => {
   describe('loadForDeck', () => {
     it('loads and hydrates primaryCommander via fetchCardById when deck has a commanderId', async () => {
       const mockCard = fakeCard({ id: 'card-abc', name: 'Hydrated Commander' });
-      vi.spyOn(scryfallClient, 'fetchCardById').mockResolvedValue(mockCard as never);
+      vi.spyOn(scryfall, 'fetchCardById').mockResolvedValue(mockCard as never);
 
       const deckId = (await db.decks.add({
         name: 'Hydrate Test',
@@ -270,7 +270,7 @@ describe('commander-store', () => {
 
       await useCommanderStore.getState().loadForDeck(deckId);
 
-      expect(scryfallClient.fetchCardById).toHaveBeenCalledWith('card-abc');
+      expect(scryfall.fetchCardById).toHaveBeenCalledWith('card-abc');
       const state = useCommanderStore.getState();
       expect((state.primaryCommander as Record<string, unknown>)?.name).toBe('Hydrated Commander');
     });
@@ -291,7 +291,7 @@ describe('commander-store', () => {
     });
 
     it('leaves partnerCommander null when deck has no partnerCommanderId', async () => {
-      vi.spyOn(scryfallClient, 'fetchCardById').mockResolvedValue(
+      vi.spyOn(scryfall, 'fetchCardById').mockResolvedValue(
         fakeCard({ id: 'card-abc', name: 'Only Primary' }) as never
       );
 
@@ -311,7 +311,7 @@ describe('commander-store', () => {
     });
 
     it('hydrates partnerCommander via fetchCardById when deck.partnerCommanderId is set', async () => {
-      vi.spyOn(scryfallClient, 'fetchCardById').mockImplementation(async (id: string) => {
+      vi.spyOn(scryfall, 'fetchCardById').mockImplementation(async (id: string) => {
         if (id === 'primary-hydrate') return fakeCard({ id: 'primary-hydrate', name: 'Primary' }) as never;
         if (id === 'partner-hydrate') return fakeCard({ id: 'partner-hydrate', name: 'Partner' }) as never;
         throw new Error(`Unexpected id: ${id}`);
@@ -330,8 +330,8 @@ describe('commander-store', () => {
 
       await useCommanderStore.getState().loadForDeck(deckId);
 
-      expect(scryfallClient.fetchCardById).toHaveBeenCalledWith('primary-hydrate');
-      expect(scryfallClient.fetchCardById).toHaveBeenCalledWith('partner-hydrate');
+      expect(scryfall.fetchCardById).toHaveBeenCalledWith('primary-hydrate');
+      expect(scryfall.fetchCardById).toHaveBeenCalledWith('partner-hydrate');
       const state = useCommanderStore.getState();
       expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner');
     });

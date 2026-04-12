@@ -1,17 +1,24 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { useCardSearchStore } from './card-search-store';
-import * as scryfallClient from '../lib/scryfall-client';
+import * as scryfall from '../lib/scryfall';
+import type { SearchResult } from '../lib/scryfall';
 
 function fakeCard(id: string, name: string): Record<string, unknown> {
   return { id, oracle_id: `oracle-${id}`, name, color_identity: [] };
 }
 
-function fakeList(
+function fakeResult(
   data: Record<string, unknown>[] = [],
-  has_more = false,
-  next_page?: string
-): Record<string, unknown> {
-  return { object: 'list', data, has_more, next_page, total_cards: data.length };
+  hasMore = false,
+): SearchResult {
+  return {
+    data: data as never,
+    hasMore,
+    totalCards: data.length,
+    // _page is an opaque handle — in tests we only ever pass it back to mocked
+    // fetchNextPage / never invoke methods on it — a placeholder object is fine.
+    _page: { next: () => Promise.resolve(data), hasMore, count: data.length } as never,
+  };
 }
 
 beforeEach(() => {
@@ -24,19 +31,19 @@ afterEach(() => {
 });
 
 describe('card-search-store', () => {
-  it('search() calls scryfall-client searchCards with a query string', async () => {
+  it('search() calls scryfall.searchCards with a query string', async () => {
     const spy = vi
-      .spyOn(scryfallClient, 'searchCards')
-      .mockResolvedValue(fakeList([fakeCard('c1', 'Card One')]) as never);
+      .spyOn(scryfall, 'searchCards')
+      .mockResolvedValue(fakeResult([fakeCard('c1', 'Card One')]) as never);
 
     await useCardSearchStore.getState().search('lightning bolt');
 
-    expect(spy).toHaveBeenCalledWith('lightning bolt', 1, expect.anything());
+    expect(spy).toHaveBeenCalledWith('lightning bolt', undefined, expect.anything());
   });
 
   it("search() populates results on success and sets status to 'success'", async () => {
-    vi.spyOn(scryfallClient, 'searchCards').mockResolvedValue(
-      fakeList([fakeCard('c1', 'Card One'), fakeCard('c2', 'Card Two')]) as never
+    vi.spyOn(scryfall, 'searchCards').mockResolvedValue(
+      fakeResult([fakeCard('c1', 'Card One'), fakeCard('c2', 'Card Two')]) as never
     );
 
     await useCardSearchStore.getState().search('test query');
@@ -53,9 +60,9 @@ describe('card-search-store', () => {
     const rejectPromise = Promise.reject(abortError);
     rejectPromise.catch(() => {}); // suppress unhandled rejection
 
-    vi.spyOn(scryfallClient, 'searchCards')
+    vi.spyOn(scryfall, 'searchCards')
       .mockReturnValueOnce(rejectPromise as never)
-      .mockResolvedValue(fakeList([fakeCard('c1', 'Card One')]) as never);
+      .mockResolvedValue(fakeResult([fakeCard('c1', 'Card One')]) as never);
 
     // First call aborted
     await useCardSearchStore.getState().search('first query');
@@ -68,7 +75,7 @@ describe('card-search-store', () => {
     const rejectPromise = Promise.reject(abortError);
     rejectPromise.catch(() => {}); // suppress unhandled rejection
 
-    vi.spyOn(scryfallClient, 'searchCards').mockReturnValue(rejectPromise as never);
+    vi.spyOn(scryfall, 'searchCards').mockReturnValue(rejectPromise as never);
 
     // Set a known pre-call state
     useCardSearchStore.setState({ status: 'idle' });
@@ -85,16 +92,17 @@ describe('card-search-store', () => {
     const newCard2 = fakeCard('c3', 'New Card 3');
 
     // Pre-set state as if a prior search completed with hasMore=true
+    const priorHandle = fakeResult([existingCard], true);
     useCardSearchStore.setState({
       results: [existingCard] as never,
       hasMore: true,
-      nextPageUrl: 'https://api.scryfall.com/cards/search?page=2',
+      searchHandle: priorHandle,
       currentPage: 1,
       status: 'success',
     });
 
-    vi.spyOn(scryfallClient, 'fetchNextPage').mockResolvedValue(
-      fakeList([newCard1, newCard2], false) as never
+    vi.spyOn(scryfall, 'fetchNextPage').mockResolvedValue(
+      fakeResult([newCard1, newCard2], false) as never
     );
 
     await useCardSearchStore.getState().loadMore();
@@ -107,17 +115,18 @@ describe('card-search-store', () => {
     expect(state.currentPage).toBe(2);
   });
 
-  it('loadMore() sets hasMore=false when response has_more is false', async () => {
+  it('loadMore() sets hasMore=false when response hasMore is false', async () => {
+    const priorHandle = fakeResult([fakeCard('c1', 'Card')], true);
     useCardSearchStore.setState({
       results: [fakeCard('c1', 'Card')] as never,
       hasMore: true,
-      nextPageUrl: 'https://api.scryfall.com/cards/search?page=2',
+      searchHandle: priorHandle,
       currentPage: 1,
       status: 'success',
     });
 
-    vi.spyOn(scryfallClient, 'fetchNextPage').mockResolvedValue(
-      fakeList([fakeCard('c2', 'Last Card')], false) as never
+    vi.spyOn(scryfall, 'fetchNextPage').mockResolvedValue(
+      fakeResult([fakeCard('c2', 'Last Card')], false) as never
     );
 
     await useCardSearchStore.getState().loadMore();
@@ -126,11 +135,11 @@ describe('card-search-store', () => {
   });
 
   it('loadMore() does not call fetchNextPage when hasMore is false', async () => {
-    const spy = vi.spyOn(scryfallClient, 'fetchNextPage');
+    const spy = vi.spyOn(scryfall, 'fetchNextPage');
 
     useCardSearchStore.setState({
       hasMore: false,
-      nextPageUrl: null,
+      searchHandle: null,
       status: 'success',
     });
 
@@ -140,11 +149,12 @@ describe('card-search-store', () => {
   });
 
   it("reset() clears query, results, currentPage, and sets status to 'idle'", () => {
+    const priorHandle = fakeResult([fakeCard('c1', 'Card')], true);
     useCardSearchStore.setState({
       filters: { name: 'lightning', type: 'instant', oracleText: 'deal' },
       results: [fakeCard('c1', 'Card')] as never,
       hasMore: true,
-      nextPageUrl: 'https://api.scryfall.com/cards/search?page=2',
+      searchHandle: priorHandle,
       currentPage: 3,
       status: 'success',
       error: 'some prior error',
@@ -156,7 +166,7 @@ describe('card-search-store', () => {
     expect(state.filters).toEqual({ name: '', type: '', oracleText: '' });
     expect(state.results).toEqual([]);
     expect(state.hasMore).toBe(false);
-    expect(state.nextPageUrl).toBeNull();
+    expect(state.searchHandle).toBeNull();
     expect(state.currentPage).toBe(0);
     expect(state.status).toBe('idle');
     expect(state.error).toBeNull();

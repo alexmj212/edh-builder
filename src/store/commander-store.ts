@@ -1,32 +1,32 @@
 import { create } from 'zustand';
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from '../lib/scryfall';
 import { db } from '../lib/db';
-import { fetchCardById } from '../lib/scryfall-client';
+import { fetchCardById } from '../lib/scryfall';
 import { cacheCard } from '../lib/card-cache';
 import { detectPartnerType, areCompatiblePartners } from '../lib/partner-detection';
 
 export interface CommanderState {
-  primaryCommander: ScryfallCard.Any | null;
-  partnerCommander: ScryfallCard.Any | null;
+  primaryCommander: Card | null;
+  partnerCommander: Card | null;
   loading: boolean;
   error: string | null;
   loadForDeck: (deckId: number) => Promise<void>;
-  setCommander: (deckId: number, card: ScryfallCard.Any) => Promise<void>;
+  setCommander: (deckId: number, card: Card) => Promise<void>;
   clearCommander: (deckId: number) => Promise<void>;
-  setPartner: (deckId: number, card: ScryfallCard.Any) => Promise<void>;
+  setPartner: (deckId: number, card: Card) => Promise<void>;
   clearPartner: (deckId: number) => Promise<void>;
 }
 
-function colorIdentityOf(card: ScryfallCard.Any): string[] {
+function colorIdentityOf(card: Card): string[] {
   const ci = (card as unknown as { color_identity?: string[] }).color_identity;
   return Array.isArray(ci) ? ci : [];
 }
 
-function idOf(card: ScryfallCard.Any): string {
+function idOf(card: Card): string {
   return (card as unknown as { id: string }).id;
 }
 
-function nameOf(card: ScryfallCard.Any): string {
+function nameOf(card: Card): string {
   return (card as unknown as { name: string }).name;
 }
 
@@ -47,7 +47,7 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       const primary = await fetchCardById(deck.commanderId);
       await cacheCard(primary);
 
-      let partner: ScryfallCard.Any | null = null;
+      let partner: Card | null = null;
       if (deck.partnerCommanderId) {
         try {
           partner = await fetchCardById(deck.partnerCommanderId);
@@ -72,11 +72,13 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
 
   setCommander: async (deckId, card) => {
     const prevPartner = get().partnerCommander;
-    const newPrimaryKind = detectPartnerType(card).kind;
+    // detectPartnerType is still typed against ScryfallCard.Any — retyping
+    // deferred to plan 02.3-03. `as never` keeps the compile path clean.
+    const newPrimaryKind = detectPartnerType(card as never).kind;
     let nextPartner = prevPartner;
     if (newPrimaryKind === 'none') {
       nextPartner = null;
-    } else if (prevPartner && !areCompatiblePartners(card, prevPartner)) {
+    } else if (prevPartner && !areCompatiblePartners(card as never, prevPartner as never)) {
       nextPartner = null;
     }
 

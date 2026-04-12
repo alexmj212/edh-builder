@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from './scryfall';
 import { db } from './db';
 import { getCard, cacheCard, cacheCards, CACHE_TTL_MS } from './card-cache';
 
-function fakeCard(oracleId: string): ScryfallCard.Any {
-  return { oracle_id: oracleId, name: 'Fake Card' } as unknown as ScryfallCard.Any;
+function fakeCard(oracleId: string): Card {
+  return { oracle_id: oracleId, name: 'Fake Card' } as unknown as Card;
 }
 
 describe('card-cache', () => {
@@ -25,15 +25,15 @@ describe('card-cache', () => {
   it('getCard returns cached JSON when within TTL (7 days)', async () => {
     const card = fakeCard('oracle-fresh');
     // Write directly to db with a fresh cachedAt
-    await db.cards.put({ oracle_id: 'oracle-fresh', cardJson: card, cachedAt: Date.now() });
+    await db.cards.put({ oracle_id: 'oracle-fresh', cardJson: card as never, cachedAt: Date.now() });
     const result = await getCard('oracle-fresh');
     expect(result).not.toBeNull();
-    expect((result as ScryfallCard.Any & { oracle_id: string }).oracle_id).toBe('oracle-fresh');
+    expect((result as Card & { oracle_id: string }).oracle_id).toBe('oracle-fresh');
   });
 
   it('getCard returns null when cache entry older than 7 days', async () => {
     const staleAt = Date.now() - CACHE_TTL_MS - 1;
-    await db.cards.put({ oracle_id: 'oracle-stale', cardJson: fakeCard('oracle-stale'), cachedAt: staleAt });
+    await db.cards.put({ oracle_id: 'oracle-stale', cardJson: fakeCard('oracle-stale') as never, cachedAt: staleAt });
     const result = await getCard('oracle-stale');
     expect(result).toBeNull();
   });
@@ -53,7 +53,7 @@ describe('card-cache', () => {
   });
 
   it('cacheCard skips cards with no oracle_id (returns without throwing)', async () => {
-    await expect(cacheCard({} as ScryfallCard.Any)).resolves.toBeUndefined();
+    await expect(cacheCard({} as Card)).resolves.toBeUndefined();
     const count = await db.cards.count();
     expect(count).toBe(0);
   });
@@ -66,11 +66,11 @@ describe('card-cache', () => {
   });
 
   it('cacheCards filters out cards missing oracle_id', async () => {
-    const cards: ScryfallCard.Any[] = [
+    const cards: Card[] = [
       fakeCard('x'),
       fakeCard('y'),
       fakeCard('z'),
-      {} as ScryfallCard.Any, // no oracle_id
+      {} as Card, // no oracle_id
     ];
     await cacheCards(cards);
     const count = await db.cards.count();

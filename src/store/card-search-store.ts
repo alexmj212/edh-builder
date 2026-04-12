@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { ScryfallCard } from '@scryfall/api-types';
-import { searchCards, fetchNextPage } from '../lib/scryfall-client';
+import type { Card, SearchResult } from '../lib/scryfall';
+import { searchCards, fetchNextPage } from '../lib/scryfall';
 import { cacheCards } from '../lib/card-cache';
 
 export interface CardSearchFilters {
@@ -11,9 +11,9 @@ export interface CardSearchFilters {
 
 export interface CardSearchState {
   filters: CardSearchFilters;
-  results: ScryfallCard.Any[];
+  results: Card[];
   hasMore: boolean;
-  nextPageUrl: string | null;
+  searchHandle: SearchResult | null;
   currentPage: number;
   status: 'idle' | 'loading' | 'success' | 'error';
   error: string | null;
@@ -33,7 +33,7 @@ export const useCardSearchStore = create<CardSearchState>((set, get) => ({
   filters: { name: '', type: '', oracleText: '' },
   results: [],
   hasMore: false,
-  nextPageUrl: null,
+  searchHandle: null,
   currentPage: 0,
   status: 'idle',
   error: null,
@@ -46,19 +46,19 @@ export const useCardSearchStore = create<CardSearchState>((set, get) => ({
     controller?.abort();
     controller = new AbortController();
     const signal = controller.signal;
-    set({ status: 'loading', error: null, results: [], currentPage: 1, hasMore: false, nextPageUrl: null });
+    set({ status: 'loading', error: null, results: [], currentPage: 1, hasMore: false, searchHandle: null });
     try {
-      const list = await searchCards(query, 1, signal);
+      const result = await searchCards(query, undefined, signal);
       if (signal.aborted) return;
       set({
-        results: list.data,
-        hasMore: list.has_more,
-        nextPageUrl: list.next_page ?? null,
+        results: result.data,
+        hasMore: result.hasMore,
+        searchHandle: result,
         currentPage: 1,
         status: 'success',
         error: null,
       });
-      void cacheCards(list.data);
+      void cacheCards(result.data);
     } catch (err) {
       if (isAbortError(err)) return;
       set({ status: 'error', error: (err as Error).message });
@@ -66,23 +66,23 @@ export const useCardSearchStore = create<CardSearchState>((set, get) => ({
   },
 
   loadMore: async () => {
-    const { hasMore, nextPageUrl, status, currentPage } = get();
-    if (!hasMore || !nextPageUrl || status === 'loading') return;
+    const { hasMore, searchHandle, status, currentPage } = get();
+    if (!hasMore || !searchHandle || status === 'loading') return;
     controller?.abort();
     controller = new AbortController();
     const signal = controller.signal;
     set({ status: 'loading' });
     try {
-      const list = await fetchNextPage(nextPageUrl, signal);
+      const result = await fetchNextPage(searchHandle, signal);
       if (signal.aborted) return;
       set(state => ({
-        results: [...state.results, ...list.data],
-        hasMore: list.has_more,
-        nextPageUrl: list.next_page ?? null,
+        results: [...state.results, ...result.data],
+        hasMore: result.hasMore,
+        searchHandle: result,
         currentPage: currentPage + 1,
         status: 'success',
       }));
-      void cacheCards(list.data);
+      void cacheCards(result.data);
     } catch (err) {
       if (isAbortError(err)) return;
       set({ status: 'error', error: (err as Error).message });
@@ -96,7 +96,7 @@ export const useCardSearchStore = create<CardSearchState>((set, get) => ({
       filters: { name: '', type: '', oracleText: '' },
       results: [],
       hasMore: false,
-      nextPageUrl: null,
+      searchHandle: null,
       currentPage: 0,
       status: 'idle',
       error: null,
