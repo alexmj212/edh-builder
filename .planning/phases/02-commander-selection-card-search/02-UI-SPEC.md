@@ -132,9 +132,13 @@ Container: `rounded-lg bg-surface border border-border p-4` (matches DeckList ca
 - Below art: "Pick a Commander" search input + results list (see item 4)
 
 **Selected state (single commander):**
-- Art area: `<img>` using `image_uris.art_crop` — `object-cover w-full h-40 sm:h-48 rounded-t-lg`
-- Below art: commander name in `text-label font-semibold`, mana cost in monospace letters, type line in `text-text-secondary text-sm`
+- Card area: `<img>` using `image_uris.normal` (the **full card** — mana cost, type line, oracle text, P/T are all visible) — `w-full max-w-[240px] aspect-[63/88] object-contain rounded-lg shadow-md`, centered within the slot
+- Below card: commander name in `text-sm font-semibold`, type line in `text-text-secondary text-xs`, both centered (the card image already contains these — caption preserved for screen readers and quick scan)
 - "Change commander" button: `text-sm text-text-secondary hover:text-text-primary` — replaces the search input
+- "Flip" button: appears beside "Change commander" only when the card has 2+ faces with their own `image_uris` (DFC commanders like Garruk Relentless / the Veil-Cursed) — toggles `faceIndex`
+
+**Deviation history:**
+- 2026-04-12 — switched primary art from `image_uris.art_crop` (h-40/h-48 banner) to `image_uris.normal` full card. Reason: art_crop hid mana cost, type line, oracle text, and P/T — leaving the user with no readable detail about the commander outside the search filters.
 
 **Partner layout (two-slot, side-by-side, D-03):**
 - `grid grid-cols-2 gap-4`
