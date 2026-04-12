@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 02-05 (next)
+current_plan: 02-06 (next)
 status: Executing Phase 02
-last_updated: "2026-04-12T03:41:05.452Z"
+last_updated: "2026-04-12T03:49:42Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 87
 ---
 
 # Project State: EDH Deck Builder
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02-commander-selection-card-search
-- **Current Plan:** 02-04 (next)
+- **Current Plan:** 02-06 (next)
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -42,6 +42,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02-02 | Wave 1 Library Modules (partner-detection, scryfall-client, card-cache) | 2026-04-12 |
 | 02-03 | Wave 2 Zustand Stores (commander-store, card-search-store) | 2026-04-12 |
 | 02-04 | Wave 3 Routing & DeckWorkspace Shell | 2026-04-12 |
+| 02-05 | Wave 4 Commander Selection UX | 2026-04-12 |
 
 ## Decisions
 
@@ -59,6 +60,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02]: react-router-dom was in package.json but not installed; npm install resolved it
 - [Phase 02]: DeckList onSelect calls both setActiveDeck and navigate to preserve active-deck highlight while routing
 - [Phase 02]: parseInt(id ?? '', 10) with NaN guard rejects non-numeric URLs (T-02-04-A mitigation)
+- [Phase 02]: RTL waitFor hangs with vi.useFakeTimers — use act+advanceTimersByTime+Promise.resolve pattern instead
+- [Phase 02]: URLSearchParams encodes spaces as '+' not '%20' — test URL assertions need .replace(/\+/g, ' ') before decodeURIComponent
+- [Phase 02]: CommanderSearch fires searchCommanders('') on mount to show EDHREC default list without typing
+- [Phase 02]: Partner compatibility gate in CommanderSearch.handleSelect is defense-in-depth (searchPartnersFor already pre-filters)
 
 ## Performance Metrics
 
@@ -68,6 +73,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02 | 02 | 15 min | 3/3 | 6 |
 | 02 | 03 | 3 min | 2/2 | 4 |
 | 02 | 04 | 3 min | 2/2 | 6 |
+| 02 | 05 | 6 min | 3/3 | 11 |
 
 ## Session Log
 
@@ -78,6 +84,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02-02: Wave 1 Library Modules (partner-detection, scryfall-client, card-cache) |
 | 2026-04-12 | Completed 02-03: Wave 2 Zustand Stores (commander-store, card-search-store) |
 | 2026-04-12 | Completed 02-04: Wave 3 Routing & DeckWorkspace Shell |
+| 2026-04-12 | Completed 02-05: Wave 4 Commander Selection UX (CommanderPanel, CommanderSearch, ColorIdentityChip, useDebouncedValue) |
 
 ---
 *Last updated: 2026-04-12*
