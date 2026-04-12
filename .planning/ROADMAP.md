@@ -221,5 +221,51 @@ Note: UI requirements are distributed across phases where they naturally fit (da
 | Testing | Vitest + React Testing Library | latest |
 
 ---
+
+## Backlog
+
+Unsequenced future-planned features captured from user feedback. Not in the active milestone sequence. Promote to an active phase via `/gsd-review-backlog` when ready.
+
+### Phase 999.1: Arena-style card hover tooltip (BACKLOG)
+
+**Goal:** On hover over any card instance (search result, deck list, commander panel, modal), surface a rich preview panel showing:
+1. Full-size card art (not `art_crop`).
+2. Related cards inline — flip/transform back face, generated tokens, meld/partner pieces, emblem produced — so the user does not need to click through to understand interactions.
+3. Keyword explainers — for each keyword on the card (Flying, Lifelink, Partner, Commander ninjutsu, etc.), render the reminder text / short definition inline, MTG Arena style.
+
+Behavior notes:
+- Debounced hover (~300ms) to avoid flicker on mouse-through.
+- Keyboard-accessible equivalent: focus + small delay, dismissable with Esc.
+- Must work consistently wherever cards render.
+
+**Requirements:** TBD (new UI-xx tooltip requirement to be added during promotion)
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.2: Card detail modal with rulings and errata (BACKLOG)
+
+**Goal:** Clicking a card opens a modal with expanded card data beyond the hover tooltip:
+- Full oracle text + any errata
+- Rulings (Scryfall `rulings_uri` / official rulings list)
+- Full printings list with set/release/frame details
+- Legality table (Commander-focused, but showing other formats for context)
+- Price snapshots (USD / USD_foil / EUR / TIX if available via Scryfall)
+- Related cards section (same as hover, but expanded with reminders)
+
+Behavior notes:
+- Modal should be dismissable (Esc, backdrop click, explicit close button).
+- Focus management: focus returns to the card that was clicked after close.
+- Should work wherever hover tooltip works (search, deck list, commander panel).
+- Mobile: full-screen variant rather than modal when viewport is narrow.
+
+**Requirements:** TBD (new UI-xx detail-modal requirement to be added during promotion)
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
+
+---
 *Roadmap created: 2026-04-11*
-*Last updated: 2026-04-11 after Phase 2 planning*
+*Last updated: 2026-04-12 — Phase 3 layout clarification + backlog items 999.1 / 999.2 captured*
