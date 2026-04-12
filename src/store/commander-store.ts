@@ -13,8 +13,8 @@ export interface CommanderState {
   loadForDeck: (deckId: number) => Promise<void>;
   setCommander: (deckId: number, card: ScryfallCard.Any) => Promise<void>;
   clearCommander: (deckId: number) => Promise<void>;
-  setPartner: (card: ScryfallCard.Any) => void;
-  clearPartner: () => void;
+  setPartner: (deckId: number, card: ScryfallCard.Any) => Promise<void>;
+  clearPartner: (deckId: number) => Promise<void>;
 }
 
 function colorIdentityOf(card: ScryfallCard.Any): string[] {
@@ -44,23 +44,27 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
         set({ loading: false });
         return;
       }
-      const card = await fetchCardById(deck.commanderId);
-      await cacheCard(card);
-      set({ primaryCommander: card, loading: false });
+      const primary = await fetchCardById(deck.commanderId);
+      await cacheCard(primary);
+
+      let partner: ScryfallCard.Any | null = null;
+      if (deck.partnerCommanderId) {
+        try {
+          partner = await fetchCardById(deck.partnerCommanderId);
+          await cacheCard(partner);
+        } catch {
+          // Partner hydration failure must not abort primary load.
+          partner = null;
+        }
+      }
+
+      set({ primaryCommander: primary, partnerCommander: partner, loading: false });
     } catch (err) {
       set({ loading: false, error: (err as Error).message });
     }
   },
 
   setCommander: async (deckId, card) => {
-    await db.decks.update(deckId, {
-      commanderId: idOf(card),
-      commanderName: nameOf(card),
-      colorIdentity: colorIdentityOf(card),
-      updatedAt: Date.now(),
-    });
-    await cacheCard(card);
-
     const prevPartner = get().partnerCommander;
     const newPrimaryKind = detectPartnerType(card).kind;
     let nextPartner = prevPartner;
@@ -69,6 +73,20 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
     } else if (prevPartner && !areCompatiblePartners(card, prevPartner)) {
       nextPartner = null;
     }
+
+    const partnerFields = nextPartner === null
+      ? { partnerCommanderId: null, partnerCommanderName: null }
+      : {};
+
+    await db.decks.update(deckId, {
+      commanderId: idOf(card),
+      commanderName: nameOf(card),
+      colorIdentity: colorIdentityOf(card),
+      updatedAt: Date.now(),
+      ...partnerFields,
+    });
+    await cacheCard(card);
+
     set({ primaryCommander: card, partnerCommander: nextPartner, error: null });
   },
 
@@ -77,16 +95,29 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
       commanderId: null,
       commanderName: null,
       colorIdentity: [],
+      partnerCommanderId: null,
+      partnerCommanderName: null,
       updatedAt: Date.now(),
     });
     set({ primaryCommander: null, partnerCommander: null });
   },
 
-  setPartner: (card) => {
+  setPartner: async (deckId, card) => {
+    await db.decks.update(deckId, {
+      partnerCommanderId: idOf(card),
+      partnerCommanderName: nameOf(card),
+      updatedAt: Date.now(),
+    });
+    await cacheCard(card);
     set({ partnerCommander: card });
   },
 
-  clearPartner: () => {
+  clearPartner: async (deckId) => {
+    await db.decks.update(deckId, {
+      partnerCommanderId: null,
+      partnerCommanderName: null,
+      updatedAt: Date.now(),
+    });
     set({ partnerCommander: null });
   },
 }));

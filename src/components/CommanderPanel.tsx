@@ -125,7 +125,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
                 <CommanderSearch
                   mode="partner"
                   primaryForPartner={primaryCommander!}
-                  onSelect={card => setPartner(card)}
+                  onSelect={card => { void setPartner(deckId, card); }}
                 />
               </div>
             </>
@@ -133,7 +133,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
             <FullCard
               card={partnerCommander}
               actionLabel="Remove partner"
-              onAction={() => clearPartner()}
+              onAction={() => { void clearPartner(deckId); }}
             />
           )}
         </div>
