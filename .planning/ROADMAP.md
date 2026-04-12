@@ -118,6 +118,7 @@ Deliverables:
 **Deliverables:**
 - Add card to deck from search results
 - Remove card from deck
+- **Side-by-side card-selection layout**: search input + paginated results on the LEFT, current deck/selected cards on the RIGHT — both visible simultaneously (no below-the-fold selection list). Feedback when a card is added is immediately visible in the right column without scrolling.
 - Every add/remove writes a changelog entry to `deckChanges` store (v2 history foundation)
 - Card references include `originalReleaseDate` from earliest Scryfall printing (v2 age analysis foundation)
 - Singleton enforcement (prevent duplicate non-basics, allow multiple basics)
@@ -136,6 +137,7 @@ Deliverables:
 - Commander art is prominent at deck top
 - Every card add/remove creates a `deckChanges` record
 - Card references include `originalReleaseDate`
+- Search results and selected cards are simultaneously visible on desktop viewports (≥1024px); a card add produces a visible change in the right-hand selection column without requiring scroll
 
 ---
 
