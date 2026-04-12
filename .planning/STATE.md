@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 4
+current_plan: 5
 status: Executing Phase 02.3
-last_updated: "2026-04-12T19:58:22.975Z"
+last_updated: "2026-04-12T20:20:01.944Z"
 progress:
   total_phases: 10
   completed_phases: 3
   total_plans: 21
-  completed_plans: 18
-  percent: 86
+  completed_plans: 19
+  percent: 90
 ---
 
 # Project State: EDH Deck Builder
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.2-playwright-e2e-harness (COMPLETE)
-- **Current Plan:** 4
+- **Current Plan:** 5
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -87,6 +87,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.3]: Plan 02.3-03: retype sweep complete — Card type is the single app-wide card surface; 16 as-unknown-as casts + 5 in-guards + 4 as-never bridges all eliminated; only scryfall-client.ts+.test.ts retain legacy ScryfallCard refs (deleted in 02.3-05)
 - [Phase 02.3]: Plan 02.3-03: test fakeCards must seed keywords/color_identity defaults for Card fixtures — required GameplayCard fields mean direct-access call sites crash on partial mocks
 - [Phase 02.3]: Plan 02.3-03: CardSearchSection's buildSearchQuery import redirected from scryfall-client to scryfall-queries (leftover from 02.3-02); app code now has zero non-wrapper scryfall-client imports — 02.3-05 deletion unblocked
+- [Phase 02.3]: Plan 02.3-04: Split Task 1 into tsconfig change + test-file bug sweep + tsconfig.app.json exclude for scryfall-client.{ts,test.ts} — user-approved scope expansion (Option 1) at decision checkpoint; exclude must be removed by 02.3-05
+- [Phase 02.3]: Plan 02.3-04: FixtureCard = Pick<Card,...> with pickKeys drift guard (not value-level satisfies, which JSON literal widening defeats); single asCard helper carries the one as-unknown-as-Card escape hatch
+- [Phase 02.3]: Plan 02.3-04: CI typecheck step added to e2e.yml between npm ci and playwright install — closes WR-01 CI half; build-script restoration deferred to 02.3-05
+- [Phase 02.3]: Plan 02.3-04: vitest runner's transpile-only mode silently missed 12 test-file type errors introduced by 02.3-02/03 — CI typecheck step now gates future drift
 
 ## Performance Metrics
 
@@ -108,6 +112,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.3 P01 | 3 min | 3/3 tasks | 3 files |
 | Phase 02.3 P02 | 6 min | 3/3 tasks | 10 files |
 | Phase 02.3 P03 | 5 min | 2/2 tasks | 15 files |
+| Phase 02.3 P04 | 6 min | 3/3 tasks | 7 files |
 
 ## Session Log
 
@@ -127,6 +132,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.3-01: Spike PASS — scryfall-api@^4.0.5 installed, live probe against api.scryfall.com ratified D-06/D-07/D-08/D-09; D-10 accepted gap |
 | 2026-04-12 | Completed 02.3-02: Wrapper (src/lib/scryfall.ts) + query-builders (src/lib/scryfall-queries.ts) + migrated card-search-store/commander-store/card-cache to the new boundary; 115/115 tests green |
 | 2026-04-12 | Completed 02.3-03: Type sweep — ScryfallCard swept from 15 files; 16 as-unknown-as + 5 in-guards + 4 as-never bridges eliminated; partner-detection accepts Card directly; 189/189 tests green |
+| 2026-04-12 | Completed 02.3-04: tsconfig.e2e.json overrides dropped, stubScryfall migrated to Pick<Card> + asCard helper, CI typecheck step added; user-approved scope expansion fixed 12 latent test-file TS errors + added tsconfig.app.json exclude for scryfall-client (02.3-05 must remove) |
 
 ## Accumulated Context
 
