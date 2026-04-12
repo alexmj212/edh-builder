@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 3
+current_plan: 4
 status: Executing Phase 02.3
-last_updated: "2026-04-12T19:49:43.056Z"
+last_updated: "2026-04-12T19:58:22.975Z"
 progress:
   total_phases: 10
   completed_phases: 3
   total_plans: 21
-  completed_plans: 17
-  percent: 81
+  completed_plans: 18
+  percent: 86
 ---
 
 # Project State: EDH Deck Builder
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.2-playwright-e2e-harness (COMPLETE)
-- **Current Plan:** 3
+- **Current Plan:** 4
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -84,6 +84,9 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.3]: Plan 02.3-02: wrapper src/lib/scryfall.ts is now sole 'scryfall-api' boundary; abortable<T> funnel for all exports; Zod array validation at .next()/byId boundary
 - [Phase 02.3]: Plan 02.3-02: card-search-store pagination flipped from nextPageUrl:string to searchHandle:SearchResult (opaque MagicPageResult handle)
 - [Phase 02.3]: Plan 02.3-02: card-cache.ts uses CachedCard['cardJson'] indexed-type cast instead of importing @scryfall/api-types (retype deferred to 02.3-03)
+- [Phase 02.3]: Plan 02.3-03: retype sweep complete — Card type is the single app-wide card surface; 16 as-unknown-as casts + 5 in-guards + 4 as-never bridges all eliminated; only scryfall-client.ts+.test.ts retain legacy ScryfallCard refs (deleted in 02.3-05)
+- [Phase 02.3]: Plan 02.3-03: test fakeCards must seed keywords/color_identity defaults for Card fixtures — required GameplayCard fields mean direct-access call sites crash on partial mocks
+- [Phase 02.3]: Plan 02.3-03: CardSearchSection's buildSearchQuery import redirected from scryfall-client to scryfall-queries (leftover from 02.3-02); app code now has zero non-wrapper scryfall-client imports — 02.3-05 deletion unblocked
 
 ## Performance Metrics
 
@@ -104,6 +107,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.2 P05 | 9 | 3 tasks | 5 files |
 | Phase 02.3 P01 | 3 min | 3/3 tasks | 3 files |
 | Phase 02.3 P02 | 6 min | 3/3 tasks | 10 files |
+| Phase 02.3 P03 | 5 min | 2/2 tasks | 15 files |
 
 ## Session Log
 
@@ -122,6 +126,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.2-01 through 02.2-05: Playwright harness, helpers, smoke spec, backfill specs, CI workflow, standing rule — Phase 02.2 COMPLETE, TEST-01 closed |
 | 2026-04-12 | Completed 02.3-01: Spike PASS — scryfall-api@^4.0.5 installed, live probe against api.scryfall.com ratified D-06/D-07/D-08/D-09; D-10 accepted gap |
 | 2026-04-12 | Completed 02.3-02: Wrapper (src/lib/scryfall.ts) + query-builders (src/lib/scryfall-queries.ts) + migrated card-search-store/commander-store/card-cache to the new boundary; 115/115 tests green |
+| 2026-04-12 | Completed 02.3-03: Type sweep — ScryfallCard swept from 15 files; 16 as-unknown-as + 5 in-guards + 4 as-never bridges eliminated; partner-detection accepts Card directly; 189/189 tests green |
 
 ## Accumulated Context
 
