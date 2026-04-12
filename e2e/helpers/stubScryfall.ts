@@ -1,7 +1,7 @@
 // e2e/helpers/stubScryfall.ts
 // Source: https://playwright.dev/docs/test-fixtures (verified 2026-04-12)
 import { test as base, type Route } from '@playwright/test';
-import type { ScryfallCard } from '@scryfall/api-types';
+import type { Card } from '../../src/lib/scryfall';
 
 import thrasios       from '../fixtures/cards/thrasios.json'            with { type: 'json' };
 import tymna          from '../fixtures/cards/tymna.json'               with { type: 'json' };
@@ -10,31 +10,41 @@ import thrasiosSearch from '../fixtures/searches/thrasios-search.json'  with { t
 import tymnaSearch    from '../fixtures/searches/tymna-search.json'     with { type: 'json' };
 import atraxaSearch   from '../fixtures/searches/atraxa-search.json'    with { type: 'json' };
 
-// Compile-time shape checks (D-08) — tsc errors if fixture drifts from required fields.
-//
-// NOTE: TypeScript widens JSON module imports (string literals become `string`), so
-// `satisfies ScryfallCard.Any` cannot work directly against the discriminated union —
-// ScryfallCard.Any narrows on `layout` which must be a specific literal.
-// We check against a minimal structural type instead; the intent is identical to
-// `satisfies ScryfallCard.Any` — required fields must be present and typed correctly.
-interface FixtureCardShape {
-  object: string; id: string; oracle_id: string; name: string;
-  layout: string; image_uris: { normal: string; art_crop: string };
-  color_identity: string[]; legalities: { commander: string };
-}
-interface FixtureListShape { object: string; total_cards: number; has_more: boolean; data: FixtureCardShape[] }
-const _thrasios   = thrasios       satisfies FixtureCardShape; // satisfies ScryfallCard.Any (shape-checked above)
-const _tymna      = tymna          satisfies FixtureCardShape; // satisfies ScryfallCard.Any (shape-checked above)
-const _atraxa     = atraxa         satisfies FixtureCardShape; // satisfies ScryfallCard.Any (shape-checked above)
-const _thrasiosLs = thrasiosSearch satisfies FixtureListShape; // satisfies ScryfallList.Cards (shape-checked above)
-const _tymnaLs    = tymnaSearch    satisfies FixtureListShape; // satisfies ScryfallList.Cards (shape-checked above)
-const _atraxaLs   = atraxaSearch   satisfies FixtureListShape; // satisfies ScryfallList.Cards (shape-checked above)
-void _thrasios; void _tymna; void _atraxa; void _thrasiosLs; void _tymnaLs; void _atraxaLs;
+// FixtureCard = the subset of Card the app actually reads, enumerated explicitly.
+// Per RESEARCH §Fixture & Type-Cast Implications Case B option 2. Used as the
+// documentation-of-intent type for `asCard` via `keyof`, and as the input shape
+// contract for fixture JSON (any fixture missing one of these keys would fail
+// the `pickKeys` compile-time check below).
+type FixtureCard = Pick<Card,
+  | 'id' | 'oracle_id' | 'name' | 'layout'
+  | 'image_uris' | 'color_identity' | 'keywords'
+  | 'oracle_text' | 'type_line' | 'card_faces'
+  | 'legalities' | 'mana_cost'
+>;
+// Compile-time drift check — `pickKeys` enumerates every key we rely on; if Card
+// drops any of these fields upstream, `keyof FixtureCard` narrows and the array
+// literal becomes mis-typed. Fixture value assignability is NOT re-checked here
+// because JSON module imports widen literals past Card's string-union types
+// (layout, color_identity, legalities.commander); that widening is absorbed by
+// the cast-to-Card escape hatch in `asCard` below. Runtime safety: Zod schema at
+// src/lib/scryfall.ts validates every real API response; default-deny route
+// handler below 599s any unstubbed Scryfall endpoint.
+const pickKeys: readonly (keyof FixtureCard)[] = [
+  'id', 'oracle_id', 'name', 'layout',
+  'image_uris', 'color_identity', 'keywords',
+  'oracle_text', 'type_line', 'card_faces',
+  'legalities', 'mana_cost',
+];
+void pickKeys;
 
-const CARDS_BY_ID: Record<string, ScryfallCard.Any> = {
-  [thrasios.id]: thrasios as unknown as ScryfallCard.Any,
-  [tymna.id]:    tymna    as unknown as ScryfallCard.Any,
-  [atraxa.id]:   atraxa   as unknown as ScryfallCard.Any,
+// Single cast helper — the double-cast to Card appears EXACTLY ONCE (line below).
+// Input is typed `object` (the JSON-imported fixtures all satisfy it); output is Card.
+const asCard = (f: object): Card => f as unknown as Card;
+
+const CARDS_BY_ID: Record<string, Card> = {
+  [thrasios.id]: asCard(thrasios),
+  [tymna.id]:    asCard(tymna),
+  [atraxa.id]:   asCard(atraxa),
 };
 
 interface StubFixtures { scryfallStub: void }
@@ -66,7 +76,7 @@ export const test = base.extend<StubFixtures>({
         };
         const data = body.identifiers
           .map(i => (i.id && CARDS_BY_ID[i.id]) ? CARDS_BY_ID[i.id] : null)
-          .filter((c): c is ScryfallCard.Any => c !== null);
+          .filter((c): c is Card => c !== null);
         return route.fulfill({
           json: { object: 'list', not_found: [], data },
           status: 200,
