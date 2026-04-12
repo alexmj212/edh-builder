@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 5
 status: Executing Phase 02.3
-last_updated: "2026-04-12T20:20:01.944Z"
+last_updated: "2026-04-12T20:28:58.796Z"
 progress:
   total_phases: 10
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 21
-  completed_plans: 19
-  percent: 90
+  completed_plans: 20
+  percent: 95
 ---
 
 # Project State: EDH Deck Builder
@@ -91,6 +91,8 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.3]: Plan 02.3-04: FixtureCard = Pick<Card,...> with pickKeys drift guard (not value-level satisfies, which JSON literal widening defeats); single asCard helper carries the one as-unknown-as-Card escape hatch
 - [Phase 02.3]: Plan 02.3-04: CI typecheck step added to e2e.yml between npm ci and playwright install — closes WR-01 CI half; build-script restoration deferred to 02.3-05
 - [Phase 02.3]: Plan 02.3-04: vitest runner's transpile-only mode silently missed 12 test-file type errors introduced by 02.3-02/03 — CI typecheck step now gates future drift
+- [Phase 02.3]: Plan 02.3-05: Test-first ordering — regression spec added + confirmed green against pre-deletion code, then deleted old client and re-ran (regression gate passed). SRCH-01..07 E2E coverage landed via e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth assertion
+- [Phase 02.3]: Plan 02.3-05: WR-01 fully closed — build script restored to 'tsc -b && vite build' after scryfall-client.ts deletion dropped @scryfall/api-types from the tsconfig.app.json include scope; CI typecheck step in place from 02.3-04. Phase 02.3 shipped
 
 ## Performance Metrics
 
@@ -113,6 +115,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.3 P02 | 6 min | 3/3 tasks | 10 files |
 | Phase 02.3 P03 | 5 min | 2/2 tasks | 15 files |
 | Phase 02.3 P04 | 6 min | 3/3 tasks | 7 files |
+| Phase 02.3 P05 | 6 min | 3/3 tasks | 6 files |
 
 ## Session Log
 
@@ -133,6 +136,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.3-02: Wrapper (src/lib/scryfall.ts) + query-builders (src/lib/scryfall-queries.ts) + migrated card-search-store/commander-store/card-cache to the new boundary; 115/115 tests green |
 | 2026-04-12 | Completed 02.3-03: Type sweep — ScryfallCard swept from 15 files; 16 as-unknown-as + 5 in-guards + 4 as-never bridges eliminated; partner-detection accepts Card directly; 189/189 tests green |
 | 2026-04-12 | Completed 02.3-04: tsconfig.e2e.json overrides dropped, stubScryfall migrated to Pick<Card> + asCard helper, CI typecheck step added; user-approved scope expansion fixed 12 latent test-file TS errors + added tsconfig.app.json exclude for scryfall-client (02.3-05 must remove) |
+| 2026-04-12 | Completed 02.3-05: Phase 02.3 CLOSED — added e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth (SRCH-07 E2E); deleted scryfall-client.ts + .test.ts; uninstalled @scryfall/api-types; removed tsconfig.app.json exclude bridge; restored 'tsc -b && vite build'; WR-01 retired; 170 unit + 8 e2e green post-deletion |
 
 ## Accumulated Context
 

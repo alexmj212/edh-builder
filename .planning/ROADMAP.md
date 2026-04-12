@@ -141,14 +141,14 @@ Deliverables:
 
 **Depends on:** Phase 02.2
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 02.3-01-PLAN.md — Spike & go/no-go gate (BLOCK authority: install scryfall-api side-by-side, live Scryfall probe verifying D-07 field parity, D-08 abort path, D-09 throttle ≥100ms, D-10 partner query)
 - [x] 02.3-02-PLAN.md — Create `src/lib/scryfall-queries.ts` + `src/lib/scryfall.ts` wrapper (Zod validation boundary, `abortable()` promise-race, `SearchResult` with opaque `MagicPageResult` handle); migrate `card-search-store`, `commander-store`, `card-cache` to new wrapper
 - [x] 02.3-03-PLAN.md — Sweep `ScryfallCard`/`@scryfall/api-types` from `src/types/`, `partner-detection.ts`, and the 4 consumer components; delete `commander-store` helpers and eliminate all `as unknown as` casts
 - [x] 02.3-04-PLAN.md — Restore `tsc -b && vite build`; drop `verbatimModuleSyntax`/`erasableSyntaxOnly` overrides in `tsconfig.e2e.json`; migrate `stubScryfall.ts` to `Pick<Card, ...>` fixture typing; add `Typecheck` step to `.github/workflows/e2e.yml`
-- [ ] 02.3-05-PLAN.md — Delete `src/lib/scryfall-client.ts` + tests; uninstall `@scryfall/api-types`; add `e2e/specs/07-card-search.spec.ts` per Phase 02.2-05 standing rule; run full suite and write phase SUMMARY (WR-01 closed)
+- [x] 02.3-05-PLAN.md — Delete `src/lib/scryfall-client.ts` + tests; uninstall `@scryfall/api-types`; add `e2e/specs/07-card-search.spec.ts` per Phase 02.2-05 standing rule; run full suite and write phase SUMMARY (WR-01 closed)
 
 Deliverables:
 - `scryfall-api@^4` installed; `@scryfall/api-types` removed from `package.json`
