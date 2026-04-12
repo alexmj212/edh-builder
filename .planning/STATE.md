@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
+current_plan: 02-04 (next)
 status: Executing Phase 02
-last_updated: "2026-04-12T23:28:00Z"
+last_updated: "2026-04-12T03:35:30Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
-  completed_plans: 3
-  percent: 37
+  completed_plans: 5
+  percent: 63
 ---
 
 # Project State: EDH Deck Builder
@@ -25,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02-commander-selection-card-search
-- **Current Plan:** 02-03 (next)
+- **Current Plan:** 02-04 (next)
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -39,6 +40,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 |------|------|-----------|
 | 02-01 | Wave 0 Foundation (Dexie v2, CachedCard, test scaffolds) | 2026-04-12 |
 | 02-02 | Wave 1 Library Modules (partner-detection, scryfall-client, card-cache) | 2026-04-12 |
+| 02-03 | Wave 2 Zustand Stores (commander-store, card-search-store) | 2026-04-12 |
 
 ## Decisions
 
@@ -49,6 +51,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - vi.useFakeTimers({ toFake: ['Date'] }) used in card-cache tests to avoid Dexie Promise hang
 - mockFetch uses mockImplementation factory so each call gets a fresh Response body
 - noUnusedLocals: unused test imports removed (isValidBackground, fetchCardById, buildCommanderSearchQuery)
+- [Phase 02]: Partner-clearing logic checks detectPartnerType(newPrimary).kind === 'none' first, then areCompatiblePartners — two-pass covers incompatible cross-kind pairs
+- [Phase 02]: setPartner has no Dexie write in Phase 2 — partner slot is UI-only state
+- [Phase 02]: card-search-store uses module-level AbortController (not Zustand state) to avoid re-renders on abort/replace
+- [Phase 02]: loadForDeck fetches via fetchCardById (Scryfall printing id) not getCard (oracle_id) — deck row stores card id not oracle_id
 
 ## Performance Metrics
 
@@ -56,6 +62,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 |-------|------|----------|-------|-------|
 | 02 | 01 | 4 min | 3/3 | 12 |
 | 02 | 02 | 15 min | 3/3 | 6 |
+| 02 | 03 | 3 min | 2/2 | 4 |
 
 ## Session Log
 
@@ -64,6 +71,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-11 | Project initialized — questioning, research, PROJECT.md, REQUIREMENTS.md, ROADMAP.md created |
 | 2026-04-12 | Completed 02-01: Wave 0 Foundation |
 | 2026-04-12 | Completed 02-02: Wave 1 Library Modules (partner-detection, scryfall-client, card-cache) |
+| 2026-04-12 | Completed 02-03: Wave 2 Zustand Stores (commander-store, card-search-store) |
 
 ---
 *Last updated: 2026-04-12*

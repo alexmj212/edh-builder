@@ -46,12 +46,12 @@ Plans:
 
 **Requirements:** CMDR-01 through CMDR-05, SRCH-01 through SRCH-07
 
-**Plans:** 2/6 plans executed
+**Plans:** 3/6 plans executed
 
 Plans:
 - [x] 02-01-PLAN.md — Wave 0: install react-router-dom, declare CachedCard type, bump Dexie to v2 with `cards` store, create RED test scaffolds (6 files) for Wave 1-3 modules
 - [x] 02-02-PLAN.md — Pure libraries: partner-detection (4 variants), scryfall-client (rate-limited HTTP + query builder + zod envelope), card-cache (read-through 7-day TTL)
-- [ ] 02-03-PLAN.md — Zustand stores: commander-store (primary + partner + Dexie persistence) and card-search-store (abortable search + pagination + cache side effect)
+- [x] 02-03-PLAN.md — Zustand stores: commander-store (primary + partner + Dexie persistence) and card-search-store (abortable search + pagination + cache side effect)
 - [ ] 02-04-PLAN.md — Routing shell: BrowserRouter with `/` and `/decks/:id`, WorkspaceHeader with back link, DeckWorkspace skeleton with three section placeholders
 - [ ] 02-05-PLAN.md — Commander selection UI: useDebouncedValue hook, ColorIdentityChip, CommanderSearch (primary + partner modes), CommanderPanel wired into DeckWorkspace
 - [ ] 02-06-PLAN.md — Card search UI: CardResultCell (image + hover overlay), CardSearchSection (filter row + results grid + pagination), human-verify checkpoint for end-to-end flow
@@ -170,7 +170,7 @@ Plans:
 | Phase | Name | Requirements | Count |
 |-------|------|-------------|-------|
 | 1 | Foundation & Deck Management | DECK-01–08, UI-01, UI-03 | 10 |
-| 2 | 2/6 | In Progress|  |
+| 2 | 3/6 | In Progress|  |
 | 3 | Deck Building & Card Display | BUILD-01–08, DECK-09, UI-02, UI-04 | 11 |
 | 4 | Live Validation Checklist | VALID-01–08 | 8 |
 | 5 | Import/Export & Polish | IO-01–04 | 4 |
