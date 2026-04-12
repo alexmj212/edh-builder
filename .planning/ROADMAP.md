@@ -86,6 +86,29 @@ Plans:
 
 ---
 
+### Phase 02.1: Partner commander Dexie persistence (INSERTED)
+
+**Goal:** Persist the partner commander to Dexie so it survives hard reload and deck re-entry, closing a gap found during the Phase 02 human-verify checkpoint.
+
+**Requirements:** CMDR-04 (full acceptance — partner selection must round-trip through IndexedDB)
+
+**Depends on:** Phase 02
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02.1-01-PLAN.md — Dexie v3 additive migration + Deck type optional partner fields + migration tests
+- [ ] 02.1-02-PLAN.md — commander-store partner persistence wiring (setPartner/clearPartner/loadForDeck/auto-clear) + store tests
+- [ ] 02.1-03-PLAN.md — CommanderPanel round-trip component tests (Remove-partner persists; remount rehydrates)
+
+Deliverables:
+- `Deck.partnerCommanderId` + `partnerCommanderName` fields
+- Dexie `version(3)` additive migration (no upgrade callback)
+- `commander-store.setPartner(deckId, card)` and `clearPartner(deckId)` persist to Dexie
+- `commander-store.loadForDeck` restores both primary and partner
+- `setCommander` auto-clear path also nulls Dexie partner fields
+- Tests: store persistence + restore round-trip, v2→v3 migration, component wiring
+
 ## Phase 3: Deck Building & Card Display
 
 **Goal:** User can add/remove cards and view the deck in grid or list format.

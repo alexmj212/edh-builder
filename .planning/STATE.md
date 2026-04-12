@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 02-06 (next)
+current_plan: 1
 status: Executing Phase 02
-last_updated: "2026-04-12T03:49:42Z"
+last_updated: "2026-04-12T04:18:34.227Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 8
   completed_plans: 7
-  percent: 87
+  percent: 88
 ---
 
 # Project State: EDH Deck Builder
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02-commander-selection-card-search
-- **Current Plan:** 02-06 (next)
+- **Current Plan:** 1
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -85,6 +85,13 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02-03: Wave 2 Zustand Stores (commander-store, card-search-store) |
 | 2026-04-12 | Completed 02-04: Wave 3 Routing & DeckWorkspace Shell |
 | 2026-04-12 | Completed 02-05: Wave 4 Commander Selection UX (CommanderPanel, CommanderSearch, ColorIdentityChip, useDebouncedValue) |
+| 2026-04-12 | Phase 02 human-verify checkpoint found gap: partner not persisted to Dexie — inserted Phase 02.1 |
+
+## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 02.1 inserted after Phase 02: Partner commander Dexie persistence — survive reload and deck re-entry (URGENT, gap found during Phase 02 human-verify checkpoint)
 
 ---
 *Last updated: 2026-04-12*
