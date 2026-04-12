@@ -53,12 +53,15 @@ Declared values (must be multiples of 4):
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
+| Caption (xs) | 12px | 400 | 1.4 | Mana pip labels, card-cell meta overlays, tooltip text |
 | Body | 14px | 400 | 1.5 | Card oracle text snippet, filter label text, meta text |
 | Label | 14px | 600 | 1.4 | Card name in result cell, filter field labels, chip text |
 | Heading | 20px | 600 | 1.2 | Workspace section headings ("Commander", "Card Search") |
 | Display | 24px | 600 | 1.2 | Deck name in workspace header (`font-semibold text-2xl`) |
 
 **Weights declared: 400 (regular) and 600 (semibold) — exactly two weights. Phase 2 introduces no font weight beyond {400, 600}. Font is system-ui — no custom loading.**
+
+**Sizes declared: exactly four sizes {12, 14, 20, 24}. No other font size is introduced in Phase 2.**
 
 Note: `Layout.tsx` uses `font-bold` on the app-level header; that is Phase 1 scope and is not part of this phase's design contract. The workspace deck-name (Display role above) uses `font-semibold`, not `font-bold`.
 
@@ -112,7 +115,7 @@ DeckPlaceholder        — "Deck building coming in Phase 3" stub
 
 ### 2. WorkspaceHeader
 
-- Left: `←` + "Back to decks" link — `text-accent hover:text-accent-hover text-sm font-medium`
+- Left: `←` + "Back to decks" link — `text-accent hover:text-accent-hover text-sm font-semibold`
 - Center/Right: Deck name in `text-2xl font-semibold text-text-primary`
 - Bottom border: `border-b border-border` to visually separate from content
 - Height: 56px (`py-4` with header text)
@@ -237,7 +240,7 @@ Section heading: "Card Search" — `text-xl font-semibold text-text-primary mb-4
 Pagination: load-more button (chosen over intersection observer — simpler to test, explicit user intent, sufficient for 175-card pages).
 
 - Position: centered below results grid, `mt-6 flex justify-center`
-- Button: `px-6 py-2 rounded-lg bg-surface border border-border text-text-primary hover:bg-surface-hover text-sm font-medium transition-colors`
+- Button: `px-6 py-2 rounded-lg bg-surface border border-border text-text-primary hover:bg-surface-hover text-sm font-semibold transition-colors`
 - Copy: "Load more results"
 - Loading state: spinner replaces button text, button disabled
 - Hidden when `has_more === false`
