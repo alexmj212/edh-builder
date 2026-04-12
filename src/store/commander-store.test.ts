@@ -86,6 +86,8 @@ describe('commander-store', () => {
       commanderId: null,
       commanderName: null,
       colorIdentity: [],
+      partnerCommanderId: 'existing-partner',
+      partnerCommanderName: 'Generic Partner',
       createdAt: Date.now(),
       updatedAt: Date.now(),
     })) as number;
@@ -109,6 +111,10 @@ describe('commander-store', () => {
     await useCommanderStore.getState().setCommander(deckId, nonPartnerPrimary as never);
 
     expect(useCommanderStore.getState().partnerCommander).toBeNull();
+
+    const deck = await db.decks.get(deckId);
+    expect(deck?.partnerCommanderId).toBeNull();
+    expect(deck?.partnerCommanderName).toBeNull();
   });
 
   it('setCommander preserves compatible partnerCommander when primary is partner-eligible', async () => {
@@ -138,6 +144,11 @@ describe('commander-store', () => {
     await useCommanderStore.getState().setCommander(deckId, genericPartnerPrimary as never);
 
     expect(useCommanderStore.getState().partnerCommander).not.toBeNull();
+
+    const deck = await db.decks.get(deckId);
+    // When partner is preserved, Dexie partner fields are untouched (never written in this path).
+    // The seed row had no partner, so they remain undefined — not explicit null.
+    expect(deck?.partnerCommanderId).toBeUndefined();
   });
 
   it('clearCommander resets both primary and partner and nulls deck row fields', async () => {
@@ -165,27 +176,82 @@ describe('commander-store', () => {
     expect(deck?.commanderId).toBeNull();
     expect(deck?.commanderName).toBeNull();
     expect(deck?.colorIdentity).toEqual([]);
+    expect(deck?.partnerCommanderId).toBeNull();
+    expect(deck?.partnerCommanderName).toBeNull();
   });
 
-  it('setPartner writes nothing to db.decks (partner is UI-only in Phase 2) but updates store state', async () => {
-    const updateSpy = vi.spyOn(db.decks, 'update');
+  it('setPartner persists partnerCommanderId and partnerCommanderName to the deck row', async () => {
+    const deckId = (await db.decks.add({
+      name: 'Partner Test',
+      commanderId: 'primary',
+      commanderName: 'Primary',
+      colorIdentity: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })) as number;
 
     const partnerCard = fakeCard({ id: 'partner-x', name: 'Partner X', keywords: ['Partner'] });
-    useCommanderStore.getState().setPartner(partnerCard as never);
+    await useCommanderStore.getState().setPartner(deckId, partnerCard as never);
 
-    expect(updateSpy).not.toHaveBeenCalled();
+    const deck = await db.decks.get(deckId);
+    expect(deck?.partnerCommanderId).toBe('partner-x');
+    expect(deck?.partnerCommanderName).toBe('Partner X');
 
     const state = useCommanderStore.getState();
-    expect(state.partnerCommander).not.toBeNull();
     expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner X');
   });
 
-  it('clearPartner resets partnerCommander to null', () => {
-    useCommanderStore.setState({ partnerCommander: fakeCard() as never });
+  it('clearPartner nulls partnerCommanderId and partnerCommanderName on the deck row and in state', async () => {
+    const deckId = (await db.decks.add({
+      name: 'Clear Partner Test',
+      commanderId: 'primary',
+      commanderName: 'Primary',
+      colorIdentity: [],
+      partnerCommanderId: 'partner-x',
+      partnerCommanderName: 'Partner X',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })) as number;
 
-    useCommanderStore.getState().clearPartner();
+    useCommanderStore.setState({ partnerCommander: fakeCard({ id: 'partner-x', name: 'Partner X' }) as never });
+
+    await useCommanderStore.getState().clearPartner(deckId);
 
     expect(useCommanderStore.getState().partnerCommander).toBeNull();
+    const deck = await db.decks.get(deckId);
+    expect(deck?.partnerCommanderId).toBeNull();
+    expect(deck?.partnerCommanderName).toBeNull();
+  });
+
+  it('partner survives reload — fresh loadForDeck after setPartner restores partnerCommander', async () => {
+    const deckId = (await db.decks.add({
+      name: 'Reload Test',
+      commanderId: 'primary-id',
+      commanderName: 'Primary',
+      colorIdentity: ['G', 'U'],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })) as number;
+
+    // Set partner — flushes to Dexie
+    const partnerCard = fakeCard({ id: 'partner-reload', name: 'Partner Reload', keywords: ['Partner'] });
+    await useCommanderStore.getState().setPartner(deckId, partnerCard as never);
+
+    // Simulate hard reload: clear in-memory state
+    useCommanderStore.setState({ primaryCommander: null, partnerCommander: null, loading: false, error: null });
+
+    // Mock Scryfall hydration for both primary and partner
+    vi.spyOn(scryfallClient, 'fetchCardById').mockImplementation(async (id: string) => {
+      if (id === 'primary-id') return fakeCard({ id: 'primary-id', name: 'Primary' }) as never;
+      if (id === 'partner-reload') return fakeCard({ id: 'partner-reload', name: 'Partner Reload', keywords: ['Partner'] }) as never;
+      throw new Error(`Unexpected id: ${id}`);
+    });
+
+    await useCommanderStore.getState().loadForDeck(deckId);
+
+    const state = useCommanderStore.getState();
+    expect((state.primaryCommander as Record<string, unknown>)?.name).toBe('Primary');
+    expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner Reload');
   });
 
   describe('loadForDeck', () => {
@@ -222,6 +288,52 @@ describe('commander-store', () => {
       await useCommanderStore.getState().loadForDeck(deckId);
 
       expect(useCommanderStore.getState().primaryCommander).toBeNull();
+    });
+
+    it('leaves partnerCommander null when deck has no partnerCommanderId', async () => {
+      vi.spyOn(scryfallClient, 'fetchCardById').mockResolvedValue(
+        fakeCard({ id: 'card-abc', name: 'Only Primary' }) as never
+      );
+
+      const deckId = (await db.decks.add({
+        name: 'No Partner',
+        commanderId: 'card-abc',
+        commanderName: 'Only Primary',
+        colorIdentity: [],
+        // partnerCommanderId intentionally omitted (v2-shape row)
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      })) as number;
+
+      await useCommanderStore.getState().loadForDeck(deckId);
+
+      expect(useCommanderStore.getState().partnerCommander).toBeNull();
+    });
+
+    it('hydrates partnerCommander via fetchCardById when deck.partnerCommanderId is set', async () => {
+      vi.spyOn(scryfallClient, 'fetchCardById').mockImplementation(async (id: string) => {
+        if (id === 'primary-hydrate') return fakeCard({ id: 'primary-hydrate', name: 'Primary' }) as never;
+        if (id === 'partner-hydrate') return fakeCard({ id: 'partner-hydrate', name: 'Partner' }) as never;
+        throw new Error(`Unexpected id: ${id}`);
+      });
+
+      const deckId = (await db.decks.add({
+        name: 'Both Slots',
+        commanderId: 'primary-hydrate',
+        commanderName: 'Primary',
+        colorIdentity: [],
+        partnerCommanderId: 'partner-hydrate',
+        partnerCommanderName: 'Partner',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      })) as number;
+
+      await useCommanderStore.getState().loadForDeck(deckId);
+
+      expect(scryfallClient.fetchCardById).toHaveBeenCalledWith('primary-hydrate');
+      expect(scryfallClient.fetchCardById).toHaveBeenCalledWith('partner-hydrate');
+      const state = useCommanderStore.getState();
+      expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner');
     });
   });
 });
