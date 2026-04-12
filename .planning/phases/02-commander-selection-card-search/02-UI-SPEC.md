@@ -1,10 +1,11 @@
 ---
 phase: 2
 slug: commander-selection-card-search
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-04-11
+reviewed_at: 2026-04-11
 ---
 
 # Phase 2 — UI Design Contract: Commander Selection & Card Search
