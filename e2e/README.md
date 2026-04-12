@@ -10,7 +10,7 @@ exercise.
 ```
 e2e/
 ├── specs/      # *.spec.ts — one file per flow area
-├── fixtures/   # Hand-crafted Scryfall JSON (typed via @scryfall/api-types)
+├── fixtures/   # Hand-crafted Scryfall JSON (typed via scryfall-api's Card)
 └── helpers/    # Shared fixtures (stubScryfall), flow helpers, console gate
 ```
 

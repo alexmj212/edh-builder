@@ -24,11 +24,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  // TODO(02.3-05): Remove this exclude entry when deleting scryfall-client.{ts,test.ts}
-  // and uninstalling @scryfall/api-types. The alpha @scryfall/api-types package ships
-  // raw .ts source that violates our verbatimModuleSyntax+erasableSyntaxOnly flags;
-  // excluding scryfall-client from the project graph drops the dep reference so
-  // `tsc -b` stays green until 02.3-05 removes the files entirely.
-  "exclude": ["src/lib/scryfall-client.ts", "src/lib/scryfall-client.test.ts"]
+  "include": ["src"]
 }
