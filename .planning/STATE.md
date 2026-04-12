@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to execute
-last_updated: "2026-04-12T18:20:11.234Z"
+current_plan: 2
+status: Executing Phase 02.3
+last_updated: "2026-04-12T19:40:09.907Z"
 progress:
   total_phases: 10
   completed_phases: 3
   total_plans: 21
-  completed_plans: 15
-  percent: 71
+  completed_plans: 16
+  percent: 76
 ---
 
 # Project State: EDH Deck Builder
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** You can build a valid Commander deck with confidence — the app tells you in real time whether your deck meets every format rule.
-**Current focus:** Phase 02.2 complete — ready to start Phase 3 (Deck Building & Card Display)
+**Current focus:** Phase 02.3 — scryfall-api-migration
 
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.2-playwright-e2e-harness (COMPLETE)
-- **Current Plan:** Not started
+- **Current Plan:** 2
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -77,6 +77,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.2]: [Phase 02.2-05]: CI workflow uses pull_request (not pull_request_target) + permissions: contents: read — T-17/T-18 security mitigations
 - [Phase 02.2]: [Phase 02.2-05]: build script changed to 'vite build' only; tsc -b separated into typecheck script — @scryfall/api-types .ts source incompatibility with erasableSyntaxOnly (pre-existing since Phase 02)
 - [Phase 02.2]: [Phase 02.2-05]: Vitest test.exclude=['e2e/**'] added — Playwright specs were being collected by Vitest runner, causing test() context conflict
+- [Phase 02.3]: D-06/D-07/D-08/D-09 verified PASS against live api.scryfall.com; scryfall-api@^4.0.5 installed alongside @scryfall/api-types
+- [Phase 02.3]: D-10 accepted gap: library ships zero query builders; all three stay in src/lib/scryfall-queries.ts (D-03 fallback)
+- [Phase 02.3]: D-08 resolution: promise-race wrapper (D-04 option 3); single abortable() helper in src/lib/scryfall.ts
+- [Phase 02.3]: Build script restoration (tsc -b && vite build) deferred to plan 02.3-05 after scryfall-client.ts deletion
 
 ## Performance Metrics
 
@@ -95,6 +99,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.2 P03 | 1 | 1 tasks | 1 files |
 | Phase 02.2 P04 | 3 | 3 tasks | 7 files |
 | Phase 02.2 P05 | 9 | 3 tasks | 5 files |
+| Phase 02.3 P01 | 3 min | 3/3 tasks | 3 files |
 
 ## Session Log
 
@@ -111,6 +116,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.1-02: commander-store partner persistence (setPartner/clearPartner Dexie writes, loadForDeck hydration, reload round-trip test) |
 | 2026-04-12 | Completed 02.1-03: CommanderPanel partner round-trip regression tests — Phase 02.1 COMPLETE, CMDR-04 shipped |
 | 2026-04-12 | Completed 02.2-01 through 02.2-05: Playwright harness, helpers, smoke spec, backfill specs, CI workflow, standing rule — Phase 02.2 COMPLETE, TEST-01 closed |
+| 2026-04-12 | Completed 02.3-01: Spike PASS — scryfall-api@^4.0.5 installed, live probe against api.scryfall.com ratified D-06/D-07/D-08/D-09; D-10 accepted gap |
 
 ## Accumulated Context
 
