@@ -133,6 +133,35 @@ Deliverables:
 - Phase 02.1 backfill specs: partner slot activates on Partner-keyword primary; partner selection renders card + Remove button; partner survives `page.reload()`; remove-partner persists through reload; changing primary to non-partner auto-clears partner in UI and IndexedDB; clearing primary clears partner too
 - Standing rule: from Phase 3 onward, every phase plan must include an E2E spec task before the phase is marked complete
 
+### Phase 02.3: Scryfall client migration to `scryfall-api` (INSERTED)
+
+**Goal:** Replace the hand-rolled `src/lib/scryfall-client.ts` and the stale `@scryfall/api-types@1.0.0-alpha.4` types with the actively-maintained `scryfall-api` (MarioMH8) package. Restore `tsc -b` in the build pipeline, drop the `tsconfig.e2e.json` strict-flag overrides, and eliminate the `as unknown as ScryfallCard.Any` casts. Closes REVIEW.md WR-01 from Phase 02.2.
+
+**Requirements:** (to be confirmed during /gsd-discuss-phase — candidates: new INFR requirement for typed Scryfall client; existing CMDR-01/02/03 remain covered via regression tests)
+
+**Depends on:** Phase 02.2
+
+**Plans:** TBD during /gsd-plan-phase — sketch below is a starting point, not locked.
+
+Sketch (subject to discuss/plan refinement):
+- [ ] 02.3-01 — Spike & go/no-go gate: install `scryfall-api`, verify browser/Vite compat, check `Card` field parity against our 11 usage sites, confirm AbortSignal support or design a wrapper. **Has BLOCK authority** — if compat or cancellation gaps cannot be resolved, abort migration and fall back to hand-written types.
+- [ ] 02.3-02 — Migrate call sites in `src/lib/scryfall-client.ts` consumers (`src/store/card-search-store.ts`, `src/store/commander-store.ts`, `src/lib/card-cache.ts`)
+- [ ] 02.3-03 — Replace `import type { ScryfallCard } from '@scryfall/api-types'` with equivalent `scryfall-api` `Card` type across `src/types/`, `src/lib/partner-detection.ts`, `src/components/*` (Commander*, Card*), tests
+- [ ] 02.3-04 — Build pipeline cleanup: restore `tsc -b && vite build`, drop `verbatimModuleSyntax: false` / `erasableSyntaxOnly: false` overrides in `tsconfig.e2e.json`, verify `typecheck` green; update `stubScryfall.ts` and e2e fixtures if `Card` shape requires adjustment
+- [ ] 02.3-05 — Delete `src/lib/scryfall-client.ts` + `src/lib/scryfall-client.test.ts`; Playwright spec per standing rule (regression over CMDR flows); unit-test coverage for any new wrapper code; REVIEW + VERIFICATION
+
+Deliverables:
+- `scryfall-api@^4` installed; `@scryfall/api-types` removed from `package.json`
+- `src/lib/scryfall-client.ts` deleted (or converted to a thin wrapper if cancellation/rate-limit gaps required it)
+- `npm run build` runs `tsc -b && vite build` cleanly
+- All existing unit + E2E tests green against the new client; no regressions in commander selection, partner persistence, card search
+- WR-01 from Phase 02.2 REVIEW.md closed
+
+Risks:
+- Browser/Vite compatibility of `scryfall-api` unverified — 02.3-01 spike exists to de-risk this before broader migration
+- AbortSignal support in `scryfall-api` unknown — `card-search-store` depends on this for search-on-keystroke cancellation; spike must confirm or design around it
+- `Card` shape parity with our fixture JSON (partner keywords, oracle_text, card_faces) must hold or fixtures need updating
+
 ## Phase 3: Deck Building & Card Display
 
 **Goal:** User can add/remove cards and view the deck in grid or list format.
