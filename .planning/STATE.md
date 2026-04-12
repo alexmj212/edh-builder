@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_plan: 3
-status: Executing Phase 02.1
-last_updated: "2026-04-12T13:02:09.373Z"
+status: Phase 02.1 Complete — Ready for Phase 03
+last_updated: "2026-04-12T13:06:02.286Z"
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 11
-  completed_plans: 9
-  percent: 82
+  completed_plans: 10
+  percent: 91
 ---
 
 # Project State: EDH Deck Builder
@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
-- **Active phase:** 02.1-partner-persistence
-- **Current Plan:** 3
+- **Active phase:** 02.1-partner-persistence (COMPLETE)
+- **Current Plan:** — (phase complete)
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -69,6 +69,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.1]: setPartner/clearPartner arity expanded to (deckId, card)/(deckId) returning Promise<void>; method names preserved
 - [Phase 02.1]: setCommander auto-clear merges partner nulling into the single db.decks.update call (one atomic write, no observer race)
 - [Phase 02.1]: loadForDeck wraps partner fetchCardById in inner try/catch — transient Scryfall failure degrades to partnerCommander:null instead of aborting primary load
+- [Phase 02.1]: [Phase 02.1] CommanderPanel partner round-trip regression coverage: Remove-partner UI persists null partner fields to Dexie; deck row with partnerCommanderId rehydrates FullCard on remount — closes Phase 02 human-verify gap
 
 ## Performance Metrics
 
@@ -81,6 +82,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02 | 05 | 6 min | 3/3 | 11 |
 | 02.1 | 01 | 1 min | 2/2 | 3 |
 | 02.1 | 02 | 2 min | 2/2 | 3 |
+| 02.1 | 03 | ~2 min | 1/1 | 1 |
 
 ## Session Log
 
@@ -95,6 +97,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Phase 02 human-verify checkpoint found gap: partner not persisted to Dexie — inserted Phase 02.1 |
 | 2026-04-12 | Completed 02.1-01: Deck type + Dexie v3 additive schema + migration tests |
 | 2026-04-12 | Completed 02.1-02: commander-store partner persistence (setPartner/clearPartner Dexie writes, loadForDeck hydration, reload round-trip test) |
+| 2026-04-12 | Completed 02.1-03: CommanderPanel partner round-trip regression tests — Phase 02.1 COMPLETE, CMDR-04 shipped |
 
 ## Accumulated Context
 
