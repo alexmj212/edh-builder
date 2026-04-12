@@ -219,7 +219,7 @@ Deliverables:
 | Phase | Name | Requirements | Count |
 |-------|------|-------------|-------|
 | 1 | Foundation & Deck Management | DECK-01–08, UI-01, UI-03 | 10 |
-| 2 | 4/6 | In Progress|  |
+| 2 | 5/6 | In Progress|  |
 | 3 | Deck Building & Card Display | BUILD-01–08, DECK-09, UI-02, UI-04 | 11 |
 | 4 | Live Validation Checklist | VALID-01–08 | 8 |
 | 5 | Import/Export & Polish | IO-01–04 | 4 |
