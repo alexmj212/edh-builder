@@ -8,6 +8,10 @@ export interface Deck {
   updatedAt: number;
 }
 
+export interface PersistedDeck extends Deck {
+  id: number;
+}
+
 export interface DeckCard {
   id?: number;
   deckId: number;

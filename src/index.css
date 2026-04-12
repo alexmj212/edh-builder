@@ -3,6 +3,20 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-background: oklch(0.97 0.01 250);
+  --color-surface: oklch(0.93 0.01 250);
+  --color-surface-hover: oklch(0.88 0.01 250);
+  --color-text-primary: oklch(0.20 0.01 250);
+  --color-text-secondary: oklch(0.40 0.01 250);
+  --color-accent: oklch(0.50 0.15 250);
+  --color-accent-hover: oklch(0.45 0.15 250);
+  --color-danger: oklch(0.50 0.20 25);
+  --color-danger-hover: oklch(0.45 0.20 25);
+  --color-success: oklch(0.50 0.15 145);
+  --color-border: oklch(0.80 0.01 250);
+}
+
+.dark {
   --color-background: oklch(0.15 0.01 250);
   --color-surface: oklch(0.20 0.01 250);
   --color-surface-hover: oklch(0.25 0.01 250);

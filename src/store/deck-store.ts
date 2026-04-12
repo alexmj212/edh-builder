@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { db } from '../lib/db'
-import type { Deck } from '../types/deck'
+import type { PersistedDeck } from '../types/deck'
 
 interface DeckState {
-  decks: Deck[]
+  decks: PersistedDeck[]
   activeDeckId: number | null
   loading: boolean
+  error: string | null
   loadDecks: () => Promise<void>
   createDeck: (name: string) => Promise<number>
   renameDeck: (id: number, name: string) => Promise<void>
@@ -17,10 +18,15 @@ export const useDeckStore = create<DeckState>((set, get) => ({
   decks: [],
   activeDeckId: null,
   loading: true,
+  error: null,
 
   loadDecks: async () => {
-    const decks = await db.decks.orderBy('updatedAt').reverse().toArray()
-    set({ decks, loading: false })
+    try {
+      const decks = await db.decks.orderBy('updatedAt').reverse().toArray() as PersistedDeck[]
+      set({ decks, loading: false, error: null })
+    } catch {
+      set({ loading: false, error: 'Failed to load decks. Please reload.' })
+    }
   },
 
   createDeck: async (name: string) => {
@@ -32,11 +38,10 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       colorIdentity: [],
       createdAt: now,
       updatedAt: now,
-    })
-    const numericId = id as number
-    await get().loadDecks()
-    set({ activeDeckId: numericId })
-    return numericId
+    }) as number
+    const decks = await db.decks.orderBy('updatedAt').reverse().toArray() as PersistedDeck[]
+    set({ decks, loading: false, activeDeckId: id })
+    return id
   },
 
   renameDeck: async (id: number, name: string) => {
@@ -51,10 +56,12 @@ export const useDeckStore = create<DeckState>((set, get) => ({
       await db.decks.delete(id)
     })
     const currentActive = get().activeDeckId
-    if (currentActive === id) {
-      set({ activeDeckId: null })
-    }
-    await get().loadDecks()
+    const decks = await db.decks.orderBy('updatedAt').reverse().toArray() as PersistedDeck[]
+    set({
+      decks,
+      loading: false,
+      activeDeckId: currentActive === id ? null : currentActive,
+    })
   },
 
   setActiveDeck: (id: number | null) => {

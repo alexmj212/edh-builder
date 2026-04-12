@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDeckStore } from '../store/deck-store'
-import type { Deck } from '../types/deck'
+import type { PersistedDeck } from '../types/deck'
 
 function relativeTime(timestamp: number): string {
   const diffSeconds = Math.floor((Date.now() - timestamp) / 1000)
@@ -11,7 +11,7 @@ function relativeTime(timestamp: number): string {
 }
 
 interface DeckCardItemProps {
-  deck: Deck
+  deck: PersistedDeck
   isActive: boolean
   onSelect: () => void
   onRename: (id: number, name: string) => void
@@ -26,8 +26,9 @@ function DeckCardItem({ deck, isActive, onSelect, onRename, onDelete }: DeckCard
   const handleRenameSubmit = () => {
     const trimmed = renameValue.trim()
     if (trimmed && trimmed !== deck.name) {
-      onRename(deck.id!, trimmed)
+      onRename(deck.id, trimmed)
     }
+    setRenameValue(deck.name)
     setRenaming(false)
   }
 
@@ -71,7 +72,7 @@ function DeckCardItem({ deck, isActive, onSelect, onRename, onDelete }: DeckCard
             <button
               onClick={e => {
                 e.stopPropagation()
-                onDelete(deck.id!)
+                onDelete(deck.id)
               }}
               className="text-sm text-danger hover:text-danger-hover"
             >
@@ -116,7 +117,7 @@ function DeckCardItem({ deck, isActive, onSelect, onRename, onDelete }: DeckCard
 }
 
 export function DeckList() {
-  const { decks, activeDeckId, loading, loadDecks, createDeck, renameDeck, deleteDeck, setActiveDeck } =
+  const { decks, activeDeckId, loading, error, loadDecks, createDeck, renameDeck, deleteDeck, setActiveDeck } =
     useDeckStore()
 
   const [showCreate, setShowCreate] = useState(false)
@@ -145,6 +146,10 @@ export function DeckList() {
 
   if (loading) {
     return <p className="text-text-secondary">Loading decks...</p>
+  }
+
+  if (error) {
+    return <p className="text-danger">{error}</p>
   }
 
   return (
@@ -209,7 +214,7 @@ export function DeckList() {
               key={deck.id}
               deck={deck}
               isActive={deck.id === activeDeckId}
-              onSelect={() => setActiveDeck(deck.id ?? null)}
+              onSelect={() => setActiveDeck(deck.id)}
               onRename={renameDeck}
               onDelete={deleteDeck}
             />
