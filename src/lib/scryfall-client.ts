@@ -61,7 +61,7 @@ export function buildSearchQuery(params: {
   const parts: string[] = [];
   if (params.name) {
     const f = encodeFragment(params.name);
-    if (f) parts.push(`n:${f}`);
+    if (f) parts.push(`name:${f}`);
   }
   if (params.type) {
     const f = encodeFragment(params.type);
@@ -84,7 +84,7 @@ export function buildCommanderSearchQuery(params: { nameFragment?: string }): st
   ];
   if (params.nameFragment) {
     const f = encodeFragment(params.nameFragment);
-    if (f) parts.push(`n:${f}`);
+    if (f) parts.push(`name:${f}`);
   }
   return parts.join(' ');
 }
@@ -164,7 +164,7 @@ export async function searchPartnersFor(
       return { object: 'list', data: [], has_more: false, total_cards: 0 };
   }
   const frag = fragment.trim();
-  const q = frag ? `${qBase} ${encodeFragment(frag) ? `n:${encodeFragment(frag)}` : ''}`.trim() : qBase;
+  const q = frag ? `${qBase} ${encodeFragment(frag) ? `name:${encodeFragment(frag)}` : ''}`.trim() : qBase;
   const sp = new URLSearchParams({ q, unique: 'cards', order: 'edhrec', page: '1' });
   const res = await scryfallFetch(`/cards/search?${sp}`, signal);
   if (res.status === 404) return { object: 'list', data: [], has_more: false, total_cards: 0 };

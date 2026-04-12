@@ -107,7 +107,7 @@ describe('CardSearchSection — with commander', () => {
     expect(firstCallArg).toContain('f:commander');
   });
 
-  it('typing in name filter triggers debounced search with n:<value>', async () => {
+  it('typing in name filter triggers debounced search with name:<value>', async () => {
     const search = vi.fn().mockResolvedValue(undefined);
     useCardSearchStore.setState({ search } as any);
     render(<CardSearchSection />);
@@ -128,13 +128,15 @@ describe('CardSearchSection — with commander', () => {
     });
     expect(search).not.toHaveBeenCalled();
 
-    // After full debounce (another 300ms = 500ms total since change), search fires with n:bolt
+    // After full debounce (another 300ms = 500ms total since change), search fires with name:bolt
     await act(async () => {
       vi.advanceTimersByTime(300);
       await Promise.resolve();
     });
     expect(search).toHaveBeenCalled();
-    expect(search.mock.calls[0][0] as string).toContain('n:bolt');
+    expect(search.mock.calls[0][0] as string).toContain('name:bolt');
+    // Regression: Scryfall has no `n:` shorthand — it silently ignores the filter.
+    expect(search.mock.calls[0][0] as string).not.toMatch(/(^|\s)n:/);
   });
 
   it('renders loading spinner when status is loading', () => {

@@ -38,13 +38,13 @@ describe('scryfall-client', () => {
 
   it('searchCards fires GET /cards/search with correct URLSearchParams (q, unique=cards, order=name, page)', async () => {
     const spy = mockFetch(200, makeListResponse());
-    const promise = searchCards('n:bolt id<=r f:commander', 2);
+    const promise = searchCards('name:bolt id<=r f:commander', 2);
     await vi.runAllTimersAsync();
     await promise;
     expect(spy).toHaveBeenCalledOnce();
     const [url] = spy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain('/cards/search');
-    expect(url).toContain('q=n%3Abolt');
+    expect(url).toContain('q=name%3Abolt');
     expect(url).toContain('unique=cards');
     expect(url).toContain('order=name');
     expect(url).toContain('page=2');
@@ -89,19 +89,22 @@ describe('scryfall-client', () => {
     await expect(promise).rejects.toThrow('Scryfall error 500');
   });
 
-  it('buildSearchQuery composes n:, t:, o:, id<=, f:commander correctly', () => {
+  it('buildSearchQuery composes name:, t:, o:, id<=, f:commander correctly', () => {
     const result = buildSearchQuery({
       name: 'bolt',
       type: 'instant',
       oracleText: 'deals damage',
       colorIdentity: ['W', 'U'],
     });
-    expect(result).toContain('n:bolt');
+    expect(result).toContain('name:bolt');
     expect(result).toContain('t:instant');
     expect(result).toContain('f:commander');
     expect(result).toContain('id<=wu');
     // oracleText has spaces — should be quoted
     expect(result).toContain('o:"deals damage"');
+    // Regression: Scryfall has no `n:` shorthand for name — it silently drops the filter.
+    // Must use `name:`. See https://scryfall.com/docs/syntax#name
+    expect(result).not.toMatch(/(^|\s)n:/);
   });
 
   it('buildSearchQuery uses "c" for empty colorIdentity (colorless commander)', () => {
@@ -237,16 +240,16 @@ describe('searchCommanders / searchPartnersFor', () => {
     const [url] = spy.mock.calls[0] as [string, RequestInit];
     expect(url).toContain('/cards/search');
     expect(url).toContain('order=edhrec');
-    expect(url).toContain('n%3Aatraxa');
+    expect(url).toContain('name%3Aatraxa');
   });
 
-  it('searchCommanders passes nameFragment into q as n:"fragment with spaces"', async () => {
+  it('searchCommanders passes nameFragment into q as name:"fragment with spaces"', async () => {
     const spy = mockFetch(200, makeListResponse());
     const promise = searchCommanders('atraxa voice');
     await vi.runAllTimersAsync();
     await promise;
     const [url] = spy.mock.calls[0] as [string, RequestInit];
-    expect(url).toContain('n%3A');
+    expect(url).toContain('name%3A');
     // URLSearchParams encodes spaces as '+'; decode both forms
     const decoded = decodeURIComponent((url as string).replace(/\+/g, ' '));
     expect(decoded).toContain('atraxa voice');
