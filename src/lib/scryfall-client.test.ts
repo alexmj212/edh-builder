@@ -2,9 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { ScryfallCard } from '@scryfall/api-types';
 import {
   searchCards,
-  fetchCardById,
   buildSearchQuery,
-  buildCommanderSearchQuery,
   getImageUri,
   __resetRateLimit,
 } from './scryfall-client';

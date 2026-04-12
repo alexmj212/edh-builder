@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import type { ScryfallCard } from '@scryfall/api-types';
 import {
   detectPartnerType,
-  isValidBackground,
   areCompatiblePartners,
 } from './partner-detection';
 
