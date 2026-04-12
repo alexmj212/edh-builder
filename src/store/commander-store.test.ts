@@ -77,7 +77,7 @@ describe('commander-store', () => {
 
     const state = useCommanderStore.getState();
     expect(state.primaryCommander).not.toBeNull();
-    expect((state.primaryCommander as Record<string, unknown>)?.name).toBe('Atraxa');
+    expect((state.primaryCommander as unknown as Record<string, unknown>)?.name).toBe('Atraxa');
   });
 
   it('setCommander clears partnerCommander when new primary is not partner-eligible', async () => {
@@ -198,7 +198,7 @@ describe('commander-store', () => {
     expect(deck?.partnerCommanderName).toBe('Partner X');
 
     const state = useCommanderStore.getState();
-    expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner X');
+    expect((state.partnerCommander as unknown as Record<string, unknown>)?.name).toBe('Partner X');
   });
 
   it('clearPartner nulls partnerCommanderId and partnerCommanderName on the deck row and in state', async () => {
@@ -250,8 +250,8 @@ describe('commander-store', () => {
     await useCommanderStore.getState().loadForDeck(deckId);
 
     const state = useCommanderStore.getState();
-    expect((state.primaryCommander as Record<string, unknown>)?.name).toBe('Primary');
-    expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner Reload');
+    expect((state.primaryCommander as unknown as Record<string, unknown>)?.name).toBe('Primary');
+    expect((state.partnerCommander as unknown as Record<string, unknown>)?.name).toBe('Partner Reload');
   });
 
   describe('loadForDeck', () => {
@@ -272,7 +272,7 @@ describe('commander-store', () => {
 
       expect(scryfall.fetchCardById).toHaveBeenCalledWith('card-abc');
       const state = useCommanderStore.getState();
-      expect((state.primaryCommander as Record<string, unknown>)?.name).toBe('Hydrated Commander');
+      expect((state.primaryCommander as unknown as Record<string, unknown>)?.name).toBe('Hydrated Commander');
     });
 
     it('sets primaryCommander to null when deck has no commanderId', async () => {
@@ -333,7 +333,7 @@ describe('commander-store', () => {
       expect(scryfall.fetchCardById).toHaveBeenCalledWith('primary-hydrate');
       expect(scryfall.fetchCardById).toHaveBeenCalledWith('partner-hydrate');
       const state = useCommanderStore.getState();
-      expect((state.partnerCommander as Record<string, unknown>)?.name).toBe('Partner');
+      expect((state.partnerCommander as unknown as Record<string, unknown>)?.name).toBe('Partner');
     });
   });
 });

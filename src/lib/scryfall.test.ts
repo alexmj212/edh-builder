@@ -2,17 +2,22 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Shared mock stubs for 'scryfall-api'.
 // We use a module-level factory so individual tests can reconfigure page / byId
-// behavior via these hoisted refs.
+// behavior via these hoisted refs. The mocks are typed as callable functions
+// (`(...args: unknown[]) => unknown`) rather than vi.Mock's broad
+// `Mock<Procedure | Constructable>` union, which vitest 4 no longer makes
+// structurally callable without a `new` signature (TS2348).
+type AnyFn = (...args: unknown[]) => unknown;
 type PageStub = {
   next: ReturnType<typeof vi.fn>;
   hasMore: boolean;
   count: number;
 };
-const pageStubRef: { current: PageStub } = {
-  current: { next: vi.fn(), hasMore: false, count: 0 },
+const searchSpyRef: { current: ReturnType<typeof vi.fn<AnyFn>> } = {
+  current: vi.fn<AnyFn>(),
 };
-const searchSpyRef: { current: ReturnType<typeof vi.fn> } = { current: vi.fn() };
-const byIdSpyRef: { current: ReturnType<typeof vi.fn> } = { current: vi.fn() };
+const byIdSpyRef: { current: ReturnType<typeof vi.fn<AnyFn>> } = {
+  current: vi.fn<AnyFn>(),
+};
 
 vi.mock('scryfall-api', () => {
   return {

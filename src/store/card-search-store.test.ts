@@ -51,7 +51,7 @@ describe('card-search-store', () => {
     const state = useCardSearchStore.getState();
     expect(state.status).toBe('success');
     expect(state.results).toHaveLength(2);
-    expect((state.results[0] as Record<string, unknown>).name).toBe('Card One');
+    expect((state.results[0] as unknown as Record<string, unknown>).name).toBe('Card One');
   });
 
   it('search() aborts the in-flight request when called again before first resolves', async () => {
@@ -109,9 +109,9 @@ describe('card-search-store', () => {
 
     const state = useCardSearchStore.getState();
     expect(state.results).toHaveLength(3);
-    expect((state.results[0] as Record<string, unknown>).name).toBe('Existing Card');
-    expect((state.results[1] as Record<string, unknown>).name).toBe('New Card 2');
-    expect((state.results[2] as Record<string, unknown>).name).toBe('New Card 3');
+    expect((state.results[0] as unknown as Record<string, unknown>).name).toBe('Existing Card');
+    expect((state.results[1] as unknown as Record<string, unknown>).name).toBe('New Card 2');
+    expect((state.results[2] as unknown as Record<string, unknown>).name).toBe('New Card 3');
     expect(state.currentPage).toBe(2);
   });
 
