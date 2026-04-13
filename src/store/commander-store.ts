@@ -8,6 +8,13 @@ import { detectPartnerType, areCompatiblePartners } from '../lib/partner-detecti
 export interface CommanderState {
   primaryCommander: Card | null;
   partnerCommander: Card | null;
+  /** Which deck this store is hydrated for. null = never loaded. Used by
+   * CommanderPanel to distinguish "store has no commander for deck 2 yet"
+   * from "store authoritatively says deck 2 has no commander". Without
+   * this, a fresh client-side navigation to /decks/N renders the empty
+   * state (and dispatches CommanderSearch's EDHREC browse) in the window
+   * between DeckWorkspace's render commit and its load effect firing. */
+  loadedDeckId: number | null;
   loading: boolean;
   error: string | null;
   loadForDeck: (deckId: number, signal?: AbortSignal) => Promise<void>;
@@ -24,11 +31,16 @@ function isAbortError(err: unknown): boolean {
 export const useCommanderStore = create<CommanderState>((set, get) => ({
   primaryCommander: null,
   partnerCommander: null,
+  loadedDeckId: null,
   loading: false,
   error: null,
 
   loadForDeck: async (deckId, signal) => {
-    set({ loading: true, error: null, primaryCommander: null, partnerCommander: null });
+    // MUST set loadedDeckId synchronously before the first await so the
+    // very next render sees "store is being hydrated for this deck" and
+    // CommanderPanel gates correctly. Moving this after the await
+    // reopens the homepage → /decks/N empty-browse bug.
+    set({ loadedDeckId: deckId, loading: true, error: null, primaryCommander: null, partnerCommander: null });
     try {
       const deck = await db.decks.get(deckId);
       if (signal?.aborted) return;

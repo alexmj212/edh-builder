@@ -13,7 +13,9 @@ function fakeCard(overrides: { id?: string; name?: string; type_line?: string; k
 beforeEach(async () => {
   await db.delete();
   await db.open();
-  useCommanderStore.setState({ primaryCommander: null, partnerCommander: null, loading: false, error: null });
+  // Default: hydrated for deckId=1 (most tests render <CommanderPanel deckId={1} />).
+  // Tests using a different deckId override loadedDeckId explicitly below.
+  useCommanderStore.setState({ primaryCommander: null, partnerCommander: null, loadedDeckId: 1, loading: false, error: null });
 });
 
 afterEach(() => {
@@ -87,6 +89,7 @@ describe('CommanderPanel', () => {
     const clearCommander = vi.fn().mockResolvedValue(undefined);
     useCommanderStore.setState({
       primaryCommander: fakeCard({ name: 'Atraxa' }) as any,
+      loadedDeckId: 42,
       clearCommander,
     } as any);
     render(<CommanderPanel deckId={42} />);

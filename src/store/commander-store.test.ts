@@ -31,6 +31,7 @@ beforeEach(async () => {
   useCommanderStore.setState({
     primaryCommander: null,
     partnerCommander: null,
+    loadedDeckId: null,
     loading: false,
     error: null,
   });

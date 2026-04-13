@@ -68,7 +68,15 @@ function FullCard({ card, actionLabel, onAction }: FullCardProps) {
 }
 
 export function CommanderPanel({ deckId }: CommanderPanelProps) {
-  const { primaryCommander, partnerCommander, loading, setCommander, clearCommander, setPartner, clearPartner } = useCommanderStore();
+  const { primaryCommander, partnerCommander, loading, loadedDeckId, setCommander, clearCommander, setPartner, clearPartner } = useCommanderStore();
+
+  // Gate on "is the store authoritative for THIS deck?" rather than just
+  // "is a fetch in flight right now?" — the latter misses the window
+  // between DeckWorkspace's first render and its loadForDeck effect on
+  // client-side navigation (deck-store already loaded, so no upstream
+  // "Loading deck..." placeholder gives loadForDeck a chance to flip
+  // `loading` before CommanderPanel renders).
+  const isHydratedForDeck = loadedDeckId === deckId && !loading;
 
   const primaryPartnerKind = primaryCommander ? detectPartnerType(primaryCommander).kind : 'none';
   const partnerSlotActive = !!primaryCommander && primaryPartnerKind !== 'none';
@@ -78,13 +86,11 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Primary slot */}
         <div>
-          {loading ? (
-            // Render a skeleton during hydration so CommanderSearch doesn't
-            // mount transiently and fire its default EDHREC browse query
-            // (`/cards/search?q=(t:legendary...)f:commander&order=edhrec`)
-            // only to be unmounted when loadForDeck resolves with a saved
-            // commander. The request would be aborted on unmount but the
-            // HTTP dispatch has already happened.
+          {!isHydratedForDeck ? (
+            // Skeleton whenever the store isn't hydrated for this deck
+            // (initial mount, in-flight loadForDeck, or a /decks/A→/decks/B
+            // navigation mid-transition). This is what prevents the
+            // empty-fragment EDHREC browse from firing on deck open.
             <EmptyArt label="Loading commander…" />
           ) : !primaryCommander ? (
             <>
@@ -107,7 +113,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
 
         {/* Partner slot */}
         <div>
-          {loading ? (
+          {!isHydratedForDeck ? (
             <EmptyArt label="Loading partner…" />
           ) : !partnerSlotActive ? (
             <div
