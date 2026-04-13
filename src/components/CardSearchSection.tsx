@@ -49,11 +49,16 @@ export function CardSearchSection() {
   const identity = useMemo(() => unionIdentity(primary, partner), [primary, partner]);
   const hasCommander = !!primary;
 
-  const filterKey = useMemo(
-    () => JSON.stringify({ filters, identity }),
-    [filters, identity],
+  // `searchKey` is null when no commander is selected, so the null→non-null
+  // transition when a commander loads is absorbed by the debouncer (single
+  // eventual effect fire) instead of triggering the search effect twice —
+  // once on the hasCommander flip and again 400ms later when debouncedKey
+  // catches up.
+  const searchKey = useMemo(
+    () => (hasCommander ? JSON.stringify({ filters, identity }) : null),
+    [filters, identity, hasCommander],
   );
-  const debouncedKey = useDebouncedValue(filterKey, 400);
+  const debouncedKey = useDebouncedValue(searchKey, 400);
 
   // Reset results only when primary commander *changes* (not on first mount)
   const primaryOracleId = primary?.oracle_id ?? null;
@@ -65,9 +70,12 @@ export function CardSearchSection() {
     }
   });
 
-  // Fire debounced search when filters or identity change (and commander is selected)
+  // Fire debounced search when filters or identity change (and commander is selected).
+  // hasCommander is intentionally NOT in the deps — it's encoded into searchKey/
+  // debouncedKey, so including it here would cause a duplicate fire on the false→
+  // true transition (one immediate with stale debouncedKey, one 400ms later).
   useEffect(() => {
-    if (!hasCommander) return;
+    if (debouncedKey === null) return;
     const q = buildSearchQuery({
       name: filters.name || undefined,
       type: filters.type || undefined,
@@ -75,9 +83,8 @@ export function CardSearchSection() {
       colorIdentity: identity,
     });
     void search(q);
-    // debouncedKey is the trigger — we intentionally use current filters/identity values
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedKey, hasCommander]);
+  }, [debouncedKey]);
 
   const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
   const errorCopy = isOffline
