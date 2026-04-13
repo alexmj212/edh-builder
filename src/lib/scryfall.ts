@@ -105,10 +105,18 @@ export async function searchPartnersFor(
   const q = buildPartnerQuery(primary, fragment);
   if (q === null) {
     // Synthetic empty result for 'none' partner kind — same behavior as old client.
-    // We still allocate a MagicPageResult handle (via an empty-string search) so
-    // the SearchResult._page slot is present; its .next() is NOT invoked here,
-    // so no HTTP round-trip is triggered.
-    const emptyPage = Cards.search('', { order: 'edhrec' });
+    // We synthesize an inert MagicPageResult-shaped object rather than calling
+    // Cards.search('') (which would build a handle capable of firing a
+    // bad-request HTTP call to api.scryfall.com/cards/search?q= if .next() were
+    // ever invoked). The returned SearchResult has hasMore:false, so the store
+    // guard never reaches fetchNextPage with this handle — but in defense of
+    // future callers, we keep the handle inert: .next() resolves to [] without
+    // any network I/O.
+    const emptyPage = {
+      next: () => Promise.resolve<Card[]>([]),
+      hasMore: false,
+      count: 0,
+    } as unknown as MagicPageResult<Card>;
     return { data: [], hasMore: false, totalCards: 0, _page: emptyPage };
   }
   return searchCards(q, { order: 'edhrec' }, signal);

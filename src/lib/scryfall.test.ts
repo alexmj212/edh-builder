@@ -169,22 +169,21 @@ describe('searchCommanders / searchPartnersFor', () => {
     expect(opts?.order).toBe('edhrec');
   });
 
-  it('searchPartnersFor returns empty result for "none" primary WITHOUT calling Cards.search for a real query', async () => {
-    // 'none' primary = no partner kind. Wrapper shortcut: synthesize empty result.
-    // Implementation may still construct an empty MagicPageResult via Cards.search
-    // to hold the _page slot, but the returned SearchResult.data MUST be empty
-    // and hasMore MUST be false without any real HTTP roundtrip being fired.
-    const emptyPage = makePageStub([], false, 0);
-    searchSpyRef.current.mockReturnValue(emptyPage);
-
+  it('searchPartnersFor returns empty result for "none" primary WITHOUT calling Cards.search at all', async () => {
+    // 'none' primary = no partner kind. Wrapper shortcut: synthesize an inert
+    // MagicPageResult-shaped handle without invoking Cards.search. The returned
+    // SearchResult.data MUST be empty and hasMore MUST be false, and no call
+    // to Cards.search (real or stubbed) is made.
     const primary = fakeCard({ keywords: [], oracle_text: '' });
     const result = await searchPartnersFor(primary, '');
 
     expect(result.data).toEqual([]);
     expect(result.hasMore).toBe(false);
     expect(result.totalCards).toBe(0);
-    // page.next() was NOT called for the 'none' case — no network round-trip triggered.
-    expect(emptyPage.next).not.toHaveBeenCalled();
+    // Cards.search was NEVER invoked for the 'none' case.
+    expect(searchSpyRef.current).not.toHaveBeenCalled();
+    // The synthesized _page handle is inert: .next() resolves to [] with no I/O.
+    await expect(result._page.next()).resolves.toEqual([]);
   });
 
   it('searchPartnersFor with generic primary passes the partner query to Cards.search', async () => {
