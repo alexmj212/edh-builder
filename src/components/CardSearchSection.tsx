@@ -74,8 +74,17 @@ export function CardSearchSection() {
   // hasCommander is intentionally NOT in the deps — it's encoded into searchKey/
   // debouncedKey, so including it here would cause a duplicate fire on the false→
   // true transition (one immediate with stale debouncedKey, one 400ms later).
+  //
+  // StrictMode-safe dedupe: mount effects run twice in dev (effect → cleanup →
+  // effect). Without this ref the second invocation fires a redundant
+  // /cards/search with the same inputs. DUP-4 established this pattern for
+  // CommanderSearch; apply it here too. `reset()` above handles commander-
+  // change invalidation (its searchKey will differ, so the ref miss re-fires).
+  const lastFiredSearchKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (debouncedKey === null) return;
+    if (lastFiredSearchKeyRef.current === debouncedKey) return;
+    lastFiredSearchKeyRef.current = debouncedKey;
     const q = buildSearchQuery({
       name: filters.name || undefined,
       type: filters.type || undefined,
