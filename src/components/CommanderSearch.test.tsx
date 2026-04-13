@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { CommanderSearch } from './CommanderSearch';
@@ -7,13 +8,21 @@ function fakeCard(overrides: { id?: string; name?: string; type_line?: string; k
   return { id: 'c-1', name: 'Fake Commander', type_line: 'Legendary Creature — Human', image_uris: { art_crop: 'x' }, keywords: [], color_identity: [], ...overrides };
 }
 
+// All renders are wrapped in <StrictMode> so vitest catches the same
+// effect-re-run bug class that prod's <StrictMode> root in src/main.tsx
+// exposes. Without this, mount-effect regressions (e.g. the DUP-4 ref
+// dedupe tearing down state) pass unit tests and only fail in the browser.
+function renderStrict(ui: React.ReactElement) {
+  return render(<StrictMode>{ui}</StrictMode>);
+}
+
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
 describe('CommanderSearch primary mode', () => {
   it('shows EDHREC default list on empty input', async () => {
     vi.spyOn(scryfall, 'searchCommanders').mockResolvedValue({ data: [fakeCard({ name: 'Atraxa, Praetors Voice' })], hasMore: false, totalCards: 1, _page: {} as any } as any);
-    render(<CommanderSearch mode="primary" onSelect={() => {}} />);
+    renderStrict(<CommanderSearch mode="primary" onSelect={() => {}} />);
     // Advance debounce timer and flush microtasks (resolved promise)
     await act(async () => {
       vi.advanceTimersByTime(400);
@@ -22,9 +31,42 @@ describe('CommanderSearch primary mode', () => {
     expect(screen.getByText('Atraxa, Praetors Voice')).toBeInTheDocument();
   });
 
+  it('fires searchCommanders exactly once on StrictMode double-mount (and renders results)', async () => {
+    // Regression guard: the ref-based dedupe must survive StrictMode's
+    // effect → cleanup → effect dev-mode sequence without leaving the UI
+    // torn down. Pre-fix: second effect no-opped after cleanup aborted
+    // the first request, stranding `loading=true` + `results=[]` forever.
+    const spy = vi
+      .spyOn(scryfall, 'searchCommanders')
+      .mockResolvedValue({ data: [fakeCard({ name: 'Only Card' })], hasMore: false, totalCards: 1, _page: {} as any } as any);
+    renderStrict(<CommanderSearch mode="primary" onSelect={() => {}} />);
+    await act(async () => {
+      vi.advanceTimersByTime(400);
+      await Promise.resolve();
+    });
+    expect(spy).toHaveBeenCalledTimes(1);
+    // UI must reflect the resolved response (the regression symptom).
+    expect(screen.getByText('Only Card')).toBeInTheDocument();
+    expect(screen.queryByRole('list', { hidden: true })?.getAttribute('aria-busy')).not.toBe('true');
+  });
+
+  it('fires searchPartnersFor exactly once on StrictMode double-mount (partner mode)', async () => {
+    const primary = fakeCard({ id: 'p-1', name: 'Primary', keywords: ['Partner'] });
+    const spy = vi
+      .spyOn(scryfall, 'searchPartnersFor')
+      .mockResolvedValue({ data: [fakeCard({ id: 'b-1', name: 'Partner Candidate', keywords: ['Partner'] })], hasMore: false, totalCards: 1, _page: {} as any } as any);
+    renderStrict(<CommanderSearch mode="partner" primaryForPartner={primary} onSelect={() => {}} />);
+    await act(async () => {
+      vi.advanceTimersByTime(400);
+      await Promise.resolve();
+    });
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Partner Candidate')).toBeInTheDocument();
+  });
+
   it('debounces 400ms before firing searchCommanders', async () => {
     const spy = vi.spyOn(scryfall, 'searchCommanders').mockResolvedValue({ data: [], hasMore: false, totalCards: 0, _page: {} as any } as any);
-    render(<CommanderSearch mode="primary" onSelect={() => {}} />);
+    renderStrict(<CommanderSearch mode="primary" onSelect={() => {}} />);
     // Flush initial empty-query effect
     await act(async () => {
       vi.advanceTimersByTime(400);
@@ -51,7 +93,7 @@ describe('CommanderSearch primary mode', () => {
     const card = fakeCard({ id: 'c-42', name: 'Target' });
     vi.spyOn(scryfall, 'searchCommanders').mockResolvedValue({ data: [card], hasMore: false, totalCards: 1, _page: {} as any } as any);
     const onSelect = vi.fn();
-    render(<CommanderSearch mode="primary" onSelect={onSelect} />);
+    renderStrict(<CommanderSearch mode="primary" onSelect={onSelect} />);
     await act(async () => {
       vi.advanceTimersByTime(400);
       await Promise.resolve();
@@ -63,7 +105,7 @@ describe('CommanderSearch primary mode', () => {
 
   it('shows zero-results copy when debounced query returns no cards', async () => {
     vi.spyOn(scryfall, 'searchCommanders').mockResolvedValue({ data: [], hasMore: false, totalCards: 0, _page: {} as any } as any);
-    render(<CommanderSearch mode="primary" onSelect={() => {}} />);
+    renderStrict(<CommanderSearch mode="primary" onSelect={() => {}} />);
     const input = screen.getByRole('textbox');
     act(() => {
       fireEvent.change(input, { target: { value: 'zzzz' } });
@@ -82,7 +124,7 @@ describe('CommanderSearch partner mode', () => {
     const candidate = fakeCard({ id: 'b-1', name: 'Not a Partner', keywords: [], type_line: 'Legendary Creature' });
     vi.spyOn(scryfall, 'searchPartnersFor').mockResolvedValue({ data: [candidate], hasMore: false, totalCards: 1, _page: {} as any } as any);
     const onSelect = vi.fn();
-    render(<CommanderSearch mode="partner" primaryForPartner={primary} onSelect={onSelect} />);
+    renderStrict(<CommanderSearch mode="partner" primaryForPartner={primary} onSelect={onSelect} />);
     await act(async () => {
       vi.advanceTimersByTime(400);
       await Promise.resolve();
@@ -95,11 +137,12 @@ describe('CommanderSearch partner mode', () => {
   it('passes primaryForPartner to searchPartnersFor', async () => {
     const primary = fakeCard({ id: 'p-1', name: 'Primary', keywords: ['Partner'] });
     const spy = vi.spyOn(scryfall, 'searchPartnersFor').mockResolvedValue({ data: [], hasMore: false, totalCards: 0, _page: {} as any } as any);
-    render(<CommanderSearch mode="partner" primaryForPartner={primary} onSelect={() => {}} />);
+    renderStrict(<CommanderSearch mode="partner" primaryForPartner={primary} onSelect={() => {}} />);
     await act(async () => {
       vi.advanceTimersByTime(400);
       await Promise.resolve();
     });
     expect(spy).toHaveBeenCalledWith(primary, '', expect.anything());
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
