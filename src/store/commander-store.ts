@@ -10,11 +10,15 @@ export interface CommanderState {
   partnerCommander: Card | null;
   loading: boolean;
   error: string | null;
-  loadForDeck: (deckId: number) => Promise<void>;
+  loadForDeck: (deckId: number, signal?: AbortSignal) => Promise<void>;
   setCommander: (deckId: number, card: Card) => Promise<void>;
   clearCommander: (deckId: number) => Promise<void>;
   setPartner: (deckId: number, card: Card) => Promise<void>;
   clearPartner: (deckId: number) => Promise<void>;
+}
+
+function isAbortError(err: unknown): boolean {
+  return err instanceof DOMException && err.name === 'AbortError';
 }
 
 export const useCommanderStore = create<CommanderState>((set, get) => ({
@@ -23,31 +27,38 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
   loading: false,
   error: null,
 
-  loadForDeck: async (deckId) => {
+  loadForDeck: async (deckId, signal) => {
     set({ loading: true, error: null, primaryCommander: null, partnerCommander: null });
     try {
       const deck = await db.decks.get(deckId);
+      if (signal?.aborted) return;
       if (!deck || !deck.commanderId) {
         set({ loading: false });
         return;
       }
-      const primary = await fetchCardById(deck.commanderId);
+      const primary = await fetchCardById(deck.commanderId, signal);
+      if (signal?.aborted) return;
       await cacheCard(primary);
 
       let partner: Card | null = null;
       if (deck.partnerCommanderId) {
         try {
-          partner = await fetchCardById(deck.partnerCommanderId);
+          partner = await fetchCardById(deck.partnerCommanderId, signal);
           await cacheCard(partner);
         } catch (err) {
+          if (isAbortError(err)) throw err;
           // Partner hydration failure must not abort primary load.
           console.warn('[commander-store] partner hydration failed, clearing slot', err);
           partner = null;
         }
       }
 
+      if (signal?.aborted) return;
       set({ primaryCommander: primary, partnerCommander: partner, loading: false });
     } catch (err) {
+      // Silent on abort — state stays at loading:true, next (unaborted) effect invocation
+      // will resolve it. Prevents flashing an error banner on StrictMode double-mount.
+      if (isAbortError(err)) return;
       set({
         loading: false,
         error: (err as Error).message,

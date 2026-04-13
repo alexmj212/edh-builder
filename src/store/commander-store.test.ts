@@ -270,7 +270,7 @@ describe('commander-store', () => {
 
       await useCommanderStore.getState().loadForDeck(deckId);
 
-      expect(scryfall.fetchCardById).toHaveBeenCalledWith('card-abc');
+      expect(scryfall.fetchCardById).toHaveBeenCalledWith('card-abc', undefined);
       const state = useCommanderStore.getState();
       expect((state.primaryCommander as unknown as Record<string, unknown>)?.name).toBe('Hydrated Commander');
     });
@@ -310,6 +310,56 @@ describe('commander-store', () => {
       expect(useCommanderStore.getState().partnerCommander).toBeNull();
     });
 
+    it('aborts silently when signal is pre-aborted — does not set error state or commander', async () => {
+      const fetchSpy = vi.spyOn(scryfall, 'fetchCardById').mockResolvedValue(
+        fakeCard({ id: 'card-abc', name: 'Should Not Appear' }) as never,
+      );
+
+      const deckId = (await db.decks.add({
+        name: 'Abort Test',
+        commanderId: 'card-abc',
+        commanderName: 'Should Not Appear',
+        colorIdentity: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      })) as number;
+
+      const ctrl = new AbortController();
+      ctrl.abort();
+
+      await useCommanderStore.getState().loadForDeck(deckId, ctrl.signal);
+
+      const state = useCommanderStore.getState();
+      expect(state.error).toBeNull();
+      expect(state.primaryCommander).toBeNull();
+      // fetchCardById is not reached because the pre-deck-read abort guard fires first.
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it('aborts silently when signal aborts mid-flight (AbortError from fetchCardById)', async () => {
+      vi.spyOn(scryfall, 'fetchCardById').mockRejectedValue(
+        new DOMException('Aborted', 'AbortError'),
+      );
+
+      const deckId = (await db.decks.add({
+        name: 'Midflight Abort',
+        commanderId: 'card-abc',
+        commanderName: 'Primary',
+        colorIdentity: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      })) as number;
+
+      const ctrl = new AbortController();
+      await useCommanderStore.getState().loadForDeck(deckId, ctrl.signal);
+
+      const state = useCommanderStore.getState();
+      // Silent: no error surfaced, state left at loading:true so a subsequent
+      // (unaborted) loadForDeck can resolve it cleanly without flashing an error.
+      expect(state.error).toBeNull();
+      expect(state.primaryCommander).toBeNull();
+    });
+
     it('hydrates partnerCommander via fetchCardById when deck.partnerCommanderId is set', async () => {
       vi.spyOn(scryfall, 'fetchCardById').mockImplementation(async (id: string) => {
         if (id === 'primary-hydrate') return fakeCard({ id: 'primary-hydrate', name: 'Primary' }) as never;
@@ -330,8 +380,8 @@ describe('commander-store', () => {
 
       await useCommanderStore.getState().loadForDeck(deckId);
 
-      expect(scryfall.fetchCardById).toHaveBeenCalledWith('primary-hydrate');
-      expect(scryfall.fetchCardById).toHaveBeenCalledWith('partner-hydrate');
+      expect(scryfall.fetchCardById).toHaveBeenCalledWith('primary-hydrate', undefined);
+      expect(scryfall.fetchCardById).toHaveBeenCalledWith('partner-hydrate', undefined);
       const state = useCommanderStore.getState();
       expect((state.partnerCommander as unknown as Record<string, unknown>)?.name).toBe('Partner');
     });

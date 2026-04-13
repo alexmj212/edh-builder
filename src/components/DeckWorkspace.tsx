@@ -19,9 +19,10 @@ export function DeckWorkspace() {
   }, [decks.length, loadDecks])
 
   useEffect(() => {
-    if (!Number.isNaN(numericId)) {
-      loadForDeck(numericId)
-    }
+    if (Number.isNaN(numericId)) return
+    const ctrl = new AbortController()
+    void loadForDeck(numericId, ctrl.signal)
+    return () => { ctrl.abort() }
   }, [numericId, loadForDeck])
 
   if (loading) {
