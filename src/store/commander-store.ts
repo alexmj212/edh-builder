@@ -40,7 +40,22 @@ export const useCommanderStore = create<CommanderState>((set, get) => ({
     // very next render sees "store is being hydrated for this deck" and
     // CommanderPanel gates correctly. Moving this after the await
     // reopens the homepage → /decks/N empty-browse bug.
-    set({ loadedDeckId: deckId, loading: true, error: null, primaryCommander: null, partnerCommander: null });
+    //
+    // Only wipe primary/partner on *cross-deck* navigation. On same-deck
+    // revisit (e.g. decks → deck 1 → back → deck 1) keep the existing
+    // commanders in place — downstream subscribers like CardSearchSection
+    // derive `searchKey` from primary.oracle_id+filters; a brief primary→null
+    // flicker aborts the in-flight search via CardSearchSection's reset effect
+    // but the post-flicker key is identical to the pre-flicker key, so the
+    // search effect doesn't re-fire and results stay empty forever. Cross-deck
+    // still wipes so atraxa's cards don't briefly appear on thrasios's deck.
+    const isSameDeck = get().loadedDeckId === deckId;
+    set({
+      loadedDeckId: deckId,
+      loading: true,
+      error: null,
+      ...(isSameDeck ? {} : { primaryCommander: null, partnerCommander: null }),
+    });
     try {
       const deck = await db.decks.get(deckId);
       if (signal?.aborted) return;
