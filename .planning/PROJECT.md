@@ -18,6 +18,7 @@ You can build a valid Commander deck with confidence — the app tells you in re
 - [x] All deck data persisted in browser storage — Validated in Phase 1: Foundation & Deck Management
 - [x] Select a commander for each deck (incl. Partner pairs, survives reload) — Validated in Phases 02 + 02.1 + 02.2
 - [x] Playwright E2E harness runs locally and in CI (TEST-01) — Validated in Phase 02.2
+- [x] Scryfall API integration via maintained `scryfall-api` client with typed `Card` surface and CI typecheck gate — Validated in Phase 02.3
 
 ### Active
 
@@ -56,7 +57,7 @@ You can build a valid Commander deck with confidence — the app tells you in re
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Scryfall API for card data | Free, comprehensive, well-documented, includes images and legality | — Pending |
+| Scryfall API for card data | Free, comprehensive, well-documented, includes images and legality | Validated (Phase 02.3 — via `scryfall-api` client) |
 | Browser storage (IndexedDB) | No backend requirement, works offline, user controls their data | Validated (Phase 1) |
 | Card image + basics display | Visual-first browsing matches how players think about cards | — Pending |
 
@@ -79,4 +80,4 @@ can be marked complete.
   gate; other specs do not enforce the console policy by default (D-15).
 
 ---
-*Last updated: 2026-04-12 after Phase 02.2 completion — Playwright E2E harness live, Phase 02.1 UAT backfilled, standing rule established for Phase 3+*
+*Last updated: 2026-04-13 after Phase 02.3 completion — `scryfall-api` migration shipped, `@scryfall/api-types` removed, `tsc -b` restored to build, CI typecheck gate added (WR-01 closed).*
