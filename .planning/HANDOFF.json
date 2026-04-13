@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-13T04:00:59.727Z",
+  "context": "post-phase-cleanup",
+  "phase": "02.3",
+  "phase_name": "scryfall-api-migration",
+  "phase_dir": ".planning/phases/02.3-scryfall-api-migration",
+  "status": "paused",
+  "completed_this_session": [
+    {"id": "REVIEW-FIX-02.3", "name": "Apply 4 Warning-severity fixes from 02.3-REVIEW.md", "commits": ["4ea3669", "1c93076", "ef4fec2", "296bbe7", "6d537fe"]},
+    {"id": "DUP-1", "name": "DeckWorkspace duplicate /cards/:id on StrictMode double-mount", "commit": "7c0c0f7", "e2e": "e2e/specs/08-no-duplicate-commander-fetch.spec.ts"},
+    {"id": "DUP-2", "name": "CardSearchSection duplicate auto-search on commander load (deps list bug)", "commit": "14eed94", "e2e": "e2e/specs/09-no-duplicate-search.spec.ts"},
+    {"id": "DUP-3", "name": "CommanderPanel transient EDHREC browse during hydration", "commit": "d381d9c", "e2e": "e2e/specs/10-no-commander-search-on-hydration.spec.ts"},
+    {"id": "DUP-4", "name": "CommanderSearch StrictMode double-dispatch", "commit": "7405687", "e2e": null}
+  ],
+  "remaining_followups": [
+    {"id": "FU-1", "name": "E2E spec for commit 7405687 — click Change commander, assert exactly 1 t:legendary request", "priority": "should-have"},
+    {"id": "FU-2", "name": "Cache-first commander hydration in loadForDeck — zero Scryfall calls on return visits; requires storing oracle_id alongside print id on deck row (card-cache keys on oracle_id)", "priority": "nice-to-have"},
+    {"id": "FU-3", "name": "Info-severity cleanup from 02.3-REVIEW.md (IR-1..IR-6) via /gsd-code-review-fix 02.3 --all", "priority": "nice-to-have"},
+    {"id": "FU-4", "name": "Pre-existing Tailwind canonical-class lint warnings in CommanderPanel.tsx:22, :43", "priority": "trivial"}
+  ],
+  "decisions": [
+    {"decision": "Fold hasCommander into searchKey rather than gate the effect with two deps", "rationale": "Single source of truth for 'should we search'; absorbs the null→non-null transition through the same debouncer so one eventual fire instead of two"},
+    {"decision": "Gate CommanderPanel on commander-store loading flag rather than block render inside CommanderSearch", "rationale": "Avoids transient mount of CommanderSearch during hydration; keeps CommanderSearch unaware of deck loading lifecycle"},
+    {"decision": "Ref-keyed dedupe in CommanderSearch instead of disabling StrictMode", "rationale": "Preserves StrictMode's dev-mode bug-surfacing value; only no-ops identical re-invocations. Legitimate dep changes produce a new key and fire normally"},
+    {"decision": "Silent abort in loadForDeck catch — do not set error state on AbortError", "rationale": "Prevents error banner from flashing between StrictMode's first invocation abort and second invocation completion"}
+  ],
+  "uncommitted_files": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "next_action": "Run the session test suite (vitest + playwright) once to confirm no regressions landed. Then decide: FU-1 (E2E for commit 7405687, ~5min) or FU-2 (cache-first hydration, larger).",
+  "context_notes": "Session was unplanned post-phase cleanup. Originally invoked /gsd-code-review-fix 02.3 to apply WR-1..WR-4, then user reported duplicate API calls which led to 4 follow-up fixes. Phase 02.3 remains CLOSED. All fixes are atomic commits on main. Context limit hit at 92%; FU-1 E2E test deferred as noted in 7405687 commit message."
+}
