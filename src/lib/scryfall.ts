@@ -44,8 +44,8 @@ export function abortable<T>(promise: Promise<T>, signal?: AbortSignal): Promise
 }
 
 function validatedData(raw: unknown[]): Card[] {
-  CardArraySchema.parse(raw);
-  return raw as Card[];
+  const parsed = CardArraySchema.parse(raw);
+  return parsed as unknown as Card[];
 }
 
 async function toSearchResult(
