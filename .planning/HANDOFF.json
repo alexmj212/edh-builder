@@ -1,33 +1,29 @@
 {
   "version": "1.0",
-  "timestamp": "2026-04-13T04:00:59.727Z",
+  "timestamp": "2026-04-13T05:07:07.051Z",
   "context": "post-phase-cleanup",
   "phase": "02.3",
   "phase_name": "scryfall-api-migration",
   "phase_dir": ".planning/phases/02.3-scryfall-api-migration",
   "status": "paused",
   "completed_this_session": [
-    {"id": "REVIEW-FIX-02.3", "name": "Apply 4 Warning-severity fixes from 02.3-REVIEW.md", "commits": ["4ea3669", "1c93076", "ef4fec2", "296bbe7", "6d537fe"]},
-    {"id": "DUP-1", "name": "DeckWorkspace duplicate /cards/:id on StrictMode double-mount", "commit": "7c0c0f7", "e2e": "e2e/specs/08-no-duplicate-commander-fetch.spec.ts"},
-    {"id": "DUP-2", "name": "CardSearchSection duplicate auto-search on commander load (deps list bug)", "commit": "14eed94", "e2e": "e2e/specs/09-no-duplicate-search.spec.ts"},
-    {"id": "DUP-3", "name": "CommanderPanel transient EDHREC browse during hydration", "commit": "d381d9c", "e2e": "e2e/specs/10-no-commander-search-on-hydration.spec.ts"},
-    {"id": "DUP-4", "name": "CommanderSearch StrictMode double-dispatch", "commit": "7405687", "e2e": null}
+    {"id": "DUP-5a", "name": "loadForDeck skips primary/partner wipe on same-deck revisit — fixes stuck-at-idle card-search on back-to-decks → re-open flow", "commit": "b04c6ca", "e2e": "e2e/specs/11-card-search-survives-revisit.spec.ts"},
+    {"id": "DUP-5b", "name": "CardSearchSection lastFiredSearchKeyRef dedupes StrictMode double-invoke — halves /cards/search on revisit (mirror of DUP-4 CommanderSearch fix)", "commit": "6eb0d1d", "e2e": "e2e/specs/12-no-duplicate-card-search.spec.ts"}
   ],
   "remaining_followups": [
-    {"id": "FU-1", "name": "E2E spec for commit 7405687 — click Change commander, assert exactly 1 t:legendary request", "priority": "should-have"},
     {"id": "FU-2", "name": "Cache-first commander hydration in loadForDeck — zero Scryfall calls on return visits; requires storing oracle_id alongside print id on deck row (card-cache keys on oracle_id)", "priority": "nice-to-have"},
     {"id": "FU-3", "name": "Info-severity cleanup from 02.3-REVIEW.md (IR-1..IR-6) via /gsd-code-review-fix 02.3 --all", "priority": "nice-to-have"},
-    {"id": "FU-4", "name": "Pre-existing Tailwind canonical-class lint warnings in CommanderPanel.tsx:22, :43", "priority": "trivial"}
+    {"id": "FU-4", "name": "Pre-existing Tailwind canonical-class lint warnings in CommanderPanel.tsx:22, :43", "priority": "trivial"},
+    {"id": "BOOK-1", "name": "Bookkeeping: 02-06-PLAN.md has no SUMMARY and ROADMAP.md:57 shows it unchecked, but deliverables (CardSearchSection.tsx, CardResultCell.tsx, e2e/specs/07-card-search.spec.ts) all exist — landed across 02.3 plans. Retroactive SUMMARY OR mark superseded + tick ROADMAP", "priority": "should-have"},
+    {"id": "FLAKE-1", "name": "00-smoke and 07-card-search fail when 'Persistent storage not granted by browser' vite warning reaches the console gate — environmental/flaky, not test logic. Consider consoleGate allowlist or suppress the warning in test env", "priority": "should-have"}
   ],
   "decisions": [
-    {"decision": "Fold hasCommander into searchKey rather than gate the effect with two deps", "rationale": "Single source of truth for 'should we search'; absorbs the null→non-null transition through the same debouncer so one eventual fire instead of two"},
-    {"decision": "Gate CommanderPanel on commander-store loading flag rather than block render inside CommanderSearch", "rationale": "Avoids transient mount of CommanderSearch during hydration; keeps CommanderSearch unaware of deck loading lifecycle"},
-    {"decision": "Ref-keyed dedupe in CommanderSearch instead of disabling StrictMode", "rationale": "Preserves StrictMode's dev-mode bug-surfacing value; only no-ops identical re-invocations. Legitimate dep changes produce a new key and fire normally"},
-    {"decision": "Silent abort in loadForDeck catch — do not set error state on AbortError", "rationale": "Prevents error banner from flashing between StrictMode's first invocation abort and second invocation completion"}
+    {"decision": "Only wipe primaryCommander/partnerCommander when loadedDeckId !== incoming deckId; keep them on same-deck revisit", "rationale": "Same-deck flicker was causing the downstream searchKey to collapse to identical pre- and post-flicker values. React's Object.is dep check then suppressed the search effect re-fire, leaving card-search-store stuck at status:'idle' with results:[] even though 2 /cards/search requests had successfully been made and aborted"},
+    {"decision": "Ref-keyed dedupe (lastFiredSearchKeyRef) in CardSearchSection mirroring DUP-4's CommanderSearch pattern", "rationale": "StrictMode double-invokes mount effects — only exposed when store already has primary at mount time (i.e. revisit path). Reload/first-open is absorbed by null-debouncedKey early-return. Ref-based dedupe preserves StrictMode's bug-surfacing value while no-oping identical re-invocations"}
   ],
   "uncommitted_files": [],
   "blockers": [],
   "human_actions_pending": [],
-  "next_action": "Run the session test suite (vitest + playwright) once to confirm no regressions landed. Then decide: FU-1 (E2E for commit 7405687, ~5min) or FU-2 (cache-first hydration, larger).",
-  "context_notes": "Session was unplanned post-phase cleanup. Originally invoked /gsd-code-review-fix 02.3 to apply WR-1..WR-4, then user reported duplicate API calls which led to 4 follow-up fixes. Phase 02.3 remains CLOSED. All fixes are atomic commits on main. Context limit hit at 92%; FU-1 E2E test deferred as noted in 7405687 commit message."
+  "next_action": "Decide: (a) BOOK-1 + FU-3 housekeeping sweep, or (b) drop into Phase 3 (Deck Building & Card Display) via /gsd-discuss-phase 3. Phase 3 requirements: BUILD-01..08, DECK-09, UI-02, UI-04.",
+  "context_notes": "User-reported bug: deck → change commander → back → re-click same deck leaves card-search section empty with what looked like 2 'commander browse' queries. The 'browse' queries were misread — they were the color-identity card-search (id<=wubg+f:commander, both look commander-ish because of f:commander). Real root cause: a silent race where reset() during loadForDeck's null-flicker destroyed the one successful search, and the post-flicker searchKey was primitive-equal to the pre-flicker key so the effect never re-fired. Fix proves out under both regression tests. Phase 02.3 still CLOSED — these are further post-phase polish commits. Context pressure at 83% when pausing."
 }
