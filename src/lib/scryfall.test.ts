@@ -135,6 +135,24 @@ describe('searchCards / fetchNextPage', () => {
     expect(result._page).toBe(page);
   });
 
+  it('searchCards rejects when API returns cards missing the required id field (Zod boundary)', async () => {
+    // D-05 Zod validation boundary: malformed responses (missing id or name)
+    // MUST be rejected at the wrapper, not propagated to callers.
+    const malformed = [{ name: 'No ID' }] as unknown as Card[];
+    const page = makePageStub(malformed, false, 1);
+    searchSpyRef.current.mockReturnValue(page);
+
+    await expect(searchCards('test')).rejects.toThrow();
+  });
+
+  it('searchCards rejects when API returns cards missing the required name field (Zod boundary)', async () => {
+    const malformed = [{ id: 'x-1' }] as unknown as Card[];
+    const page = makePageStub(malformed, false, 1);
+    searchSpyRef.current.mockReturnValue(page);
+
+    await expect(searchCards('test')).rejects.toThrow();
+  });
+
   it('fetchNextPage advances via the opaque page handle', async () => {
     const card1 = fakeCard({ id: 'r1', name: 'One' });
     const card2 = fakeCard({ id: 'r2', name: 'Two' });
