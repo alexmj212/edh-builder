@@ -21,12 +21,23 @@ export function CommanderSearch({ mode, primaryForPartner, onSelect }: Commander
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const ctrlRef = useRef<AbortController | null>(null);
+  // StrictMode dev-mode double-invokes mount effects (effect → cleanup →
+  // effect). The cleanup aborts the first request, but the HTTP dispatch
+  // has already happened — so both hits land on the wire. Dedupe by the
+  // actual request tuple so a second invocation with identical inputs is
+  // a no-op. Legitimate dep changes (user typed, partner slot activated)
+  // produce a different key and fire normally.
+  const lastFiredKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (mode === 'partner' && !primaryForPartner) {
       setResults([]);
+      lastFiredKeyRef.current = null;
       return;
     }
+    const key = `${mode}:${debounced}:${primaryForPartner?.id ?? ''}`;
+    if (lastFiredKeyRef.current === key) return;
+    lastFiredKeyRef.current = key;
     ctrlRef.current?.abort();
     const ctrl = new AbortController();
     ctrlRef.current = ctrl;
