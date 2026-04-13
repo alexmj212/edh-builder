@@ -68,7 +68,7 @@ function FullCard({ card, actionLabel, onAction }: FullCardProps) {
 }
 
 export function CommanderPanel({ deckId }: CommanderPanelProps) {
-  const { primaryCommander, partnerCommander, setCommander, clearCommander, setPartner, clearPartner } = useCommanderStore();
+  const { primaryCommander, partnerCommander, loading, setCommander, clearCommander, setPartner, clearPartner } = useCommanderStore();
 
   const primaryPartnerKind = primaryCommander ? detectPartnerType(primaryCommander).kind : 'none';
   const partnerSlotActive = !!primaryCommander && primaryPartnerKind !== 'none';
@@ -78,7 +78,15 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Primary slot */}
         <div>
-          {!primaryCommander ? (
+          {loading ? (
+            // Render a skeleton during hydration so CommanderSearch doesn't
+            // mount transiently and fire its default EDHREC browse query
+            // (`/cards/search?q=(t:legendary...)f:commander&order=edhrec`)
+            // only to be unmounted when loadForDeck resolves with a saved
+            // commander. The request would be aborted on unmount but the
+            // HTTP dispatch has already happened.
+            <EmptyArt label="Loading commander…" />
+          ) : !primaryCommander ? (
             <>
               <EmptyArt label="No commander selected" />
               <div className="mt-3">
@@ -99,7 +107,9 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
 
         {/* Partner slot */}
         <div>
-          {!partnerSlotActive ? (
+          {loading ? (
+            <EmptyArt label="Loading partner…" />
+          ) : !partnerSlotActive ? (
             <div
               aria-disabled="true"
               className="opacity-50 cursor-not-allowed border-dashed border border-border bg-surface rounded-lg h-40 sm:h-48 flex items-center justify-center"
