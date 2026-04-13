@@ -7,7 +7,10 @@ import { detectPartnerType } from './partner-detection';
 export function encodeFragment(v: string): string {
   const cleaned = v.replace(/"/g, '').trim();
   if (!cleaned) return '';
-  return /[\s"()]/.test(cleaned) ? `"${cleaned}"` : cleaned;
+  // Quotes were stripped above, so the wrapping test only needs to detect
+  // whitespace or parentheses — the previously-included `"` character in this
+  // regex could never match.
+  return /[\s()]/.test(cleaned) ? `"${cleaned}"` : cleaned;
 }
 
 export function buildSearchQuery(params: {
