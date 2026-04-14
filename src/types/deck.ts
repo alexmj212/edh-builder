@@ -6,6 +6,7 @@ export interface Deck {
   colorIdentity: string[];
   partnerCommanderId?: string | null;
   partnerCommanderName?: string | null;
+  viewMode?: 'grid' | 'list';
   createdAt: number;
   updatedAt: number;
 }
@@ -22,6 +23,7 @@ export interface DeckCard {
   quantity: number;
   isCommander: boolean;
   addedAt: number;
+  originalReleaseDate?: string | null;
 }
 
 export interface DeckChange {

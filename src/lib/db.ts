@@ -30,6 +30,13 @@ export class EDHBuilderDB extends Dexie {
       deckChanges: '++id, deckId, timestamp',
       cards: 'oracle_id, cachedAt',
     });
+
+    this.version(4).stores({
+      decks: '++id, updatedAt',
+      deckCards: '++id, deckId, scryfallId',
+      deckChanges: '++id, deckId, timestamp',
+      cards: 'oracle_id, cachedAt',
+    });
   }
 }
 

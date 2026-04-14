@@ -189,3 +189,89 @@ describe('Dexie v3 migration', () => {
     expect(deck?.partnerCommanderName).toBeNull()
   })
 })
+
+describe('Dexie v4 additive migration', () => {
+  let db: EDHBuilderDB
+
+  beforeEach(async () => {
+    db = new EDHBuilderDB()
+    await db.delete()
+    db = new EDHBuilderDB()
+    await db.open()
+  })
+
+  it('exposes schema version >= 4', () => {
+    expect(db.verno).toBeGreaterThanOrEqual(4)
+  })
+
+  it('round-trips Deck.viewMode', async () => {
+    const id = await db.decks.add({
+      name: 'View Mode Deck',
+      commanderId: null,
+      commanderName: null,
+      colorIdentity: [],
+      viewMode: 'grid',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const deck = await db.decks.get(id)
+    expect(deck?.viewMode).toBe('grid')
+  })
+
+  it('round-trips DeckCard.originalReleaseDate', async () => {
+    const deckId = await db.decks.add({
+      name: 'Test Deck',
+      commanderId: null,
+      commanderName: null,
+      colorIdentity: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const cardId = await db.deckCards.add({
+      deckId: deckId as number,
+      scryfallId: 'sol-ring-id',
+      cardName: 'Sol Ring',
+      quantity: 1,
+      isCommander: false,
+      addedAt: Date.now(),
+      originalReleaseDate: '1993-12-31',
+    })
+    const card = await db.deckCards.get(cardId)
+    expect(card?.originalReleaseDate).toBe('1993-12-31')
+  })
+
+  it('reads legacy rows without viewMode as undefined', async () => {
+    const id = await db.decks.add({
+      name: 'Legacy Deck No ViewMode',
+      commanderId: null,
+      commanderName: null,
+      colorIdentity: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const deck = await db.decks.get(id)
+    expect(deck?.viewMode).toBeUndefined()
+  })
+
+  it('persists originalReleaseDate: null', async () => {
+    const deckId = await db.decks.add({
+      name: 'Test Deck',
+      commanderId: null,
+      commanderName: null,
+      colorIdentity: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+    const cardId = await db.deckCards.add({
+      deckId: deckId as number,
+      scryfallId: 'force-of-will-id',
+      cardName: 'Force of Will',
+      quantity: 1,
+      isCommander: false,
+      addedAt: Date.now(),
+      originalReleaseDate: null,
+    })
+    const card = await db.deckCards.get(cardId)
+    expect(card?.originalReleaseDate).toBeNull()
+  })
+})
