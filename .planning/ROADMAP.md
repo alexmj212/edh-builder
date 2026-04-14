@@ -46,7 +46,7 @@ Plans:
 
 **Requirements:** CMDR-01 through CMDR-05, SRCH-01 through SRCH-07
 
-**Plans:** 5/6 plans executed
+**Plans:** 6/6 plans executed
 
 Plans:
 - [x] 02-01-PLAN.md — Wave 0: install react-router-dom, declare CachedCard type, bump Dexie to v2 with `cards` store, create RED test scaffolds (6 files) for Wave 1-3 modules
@@ -54,7 +54,7 @@ Plans:
 - [x] 02-03-PLAN.md — Zustand stores: commander-store (primary + partner + Dexie persistence) and card-search-store (abortable search + pagination + cache side effect)
 - [x] 02-04-PLAN.md — Routing shell: BrowserRouter with `/` and `/decks/:id`, WorkspaceHeader with back link, DeckWorkspace skeleton with three section placeholders
 - [x] 02-05-PLAN.md — Commander selection UI: useDebouncedValue hook, ColorIdentityChip, CommanderSearch (primary + partner modes), CommanderPanel wired into DeckWorkspace
-- [ ] 02-06-PLAN.md — Card search UI: CardResultCell (image + hover overlay), CardSearchSection (filter row + results grid + pagination), human-verify checkpoint for end-to-end flow
+- [x] 02-06-PLAN.md — Card search UI: CardResultCell (image + hover overlay), CardSearchSection (filter row + results grid + pagination), human-verify checkpoint for end-to-end flow
 
 **Key decisions:**
 - Scryfall API direct from browser (CORS supported, no proxy)

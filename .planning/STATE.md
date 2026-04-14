@@ -9,8 +9,8 @@ progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 21
-  completed_plans: 20
-  percent: 95
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State: EDH Deck Builder
