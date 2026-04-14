@@ -42,9 +42,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **BUILD-01**: User can add a card from search results to the active deck
 - [ ] **BUILD-02**: User can remove a card from the deck
 - [ ] **BUILD-03**: Deck prevents adding duplicate non-basic-land cards (singleton enforcement)
-- [ ] **BUILD-04**: Deck allows multiple copies of basic lands (12 basic land types recognized)
+- [x] **BUILD-04**: Deck allows multiple copies of basic lands (12 basic land types recognized)
 - [ ] **BUILD-05**: User can view deck as a visual card image grid
-- [ ] **BUILD-06**: User can view deck as a categorized text list (grouped by type: creatures, instants, sorceries, lands, etc.)
+- [x] **BUILD-06**: User can view deck as a categorized text list (grouped by type: creatures, instants, sorceries, lands, etc.)
 - [ ] **BUILD-07**: User can toggle between grid and list views
 - [x] **BUILD-08**: Card references store `originalReleaseDate` (earliest printing date via oracle_id) for v2 age analysis
 
@@ -177,9 +177,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUILD-01 | Phase 3 | Pending |
 | BUILD-02 | Phase 3 | Pending |
 | BUILD-03 | Phase 3 | Pending |
-| BUILD-04 | Phase 3 | Pending |
+| BUILD-04 | Phase 3 | Complete |
 | BUILD-05 | Phase 3 | Pending |
-| BUILD-06 | Phase 3 | Pending |
+| BUILD-06 | Phase 3 | Complete |
 | BUILD-07 | Phase 3 | Pending |
 | BUILD-08 | Phase 3 | Complete |
 | VALID-01 | Phase 4 | Pending |

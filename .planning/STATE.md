@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 1
 status: Executing Phase 03
-last_updated: "2026-04-14T04:12:25.691Z"
+last_updated: "2026-04-14T04:16:02.217Z"
 progress:
   total_phases: 10
   completed_phases: 5
   total_plans: 26
-  completed_plans: 22
-  percent: 85
+  completed_plans: 23
+  percent: 88
 ---
 
 # Project State: EDH Deck Builder
@@ -94,6 +94,8 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.3]: Plan 02.3-05: Test-first ordering — regression spec added + confirmed green against pre-deletion code, then deleted old client and re-ran (regression gate passed). SRCH-01..07 E2E coverage landed via e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth assertion
 - [Phase 02.3]: Plan 02.3-05: WR-01 fully closed — build script restored to 'tsc -b && vite build' after scryfall-client.ts deletion dropped @scryfall/api-types from the tsconfig.app.json include scope; CI typecheck step in place from 02.3-04. Phase 02.3 shipped
 - [Phase 03]: oracleid: is the canonical Scryfall search operator for oracle-id prints lookup — confirmed by prints_search_uri field on every Card object; Sol Ring oracle_id corrected from plan's value to 6ad8011d-3471-4369-9d68-b264cc027487
+- [Phase 03]: isBasicLand: name whitelist check + /^Basic\s+(Snow\s+)?Land\b/i regex; Dryad Arbor returns false because type_line starts with Land not Basic
+- [Phase 03]: categorizeCard: Land branch at line 9 before Creature at line 10 — Land-wins precedence syntactically provable
 
 ## Performance Metrics
 
@@ -118,6 +120,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.3 P04 | 6 min | 3/3 tasks | 7 files |
 | Phase 02.3 P05 | 6 min | 3/3 tasks | 6 files |
 | Phase 03 P01 | 30min | 3 tasks | 20 files |
+| Phase 03 P02 | 2min | 2 tasks | 4 files |
 
 ## Session Log
 
