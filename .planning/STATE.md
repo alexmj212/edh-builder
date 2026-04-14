@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 1
 status: Executing Phase 03
-last_updated: "2026-04-14T04:20:41.059Z"
+last_updated: "2026-04-14T04:26:37.535Z"
 progress:
   total_phases: 10
   completed_phases: 5
   total_plans: 26
-  completed_plans: 24
-  percent: 92
+  completed_plans: 25
+  percent: 96
 ---
 
 # Project State: EDH Deck Builder
@@ -98,6 +98,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 03]: categorizeCard: Land branch at line 9 before Creature at line 10 — Land-wins precedence syntactically provable
 - [Phase 03]: resolveOriginalReleaseDate called before Dexie transaction to avoid extending transaction lifetime with async Scryfall I/O
 - [Phase 03]: Singleton pre-check uses in-memory state.cards (not DB query) for performance; isBasicLand() exemption allows multiple basics
+- [Phase 03]: ViewToggle uses aria-pressed buttons (not radio inputs) per UI-SPEC segmented control contract
+- [Phase 03]: DeckListView remove: opacity-0 default (keyboard accessible), opacity-100 on group-hover/focus
+- [Phase 03]: DeckGridView remove: always visible (no opacity-0), absolute top-2 right-2 per UI-SPEC grid rule
+- [Phase 03]: GridCell carries own useState(loaded) for skeleton-fade — pure local state, no Zustand
 
 ## Performance Metrics
 
@@ -124,6 +128,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 03 P01 | 30min | 3 tasks | 20 files |
 | Phase 03 P02 | 2min | 2 tasks | 4 files |
 | Phase 03 P03-03 | 15min | 1 tasks | 2 files |
+| Phase 03 P04 | 4min | 3 tasks | 6 files |
 
 ## Session Log
 
