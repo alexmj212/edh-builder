@@ -6,9 +6,12 @@ import type { Card } from '../../src/lib/scryfall';
 import thrasios       from '../fixtures/cards/thrasios.json'            with { type: 'json' };
 import tymna          from '../fixtures/cards/tymna.json'               with { type: 'json' };
 import atraxa         from '../fixtures/cards/atraxa.json'              with { type: 'json' };
+import solRing        from '../fixtures/cards/sol-ring.json'            with { type: 'json' };
+import forest         from '../fixtures/cards/forest.json'              with { type: 'json' };
 import thrasiosSearch from '../fixtures/searches/thrasios-search.json'  with { type: 'json' };
 import tymnaSearch    from '../fixtures/searches/tymna-search.json'     with { type: 'json' };
 import atraxaSearch   from '../fixtures/searches/atraxa-search.json'    with { type: 'json' };
+import solRingPrints  from '../fixtures/searches/sol-ring-prints.json'  with { type: 'json' };
 
 // FixtureCard = the subset of Card the app actually reads, enumerated explicitly.
 // Per RESEARCH §Fixture & Type-Cast Implications Case B option 2. Used as the
@@ -45,6 +48,8 @@ const CARDS_BY_ID: Record<string, Card> = {
   [thrasios.id]: asCard(thrasios),
   [tymna.id]:    asCard(tymna),
   [atraxa.id]:   asCard(atraxa),
+  [solRing.id]:  asCard(solRing),
+  [forest.id]:   asCard(forest),
 };
 
 interface StubFixtures { scryfallStub: void }
@@ -54,6 +59,7 @@ export const test = base.extend<StubFixtures>({
     await page.route(/https:\/\/api\.scryfall\.com\/.*/i, async (route: Route) => {
       const url = new URL(route.request().url());
 
+      // Per-card lookup by Scryfall printing id (/cards/:id)
       const idMatch = url.pathname.match(/^\/cards\/([0-9a-f-]{36})$/i);
       if (idMatch && CARDS_BY_ID[idMatch[1]]) {
         return route.fulfill({ json: CARDS_BY_ID[idMatch[1]], status: 200 });
@@ -61,9 +67,23 @@ export const test = base.extend<StubFixtures>({
 
       if (url.pathname === '/cards/search') {
         const q = url.searchParams.get('q') ?? '';
+        const unique = url.searchParams.get('unique') ?? '';
+
+        // Oracle-id prints lookup (locked operator from 03-ORACLEID-PROBE.md):
+        // matches `q=oracleid:<any-oracle-id>` with unique=prints
+        // Route to sol-ring-prints fixture (the only card we add in tests).
+        // Forest prints lookups also return the same fixture shape — forest's
+        // oracle_id differs but the fixture pattern works (just one result).
+        if (unique === 'prints' && /oracleid:/i.test(q)) {
+          return route.fulfill({ json: solRingPrints, status: 200 });
+        }
+
+        // Commander searches
         if (/thrasios/i.test(q)) return route.fulfill({ json: thrasiosSearch, status: 200 });
         if (/tymna/i.test(q))    return route.fulfill({ json: tymnaSearch,    status: 200 });
         if (/atraxa/i.test(q))   return route.fulfill({ json: atraxaSearch,   status: 200 });
+
+        // Default: empty results for unmatched search queries
         return route.fulfill({
           json: { object: 'list', total_cards: 0, has_more: false, data: [] },
           status: 200,

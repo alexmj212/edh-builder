@@ -24,7 +24,12 @@ beforeEach(async () => {
   await db.open()
   useDeckStore.setState({ decks: [], activeDeckId: null, loading: false, error: null })
   useCommanderStore.setState({ primaryCommander: null, partnerCommander: null, loading: false, error: null })
-  useDeckCardsStore.setState({ deckId: null, cards: [], viewMode: 'list', loading: false, error: null })
+  // Stub loadForDeck on deck-cards-store so DeckColumn never hits the real DB
+  // (db.delete() in beforeEach closes it, causing DatabaseClosedError in async effects)
+  useDeckCardsStore.setState({
+    deckId: null, cards: [], viewMode: 'list', loading: false, error: null,
+    loadForDeck: vi.fn().mockResolvedValue(undefined),
+  } as any)
   vi.restoreAllMocks()
 })
 

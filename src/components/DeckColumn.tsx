@@ -105,7 +105,10 @@ export function DeckColumn({ deckId }: DeckColumnProps) {
         </div>
       )}
 
-      {/* No commander gate */}
+      {/* Commander art strip — always visible (handles own no-commander / loading states) */}
+      <CommanderPanel deckId={deckId} variant="art_crop" />
+
+      {/* Card section: gate on commander, then show empty state or card view */}
       {!primaryCommander ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-text-secondary text-sm">Pick a commander first.</p>
@@ -113,33 +116,25 @@ export function DeckColumn({ deckId }: DeckColumnProps) {
             Card search will be enabled once a commander is selected.
           </p>
         </div>
+      ) : cards.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-text-secondary text-sm">No cards yet.</p>
+          <p className="text-text-secondary text-sm mt-1">
+            Add from search results on the left.
+          </p>
+        </div>
+      ) : viewMode === 'list' ? (
+        <DeckListView
+          cards={cards}
+          cardLookup={cardLookup}
+          onRemove={id => void removeCard(id)}
+        />
       ) : (
-        <>
-          {/* Commander art strip (UI-04) */}
-          <CommanderPanel deckId={deckId} variant="art_crop" />
-
-          {/* Empty state or card view */}
-          {cards.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-text-secondary text-sm">No cards yet.</p>
-              <p className="text-text-secondary text-sm mt-1">
-                Add from search results on the left.
-              </p>
-            </div>
-          ) : viewMode === 'list' ? (
-            <DeckListView
-              cards={cards}
-              cardLookup={cardLookup}
-              onRemove={id => void removeCard(id)}
-            />
-          ) : (
-            <DeckGridView
-              cards={cards}
-              cardLookup={cardLookup}
-              onRemove={id => void removeCard(id)}
-            />
-          )}
-        </>
+        <DeckGridView
+          cards={cards}
+          cardLookup={cardLookup}
+          onRemove={id => void removeCard(id)}
+        />
       )}
     </div>
   );
