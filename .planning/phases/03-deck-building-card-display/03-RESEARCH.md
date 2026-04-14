@@ -77,7 +77,7 @@ This research confirms the decisions are technically sound, surfaces three imple
 | BUILD-08 | Card references store `originalReleaseDate` | On add: `searchCards('oracle_id:<id>', {unique:'prints', order:'released', dir:'asc'})` → `results[0].released_at` → **convert to ISO string** `toISOString().split('T')[0]` → persist as `string`. Non-blocking — null on failure. Dedupe across decks before firing query |
 | DECK-09 | Every card add/remove writes a changelog entry to `deckChanges` | `deckChanges` table already exists (Phase 1). Add transaction: `db.transaction('rw', [deckCards, deckChanges, decks], async () => { deckCards.add(...); deckChanges.add({type:'add',deckId,cardName,scryfallId,timestamp}); decks.update(deckId,{updatedAt}) })`. Symmetric for remove |
 | UI-02 | Card images lazy-load with placeholder skeletons | `<img loading="lazy" decoding="async">` on all card images. Grid cells wrap in `aspect-[146/204]` + sibling `bg-surface animate-pulse` skeleton div removed/faded on `img.onLoad`. List rows use 32×32 thumbnail with same pattern. No layout shift because aspect-ratio container reserves space |
-| UI-04 | Commander displayed prominently at top of deck view with art_crop image | Reuse existing `CommanderPanel` (src/components/CommanderPanel.tsx) as first child of `DeckColumn`. `CommanderPanel` already shows primary + partner slots with `normal` image. **Note**: UI-SPEC §Commander strip says reuse as-is; ROADMAP says `art_crop`. Planner must reconcile — recommended: reuse `CommanderPanel` unchanged (meets "prominent" requirement), defer art_crop variant to polish if deemed necessary |
+| UI-04 | Commander displayed prominently at top of deck view with art_crop image | Extend `CommanderPanel` (src/components/CommanderPanel.tsx) with a `variant?: 'normal' \| 'art_crop'` prop (default `'normal'`). `DeckColumn` mounts `<CommanderPanel deckId={deckId} variant="art_crop" />` as the deck-column strip. `art_crop` variant renders `<img src={getImageUri(card, 'art_crop')} data-testid="commander-strip-image" />` with `aspect-[626/457]` container. `DeckWorkspace` renders NO top-level commander row — single mount inside `DeckColumn` only. Resolves ROADMAP verbatim. [RESOLVED in Plan 03-05 Task 2] |
 </phase_requirements>
 
 ## Project Constraints (from CLAUDE.md)
@@ -564,26 +564,30 @@ this.version(4).stores({
 | A2 | Artifact-creature → Creatures bucket (not Artifacts) | Pitfall 5 | Categorizer bug on 5–10% of deckable cards. Planner should lock this in the category test file. | [ASSUMED — CONTEXT only locks "Land wins"] |
 | A3 | Dexie structured-clone persists `string | null` cleanly for `originalReleaseDate` | Code Examples §Add Card | Storage error on add. Low risk — `string | null` is trivial to clone. | [VERIFIED: Dexie stores any structured-cloneable value, ISO string qualifies] |
 | A4 | `released_at` on a `unique:prints` search result is the actual printing date (not oracle date) | Pitfall 1, Code Examples | If it were oracle date, every printing would return the same value (fine — still earliest). If it's the physical printing date and the API returns prints in release order via `order:released,dir:asc`, first result IS earliest. | [CITED: scryfall.com/docs/api/cards/search — order:released parameter] |
-| A5 | `CommanderPanel` at top of deck column satisfies UI-04 without switching to `art_crop` | Phase Requirements §UI-04 | ROADMAP says "art_crop"; UI-SPEC reuses `CommanderPanel` which uses `normal`. Planner may choose to upgrade. Ruling visually: normal is more prominent than art_crop at typical sizes — likely satisfies intent. | [ASSUMED — reconciliation decision for planner] |
+| A5 | `CommanderPanel` at top of deck column delivers UI-04 via new `variant?: 'normal' \| 'art_crop'` prop (default 'normal') | Phase Requirements §UI-04 | ROADMAP says "art_crop"; UI-SPEC reuses `CommanderPanel` which uses `normal`. Planner reconciled by adding opt-in `variant` prop; DeckColumn mounts `<CommanderPanel deckId={deckId} variant="art_crop" />` so the deck-column commander strip satisfies the ROADMAP verbatim while the workspace no longer renders a separate top-row. | [RESOLVED 2026-04-13: variant prop added in Plan 03-05 Task 2; DeckColumn uses 'art_crop'; test asserts `getImageUri(card, 'art_crop')` is passed to the rendered `<img src>`. ASSUMED → RESOLVED.] |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`oracleid:` vs `oracle_id:` — which is the live Scryfall operator?**
    - What we know: library passes the string through; `prints_search_uri` on every Card contains the canonical query Scryfall generates.
    - What's unclear: raw `oracle_id:<uuid>` syntax without verifying against the live API.
    - Recommendation: Wave 0 task — one live probe `curl 'https://api.scryfall.com/cards/search?q=oracleid:<sol-ring-oracle-id>&unique=prints&order=released&dir=asc'`; if 404/invalid, parse the `prints_search_uri` off the Card object instead.
+   - **RESOLVED:** Wave 0 manual probe is codified in Plan 03-01 Task 3 (`checkpoint:human-action`) which writes `03-ORACLEID-PROBE.md` with the chosen operator. Plan 03-03 reads the probe file and hard-codes the locked operator into `resolveOriginalReleaseDate`. Fallback (`prints_search_uri-parsing`) is the documented third branch if neither candidate returns rows.
 
 2. **`deck-cards-store` vs. extending `deck-store`?**
    - What we know: CONTEXT marks component decomposition as Claude's discretion; store structure isn't explicit.
    - Recommendation: New `deck-cards-store.ts` — keeps `deck-store.ts` at 71 lines focused on deck CRUD, avoids pulling all decks into every card rerender.
+   - **RESOLVED:** Dedicated `src/store/deck-cards-store.ts` (separate from `deck-store.ts`). Shipped in Plan 03-03 Task 1. Rationale: keeps `deck-store.ts` CRUD-focused; isolates per-card re-render scope; mirrors the `commander-store`/`card-search-store` one-domain-per-store pattern.
 
 3. **Categorizer precedence for Artifact-Creature / Enchantment-Creature?**
    - What we know: CONTEXT locks Land > all. Silent on the other hybrid precedences.
    - Recommendation: Plan encodes Creature > Artifact > Enchantment (the common EDH deckbuilder convention); test file has explicit cases.
+   - **RESOLVED:** Precedence locked as **Land > Creature > Planeswalker > Instant > Sorcery > Artifact > Enchantment**. Codified in Plan 03-02 Task 2's test matrix for `src/lib/card-categorizer.ts` with explicit Artifact-Creature → Creatures and Enchantment-Creature → Creatures cases.
 
 4. **`CommanderPanel` reuse vs. dedicated art_crop strip?**
    - What we know: UI-SPEC §Commander strip says reuse; ROADMAP success criterion says art_crop.
    - Recommendation: Reuse CommanderPanel. Satisfies "prominent" even without art_crop. If checker flags, a 1-task follow-up can swap image size.
+   - **RESOLVED:** Extend `CommanderPanel` with a `variant?: 'normal' | 'art_crop'` prop (default `'normal'` preserves Phase 2 call sites). `DeckColumn` mounts `<CommanderPanel deckId={deckId} variant="art_crop" />` so the deck-column strip delivers the ROADMAP `art_crop` image verbatim. No new component. No duplicated commander row — `DeckWorkspace` renders only ONE `CommanderPanel` instance (inside `DeckColumn`). Implemented in Plan 03-05 Task 2; test asserts `getImageUri(card, 'art_crop')` is the `<img src>` for the deck-column variant.
 
 ## Environment Availability
 
@@ -761,12 +765,12 @@ No new secrets, no new auth, no new exposed endpoints. Risk profile unchanged fr
 | Tests | HIGH | Harness complete; Wave 0 file list is exhaustive. |
 | Security | HIGH | No new attack surface. |
 
-### Open Questions
+### Open Questions (RESOLVED)
 
-1. Live syntax of Scryfall's oracle-id prints query (`oracleid:` vs `oracle_id:`) — mitigated with `prints_search_uri` fallback.
-2. File decomposition inside deck column — recommended split (`DeckColumn` + `DeckListView` + `DeckGridView` + `ViewToggle`) per CONTEXT discretion.
-3. Categorizer precedence for Artifact-Creature / Enchantment-Creature — recommended Creature wins, explicit test cases.
-4. `CommanderPanel` reuse vs. dedicated art_crop strip — recommended reuse.
+1. Live syntax of Scryfall's oracle-id prints query (`oracleid:` vs `oracle_id:`). **RESOLVED:** Wave 0 manual probe in Plan 03-01 Task 3 writes `03-ORACLEID-PROBE.md`; Plan 03-03 hard-codes the locked operator. `prints_search_uri-parsing` documented as third-branch fallback.
+2. File decomposition inside deck column. **RESOLVED:** Separate store `src/store/deck-cards-store.ts` + component split `DeckColumn` + `DeckListView` + `DeckGridView` + `ViewToggle`. Shipped across Plans 03-03 (store) and 03-04 (components).
+3. Categorizer precedence for Artifact-Creature / Enchantment-Creature. **RESOLVED:** Locked as Creature > Artifact > Enchantment (full order: Land > Creature > Planeswalker > Instant > Sorcery > Artifact > Enchantment). Codified in Plan 03-02 Task 2's test matrix.
+4. `CommanderPanel` reuse vs. dedicated art_crop strip. **RESOLVED:** Extend `CommanderPanel` with `variant?: 'normal' | 'art_crop'` prop (default `'normal'`). `DeckColumn` passes `variant="art_crop"`. Single `CommanderPanel` mount in DeckWorkspace — inside `DeckColumn`, no top-level sibling row. Implemented in Plan 03-05 Task 2.
 
 ### Ready for Planning
 
