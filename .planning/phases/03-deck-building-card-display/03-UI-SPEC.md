@@ -34,9 +34,8 @@ Declared values (must be multiples of 4):
 | Token | Tailwind | Value | Usage |
 |-------|----------|-------|-------|
 | xs | `gap-1` / `p-1` | 4px | Icon gaps, inline SVG padding |
-| sm | `gap-2` / `p-2` | 8px | Compact element spacing, button inner padding |
-| md | `gap-3` / `p-3` or `gap-4` / `p-4` | 12–16px | Default element spacing, card cell padding |
-| lg | `p-4` / `gap-4` | 16px | Section padding, row-level padding |
+| sm | `gap-2` / `p-2` | 8px | Compact element spacing, button inner padding, deck row gap, category header padding |
+| md | `gap-4` / `p-4` | 16px | Default element spacing, card cell padding, error banners |
 | xl | `gap-6` / `mt-6` | 24px | Section vertical rhythm |
 | 2xl | `mt-8` | 32px | Major section breaks (search→deck pane gap) |
 | 3xl | `py-16` | 64px | Empty/error state vertical centering |
@@ -149,11 +148,11 @@ Rendered as two `<button>` elements side-by-side inside a `<div>` container. NOT
 ```
 <div role="group" aria-label="Deck view" class="flex rounded-lg border border-border overflow-hidden text-sm">
   <button aria-pressed={viewMode === 'list'}
-    class="px-3 py-1 font-semibold {active: bg-accent text-white | inactive: bg-surface text-text-secondary hover:bg-surface-hover}">
+    class="px-2 py-1 font-semibold {active: bg-accent text-white | inactive: bg-surface text-text-secondary hover:bg-surface-hover}">
     List
   </button>
   <button aria-pressed={viewMode === 'grid'}
-    class="px-3 py-1 font-semibold border-l border-border {active: bg-accent text-white | inactive: bg-surface text-text-secondary hover:bg-surface-hover}">
+    class="px-2 py-1 font-semibold border-l border-border {active: bg-accent text-white | inactive: bg-surface text-text-secondary hover:bg-surface-hover}">
     Grid
   </button>
 </div>
@@ -175,7 +174,7 @@ One `<section>` per non-empty category. Empty categories are omitted.
 
 ```
 <section aria-label="{CategoryName} ({count})">
-  <div class="flex items-center justify-between px-3 py-2 bg-surface border-b border-border sticky top-0 z-10">
+  <div class="flex items-center justify-between px-2 py-2 bg-surface border-b border-border sticky top-0 z-10">
     <span class="text-xs font-semibold text-text-secondary uppercase tracking-wide">
       {CategoryName}
     </span>
@@ -203,7 +202,7 @@ Count format: integer only, e.g. `4` not `4/99`. No category is shown when it ha
 One `<li>` per card in the category.
 
 ```
-<li class="flex items-center gap-3 px-3 py-2 hover:bg-surface-hover transition-colors group">
+<li class="flex items-center gap-2 px-2 py-2 hover:bg-surface-hover transition-colors group">
   <!-- small art thumbnail (optional but recommended) -->
   <img src="{small_image_url}" alt="" aria-hidden="true"
     class="w-8 h-8 rounded object-cover flex-shrink-0 bg-surface" loading="lazy" />
@@ -352,7 +351,7 @@ If the Scryfall prints lookup fails AND the add itself succeeds (add is non-bloc
 
 ```
 <div role="alert"
-  class="border-l-4 border-danger bg-surface rounded-r-lg p-3 text-sm text-text-primary mt-2">
+  class="border-l-4 border-danger bg-surface rounded-r-lg p-4 text-sm text-text-primary mt-2">
   Could not add card. Check your browser storage settings and try again.
 </div>
 ```
@@ -438,10 +437,11 @@ No external component registry is used. All components are hand-rolled Tailwind 
 | text-sm / text-xs / text-xl / font-semibold patterns | src/components/CardResultCell.tsx, CardSearchSection.tsx |
 | focus:ring-accent focus:ring-2 pattern | src/components/CardSearchSection.tsx |
 | border-l-4 border-danger error banner pattern | src/components/CardSearchSection.tsx |
-| 8px grid spacing (gap-2/gap-3/gap-4) | src/components/CardSearchSection.tsx, CardResultCell.tsx |
+| 8px compact spacing (gap-2/p-2), 16px default spacing (gap-4/p-4) | src/components/CardSearchSection.tsx, CardResultCell.tsx |
 | w-8 h-8 button size + p-1 -m-1 tap target | src/components/CardResultCell.tsx:38 |
 | "Cards: {n}" format (not n/100 — Phase 4 concern) | CONTEXT.md — Specifics |
 | Scroll top reset (not position preservation) on view switch | CONTEXT.md — Specifics + Deferred |
+| Spacing revision: removed 12px (gap-3/p-3/px-3) from all component contracts | gsd-ui-checker Dimension 5 BLOCK — 2026-04-13 |
 
 ---
 
