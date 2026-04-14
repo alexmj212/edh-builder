@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: Ready to plan
-last_updated: "2026-04-13T01:01:16.234Z"
+last_updated: "2026-04-13T21:17:00.000Z"
 progress:
   total_phases: 10
   completed_phases: 4
@@ -137,6 +137,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.3-03: Type sweep — ScryfallCard swept from 15 files; 16 as-unknown-as + 5 in-guards + 4 as-never bridges eliminated; partner-detection accepts Card directly; 189/189 tests green |
 | 2026-04-12 | Completed 02.3-04: tsconfig.e2e.json overrides dropped, stubScryfall migrated to Pick<Card> + asCard helper, CI typecheck step added; user-approved scope expansion fixed 12 latent test-file TS errors + added tsconfig.app.json exclude for scryfall-client (02.3-05 must remove) |
 | 2026-04-12 | Completed 02.3-05: Phase 02.3 CLOSED — added e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth (SRCH-07 E2E); deleted scryfall-client.ts + .test.ts; uninstalled @scryfall/api-types; removed tsconfig.app.json exclude bridge; restored 'tsc -b && vite build'; WR-01 retired; 170 unit + 8 e2e green post-deletion |
+| 2026-04-13 | Housekeeping sweep: closed BOOK-1 (retroactive 02-06-SUMMARY.md + tick ROADMAP; f2ace20) and FLAKE-1 (consoleGate accepts @vite/client as valid location — Vite dev wraps console.warn, breaking the storage.ts pin; 3e37665). 176 unit + 15 e2e green. FU-2/3/4 remain as nice-to-haves. |
 
 ## Accumulated Context
 

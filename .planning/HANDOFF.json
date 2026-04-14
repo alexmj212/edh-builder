@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-04-13T05:07:07.051Z",
+  "timestamp": "2026-04-13T21:17:00.000Z",
   "context": "post-phase-cleanup",
   "phase": "02.3",
   "phase_name": "scryfall-api-migration",
@@ -8,22 +8,23 @@
   "status": "paused",
   "completed_this_session": [
     {"id": "DUP-5a", "name": "loadForDeck skips primary/partner wipe on same-deck revisit — fixes stuck-at-idle card-search on back-to-decks → re-open flow", "commit": "b04c6ca", "e2e": "e2e/specs/11-card-search-survives-revisit.spec.ts"},
-    {"id": "DUP-5b", "name": "CardSearchSection lastFiredSearchKeyRef dedupes StrictMode double-invoke — halves /cards/search on revisit (mirror of DUP-4 CommanderSearch fix)", "commit": "6eb0d1d", "e2e": "e2e/specs/12-no-duplicate-card-search.spec.ts"}
+    {"id": "DUP-5b", "name": "CardSearchSection lastFiredSearchKeyRef dedupes StrictMode double-invoke — halves /cards/search on revisit (mirror of DUP-4 CommanderSearch fix)", "commit": "6eb0d1d", "e2e": "e2e/specs/12-no-duplicate-card-search.spec.ts"},
+    {"id": "BOOK-1", "name": "Retroactive 02-06-SUMMARY.md + tick ROADMAP.md:57 — bookkeeping now matches the four feat(02-06) commits that actually shipped the plan", "commit": "f2ace20"},
+    {"id": "FLAKE-1", "name": "consoleGate allowlist now accepts @vite/client as a valid location for the 'Persistent storage not granted' warning — Vite's dev client wraps console.warn and rewrites the location, breaking the storage.ts pin. Widened locationIncludes to string | string[]. 15 e2e + 176 unit green.", "commit": "3e37665"}
   ],
   "remaining_followups": [
     {"id": "FU-2", "name": "Cache-first commander hydration in loadForDeck — zero Scryfall calls on return visits; requires storing oracle_id alongside print id on deck row (card-cache keys on oracle_id)", "priority": "nice-to-have"},
     {"id": "FU-3", "name": "Info-severity cleanup from 02.3-REVIEW.md (IR-1..IR-6) via /gsd-code-review-fix 02.3 --all", "priority": "nice-to-have"},
-    {"id": "FU-4", "name": "Pre-existing Tailwind canonical-class lint warnings in CommanderPanel.tsx:22, :43", "priority": "trivial"},
-    {"id": "BOOK-1", "name": "Bookkeeping: 02-06-PLAN.md has no SUMMARY and ROADMAP.md:57 shows it unchecked, but deliverables (CardSearchSection.tsx, CardResultCell.tsx, e2e/specs/07-card-search.spec.ts) all exist — landed across 02.3 plans. Retroactive SUMMARY OR mark superseded + tick ROADMAP", "priority": "should-have"},
-    {"id": "FLAKE-1", "name": "00-smoke and 07-card-search fail when 'Persistent storage not granted by browser' vite warning reaches the console gate — environmental/flaky, not test logic. Consider consoleGate allowlist or suppress the warning in test env", "priority": "should-have"}
+    {"id": "FU-4", "name": "Pre-existing Tailwind canonical-class lint warnings in CommanderPanel.tsx:22, :43", "priority": "trivial"}
   ],
   "decisions": [
     {"decision": "Only wipe primaryCommander/partnerCommander when loadedDeckId !== incoming deckId; keep them on same-deck revisit", "rationale": "Same-deck flicker was causing the downstream searchKey to collapse to identical pre- and post-flicker values. React's Object.is dep check then suppressed the search effect re-fire, leaving card-search-store stuck at status:'idle' with results:[] even though 2 /cards/search requests had successfully been made and aborted"},
-    {"decision": "Ref-keyed dedupe (lastFiredSearchKeyRef) in CardSearchSection mirroring DUP-4's CommanderSearch pattern", "rationale": "StrictMode double-invokes mount effects — only exposed when store already has primary at mount time (i.e. revisit path). Reload/first-open is absorbed by null-debouncedKey early-return. Ref-based dedupe preserves StrictMode's bug-surfacing value while no-oping identical re-invocations"}
+    {"decision": "Ref-keyed dedupe (lastFiredSearchKeyRef) in CardSearchSection mirroring DUP-4's CommanderSearch pattern", "rationale": "StrictMode double-invokes mount effects — only exposed when store already has primary at mount time (i.e. revisit path). Reload/first-open is absorbed by null-debouncedKey early-return. Ref-based dedupe preserves StrictMode's bug-surfacing value while no-oping identical re-invocations"},
+    {"decision": "consoleGate BenignRule.locationIncludes: string | string[] with locationMatches() helper", "rationale": "Vite dev client wraps console.warn → msg.location() reports @vite/client:509 not storage.ts. Prod builds would also break the pin since storage.ts gets bundled into a hashed asset. Widening keeps the text match strict (still catches NEW benign-looking warnings) while handling dev + prod paths."}
   ],
   "uncommitted_files": [],
   "blockers": [],
   "human_actions_pending": [],
-  "next_action": "Decide: (a) BOOK-1 + FU-3 housekeeping sweep, or (b) drop into Phase 3 (Deck Building & Card Display) via /gsd-discuss-phase 3. Phase 3 requirements: BUILD-01..08, DECK-09, UI-02, UI-04.",
-  "context_notes": "User-reported bug: deck → change commander → back → re-click same deck leaves card-search section empty with what looked like 2 'commander browse' queries. The 'browse' queries were misread — they were the color-identity card-search (id<=wubg+f:commander, both look commander-ish because of f:commander). Real root cause: a silent race where reset() during loadForDeck's null-flicker destroyed the one successful search, and the post-flicker searchKey was primitive-equal to the pre-flicker key so the effect never re-fired. Fix proves out under both regression tests. Phase 02.3 still CLOSED — these are further post-phase polish commits. Context pressure at 83% when pausing."
+  "next_action": "Housekeeping done — both should-have items (BOOK-1, FLAKE-1) closed. Options: (a) drop into Phase 3 (Deck Building & Card Display) via /gsd-discuss-phase 3 — no CONTEXT.md yet, requirements BUILD-01..08, DECK-09, UI-02, UI-04; (b) knock out the three nice-to-have FU-items before moving on; (c) push the 12 local commits to origin.",
+  "context_notes": "Post-02.3 polish fully closed. BOOK-1 paper trail written retroactively from commit history (no code changed). FLAKE-1 root cause was Vite's dev-mode console.warn wrapping changing msg.location() — widened allowlist handles both dev and prod paths without loosening the text match. FU-2/3/4 are small enough to tackle inline during Phase 3 or defer; none are blocking. Working tree clean."
 }
