@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 1
 status: Executing Phase 03
-last_updated: "2026-04-14T04:16:02.217Z"
+last_updated: "2026-04-14T04:20:41.059Z"
 progress:
   total_phases: 10
   completed_phases: 5
   total_plans: 26
-  completed_plans: 23
-  percent: 88
+  completed_plans: 24
+  percent: 92
 ---
 
 # Project State: EDH Deck Builder
@@ -96,6 +96,8 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 03]: oracleid: is the canonical Scryfall search operator for oracle-id prints lookup — confirmed by prints_search_uri field on every Card object; Sol Ring oracle_id corrected from plan's value to 6ad8011d-3471-4369-9d68-b264cc027487
 - [Phase 03]: isBasicLand: name whitelist check + /^Basic\s+(Snow\s+)?Land\b/i regex; Dryad Arbor returns false because type_line starts with Land not Basic
 - [Phase 03]: categorizeCard: Land branch at line 9 before Creature at line 10 — Land-wins precedence syntactically provable
+- [Phase 03]: resolveOriginalReleaseDate called before Dexie transaction to avoid extending transaction lifetime with async Scryfall I/O
+- [Phase 03]: Singleton pre-check uses in-memory state.cards (not DB query) for performance; isBasicLand() exemption allows multiple basics
 
 ## Performance Metrics
 
@@ -121,6 +123,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.3 P05 | 6 min | 3/3 tasks | 6 files |
 | Phase 03 P01 | 30min | 3 tasks | 20 files |
 | Phase 03 P02 | 2min | 2 tasks | 4 files |
+| Phase 03 P03-03 | 15min | 1 tasks | 2 files |
 
 ## Session Log
 

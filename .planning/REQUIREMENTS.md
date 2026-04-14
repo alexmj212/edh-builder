@@ -17,7 +17,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DECK-06**: All deck data persists in IndexedDB via Dexie.js across browser sessions
 - [ ] **DECK-07**: Browser requests persistent storage on first launch (navigator.storage.persist)
 - [ ] **DECK-08**: Dexie schema includes a `deckChanges` store for change tracking from day one (add/remove events with timestamps)
-- [ ] **DECK-09**: Every card add/remove writes a changelog entry to `deckChanges` (enables v2 history features without retrofit)
+- [x] **DECK-09**: Every card add/remove writes a changelog entry to `deckChanges` (enables v2 history features without retrofit)
 
 ### Commander Selection
 
@@ -39,13 +39,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Deck Building
 
-- [ ] **BUILD-01**: User can add a card from search results to the active deck
-- [ ] **BUILD-02**: User can remove a card from the deck
-- [ ] **BUILD-03**: Deck prevents adding duplicate non-basic-land cards (singleton enforcement)
+- [x] **BUILD-01**: User can add a card from search results to the active deck
+- [x] **BUILD-02**: User can remove a card from the deck
+- [x] **BUILD-03**: Deck prevents adding duplicate non-basic-land cards (singleton enforcement)
 - [x] **BUILD-04**: Deck allows multiple copies of basic lands (12 basic land types recognized)
 - [ ] **BUILD-05**: User can view deck as a visual card image grid
 - [x] **BUILD-06**: User can view deck as a categorized text list (grouped by type: creatures, instants, sorceries, lands, etc.)
-- [ ] **BUILD-07**: User can toggle between grid and list views
+- [x] **BUILD-07**: User can toggle between grid and list views
 - [x] **BUILD-08**: Card references store `originalReleaseDate` (earliest printing date via oracle_id) for v2 age analysis
 
 ### Validation
@@ -161,7 +161,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DECK-06 | Phase 1 | Pending |
 | DECK-07 | Phase 1 | Pending |
 | DECK-08 | Phase 1 | Pending |
-| DECK-09 | Phase 3 | Pending |
+| DECK-09 | Phase 3 | Complete |
 | CMDR-01 | Phase 2 | Complete |
 | CMDR-02 | Phase 2 | Complete |
 | CMDR-03 | Phase 2 | Complete |
@@ -174,13 +174,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SRCH-05 | Phase 2 | Complete |
 | SRCH-06 | Phase 2 | Complete |
 | SRCH-07 | Phase 2 | Complete |
-| BUILD-01 | Phase 3 | Pending |
-| BUILD-02 | Phase 3 | Pending |
-| BUILD-03 | Phase 3 | Pending |
+| BUILD-01 | Phase 3 | Complete |
+| BUILD-02 | Phase 3 | Complete |
+| BUILD-03 | Phase 3 | Complete |
 | BUILD-04 | Phase 3 | Complete |
 | BUILD-05 | Phase 3 | Pending |
 | BUILD-06 | Phase 3 | Complete |
-| BUILD-07 | Phase 3 | Pending |
+| BUILD-07 | Phase 3 | Complete |
 | BUILD-08 | Phase 3 | Complete |
 | VALID-01 | Phase 4 | Pending |
 | VALID-02 | Phase 4 | Pending |

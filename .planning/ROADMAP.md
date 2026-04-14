@@ -173,7 +173,7 @@ Risks:
 Plans:
 - [x] 03-01-PLAN.md — Wave 1: Dexie v4 additive migration + Deck/DeckCard type extensions + Wave 2-5 test/source scaffolds + manual Scryfall oracleid probe
 - [x] 03-02-PLAN.md — Wave 2: Pure libs — isBasicLand whitelist + categorizeCard precedence (Land > Creature > Planeswalker > Instant > Sorcery > Artifact > Enchantment)
-- [ ] 03-03-PLAN.md — Wave 3: deck-cards-store with atomic deckCards+deckChanges+decks.updatedAt transactions, singleton enforcement, cross-deck originalReleaseDate dedupe
+- [x] 03-03-PLAN.md — Wave 3: deck-cards-store with atomic deckCards+deckChanges+decks.updatedAt transactions, singleton enforcement, cross-deck originalReleaseDate dedupe
 - [ ] 03-04-PLAN.md — Wave 4: UI components — ViewToggle (aria-pressed), DeckListView (7 categories + sticky headers), DeckGridView (aspect-[146/204] CLS-safe skeletons)
 - [ ] 03-05-PLAN.md — Wave 5: Integration — CardResultCell wiring, DeckColumn composition, DeckWorkspace 60/40 layout, Playwright spec 13-deck-building.spec.ts, human-verify checkpoint
 
