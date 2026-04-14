@@ -46,7 +46,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **BUILD-05**: User can view deck as a visual card image grid
 - [ ] **BUILD-06**: User can view deck as a categorized text list (grouped by type: creatures, instants, sorceries, lands, etc.)
 - [ ] **BUILD-07**: User can toggle between grid and list views
-- [ ] **BUILD-08**: Card references store `originalReleaseDate` (earliest printing date via oracle_id) for v2 age analysis
+- [x] **BUILD-08**: Card references store `originalReleaseDate` (earliest printing date via oracle_id) for v2 age analysis
 
 ### Validation
 
@@ -181,7 +181,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUILD-05 | Phase 3 | Pending |
 | BUILD-06 | Phase 3 | Pending |
 | BUILD-07 | Phase 3 | Pending |
-| BUILD-08 | Phase 3 | Pending |
+| BUILD-08 | Phase 3 | Complete |
 | VALID-01 | Phase 4 | Pending |
 | VALID-02 | Phase 4 | Pending |
 | VALID-03 | Phase 4 | Pending |

@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-last_updated: "2026-04-13T21:17:00.000Z"
+current_plan: 1
+status: Executing Phase 03
+last_updated: "2026-04-14T04:12:25.691Z"
 progress:
   total_phases: 10
-  completed_phases: 4
-  total_plans: 21
-  completed_plans: 21
-  percent: 100
+  completed_phases: 5
+  total_plans: 26
+  completed_plans: 22
+  percent: 85
 ---
 
 # Project State: EDH Deck Builder
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** You can build a valid Commander deck with confidence — the app tells you in real time whether your deck meets every format rule.
-**Current focus:** Phase 02.3 — scryfall-api-migration
+**Current focus:** Phase 03 — Deck Building & Card Display
 
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 02.2-playwright-e2e-harness (COMPLETE)
-- **Current Plan:** Not started
+- **Current Plan:** 1
 - **Phases planned:** 5
 - **Requirements:** 37 v1, 10 v2
 
@@ -93,6 +93,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 02.3]: Plan 02.3-04: vitest runner's transpile-only mode silently missed 12 test-file type errors introduced by 02.3-02/03 — CI typecheck step now gates future drift
 - [Phase 02.3]: Plan 02.3-05: Test-first ordering — regression spec added + confirmed green against pre-deletion code, then deleted old client and re-ran (regression gate passed). SRCH-01..07 E2E coverage landed via e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth assertion
 - [Phase 02.3]: Plan 02.3-05: WR-01 fully closed — build script restored to 'tsc -b && vite build' after scryfall-client.ts deletion dropped @scryfall/api-types from the tsconfig.app.json include scope; CI typecheck step in place from 02.3-04. Phase 02.3 shipped
+- [Phase 03]: oracleid: is the canonical Scryfall search operator for oracle-id prints lookup — confirmed by prints_search_uri field on every Card object; Sol Ring oracle_id corrected from plan's value to 6ad8011d-3471-4369-9d68-b264cc027487
 
 ## Performance Metrics
 
@@ -116,6 +117,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 02.3 P03 | 5 min | 2/2 tasks | 15 files |
 | Phase 02.3 P04 | 6 min | 3/3 tasks | 7 files |
 | Phase 02.3 P05 | 6 min | 3/3 tasks | 6 files |
+| Phase 03 P01 | 30min | 3 tasks | 20 files |
 
 ## Session Log
 
@@ -138,6 +140,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.3-04: tsconfig.e2e.json overrides dropped, stubScryfall migrated to Pick<Card> + asCard helper, CI typecheck step added; user-approved scope expansion fixed 12 latent test-file TS errors + added tsconfig.app.json exclude for scryfall-client (02.3-05 must remove) |
 | 2026-04-12 | Completed 02.3-05: Phase 02.3 CLOSED — added e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth (SRCH-07 E2E); deleted scryfall-client.ts + .test.ts; uninstalled @scryfall/api-types; removed tsconfig.app.json exclude bridge; restored 'tsc -b && vite build'; WR-01 retired; 170 unit + 8 e2e green post-deletion |
 | 2026-04-13 | Housekeeping sweep: closed BOOK-1 (retroactive 02-06-SUMMARY.md + tick ROADMAP; f2ace20) and FLAKE-1 (consoleGate accepts @vite/client as valid location — Vite dev wraps console.warn, breaking the storage.ts pin; 3e37665). 176 unit + 15 e2e green. FU-2/3/4 remain as nice-to-haves. |
+| 2026-04-14 | Completed 03-01: Dexie v4 additive migration + 16 Wave 2-4 typed scaffolds + live Scryfall probe; oracleid: operator locked as canonical prints-lookup operator; BUILD-08 requirement ticked |
 
 ## Accumulated Context
 

@@ -168,10 +168,10 @@ Risks:
 
 **Requirements:** BUILD-01 through BUILD-08, DECK-09, UI-02, UI-04
 
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
-- [ ] 03-01-PLAN.md — Wave 1: Dexie v4 additive migration + Deck/DeckCard type extensions + Wave 2-5 test/source scaffolds + manual Scryfall oracleid probe
+- [x] 03-01-PLAN.md — Wave 1: Dexie v4 additive migration + Deck/DeckCard type extensions + Wave 2-5 test/source scaffolds + manual Scryfall oracleid probe
 - [ ] 03-02-PLAN.md — Wave 2: Pure libs — isBasicLand whitelist + categorizeCard precedence (Land > Creature > Planeswalker > Instant > Sorcery > Artifact > Enchantment)
 - [ ] 03-03-PLAN.md — Wave 3: deck-cards-store with atomic deckCards+deckChanges+decks.updatedAt transactions, singleton enforcement, cross-deck originalReleaseDate dedupe
 - [ ] 03-04-PLAN.md — Wave 4: UI components — ViewToggle (aria-pressed), DeckListView (7 categories + sticky headers), DeckGridView (aspect-[146/204] CLS-safe skeletons)
@@ -258,7 +258,7 @@ Plans:
 |-------|------|-------------|-------|
 | 1 | Foundation & Deck Management | DECK-01–08, UI-01, UI-03 | 10 |
 | 2 | Commander Selection & Card Search (+ 02.1/02.2/02.3 inserts) | CMDR-01–05, SRCH-01–07, TEST-01 | 13 |
-| 3 | Deck Building & Card Display | BUILD-01–08, DECK-09, UI-02, UI-04 | 11 |
+| 3 | 1/5 | In Progress|  |
 | 4 | Live Validation Checklist | VALID-01–08 | 8 |
 | 5 | Import/Export & Polish | IO-01–04 | 4 |
 | **Total** | | | **45** |
