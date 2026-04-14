@@ -168,6 +168,15 @@ Risks:
 
 **Requirements:** BUILD-01 through BUILD-08, DECK-09, UI-02, UI-04
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Wave 1: Dexie v4 additive migration + Deck/DeckCard type extensions + Wave 2-5 test/source scaffolds + manual Scryfall oracleid probe
+- [ ] 03-02-PLAN.md — Wave 2: Pure libs — isBasicLand whitelist + categorizeCard precedence (Land > Creature > Planeswalker > Instant > Sorcery > Artifact > Enchantment)
+- [ ] 03-03-PLAN.md — Wave 3: deck-cards-store with atomic deckCards+deckChanges+decks.updatedAt transactions, singleton enforcement, cross-deck originalReleaseDate dedupe
+- [ ] 03-04-PLAN.md — Wave 4: UI components — ViewToggle (aria-pressed), DeckListView (7 categories + sticky headers), DeckGridView (aspect-[146/204] CLS-safe skeletons)
+- [ ] 03-05-PLAN.md — Wave 5: Integration — CardResultCell wiring, DeckColumn composition, DeckWorkspace 60/40 layout, Playwright spec 13-deck-building.spec.ts, human-verify checkpoint
+
 **Deliverables:**
 - Add card to deck from search results
 - Remove card from deck
@@ -248,7 +257,7 @@ Risks:
 | Phase | Name | Requirements | Count |
 |-------|------|-------------|-------|
 | 1 | Foundation & Deck Management | DECK-01–08, UI-01, UI-03 | 10 |
-| 2 | 5/6 | In Progress|  |
+| 2 | Commander Selection & Card Search (+ 02.1/02.2/02.3 inserts) | CMDR-01–05, SRCH-01–07, TEST-01 | 13 |
 | 3 | Deck Building & Card Display | BUILD-01–08, DECK-09, UI-02, UI-04 | 11 |
 | 4 | Live Validation Checklist | VALID-01–08 | 8 |
 | 5 | Import/Export & Polish | IO-01–04 | 4 |
@@ -321,4 +330,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-04-11*
-*Last updated: 2026-04-12 — Phase 3 layout clarification + backlog items 999.1 / 999.2 captured*
+*Last updated: 2026-04-13 — Phase 3 decomposed into 5 plans across 5 waves*
