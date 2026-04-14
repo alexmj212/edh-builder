@@ -1,15 +1,25 @@
 import { useState } from 'react';
 import type { Card } from '../lib/scryfall';
+import { getImageUri } from '../lib/scryfall';
 import { useCommanderStore } from '../store/commander-store';
 import { detectPartnerType } from '../lib/partner-detection';
 import { CommanderSearch } from './CommanderSearch';
 
-export interface CommanderPanelProps { deckId: number }
+export interface CommanderPanelProps {
+  deckId: number;
+  variant?: 'normal' | 'art_crop';
+}
 
 /** Returns the `normal` (full-card) image for a given face index, with fallbacks. */
 function fullCardImageFor(card: Card, faceIndex: number): string {
   const face = card.card_faces?.[faceIndex];
   return face?.image_uris?.normal ?? card.image_uris?.normal ?? '/placeholder-card.jpg';
+}
+
+/** Returns the `art_crop` image for a given face index, with fallbacks. */
+function artCropImageFor(card: Card, faceIndex: number): string {
+  const face = card.card_faces?.[faceIndex];
+  return face?.image_uris?.art_crop ?? card.image_uris?.art_crop ?? getImageUri(card, 'art_crop');
 }
 
 function isDoubleFaced(card: Card): boolean {
@@ -29,22 +39,33 @@ interface FullCardProps {
   card: Card;
   actionLabel: string;
   onAction: () => void;
+  variant?: 'normal' | 'art_crop';
 }
 
-function FullCard({ card, actionLabel, onAction }: FullCardProps) {
+function FullCard({ card, actionLabel, onAction, variant = 'normal' }: FullCardProps) {
   const [faceIndex, setFaceIndex] = useState(0);
   const dfc = isDoubleFaced(card);
+
+  const imgSrc = variant === 'art_crop'
+    ? artCropImageFor(card, faceIndex)
+    : fullCardImageFor(card, faceIndex);
+
+  const imgClassName = variant === 'art_crop'
+    ? 'w-full aspect-[626/457] object-cover rounded-lg shadow-md'
+    : 'w-full max-w-[240px] aspect-[63/88] object-contain rounded-lg shadow-md';
+
   return (
     <div className="flex flex-col items-center">
       <img
-        src={fullCardImageFor(card, faceIndex)}
+        src={imgSrc}
         alt={card.name}
         loading="lazy"
-        className="w-full max-w-[240px] aspect-[63/88] object-contain rounded-lg shadow-md"
+        data-testid={variant === 'art_crop' ? 'commander-strip-image' : undefined}
+        className={imgClassName}
       />
       <p className="text-sm font-semibold text-text-primary mt-2 text-center">{card.name}</p>
       <p className="text-xs text-text-secondary text-center">{card.type_line}</p>
-      <div className="mt-2 flex items-center gap-3">
+      <div className="mt-2 flex items-center gap-2">
         {dfc && (
           <button
             type="button"
@@ -67,7 +88,7 @@ function FullCard({ card, actionLabel, onAction }: FullCardProps) {
   );
 }
 
-export function CommanderPanel({ deckId }: CommanderPanelProps) {
+export function CommanderPanel({ deckId, variant = 'normal' }: CommanderPanelProps) {
   const { primaryCommander, partnerCommander, loading, loadedDeckId, setCommander, clearCommander, setPartner, clearPartner } = useCommanderStore();
 
   // Gate on "is the store authoritative for THIS deck?" rather than just
@@ -95,7 +116,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
           ) : !primaryCommander ? (
             <>
               <EmptyArt label="No commander selected" />
-              <div className="mt-3">
+              <div className="mt-2">
                 <CommanderSearch
                   mode="primary"
                   onSelect={card => { void setCommander(deckId, card); }}
@@ -105,6 +126,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
           ) : (
             <FullCard
               card={primaryCommander}
+              variant={variant}
               actionLabel="Change commander"
               onAction={() => { void clearCommander(deckId); }}
             />
@@ -125,7 +147,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
           ) : !partnerCommander ? (
             <>
               <EmptyArt label="Partner (optional)" />
-              <div className="mt-3">
+              <div className="mt-2">
                 <CommanderSearch
                   mode="partner"
                   primaryForPartner={primaryCommander!}
@@ -136,6 +158,7 @@ export function CommanderPanel({ deckId }: CommanderPanelProps) {
           ) : (
             <FullCard
               card={partnerCommander}
+              variant={variant}
               actionLabel="Remove partner"
               onAction={() => { void clearPartner(deckId); }}
             />

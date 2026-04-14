@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Card } from '../lib/scryfall';
 import { useCardSearchStore } from '../store/card-search-store';
 import { useCommanderStore } from '../store/commander-store';
+import { useDeckCardsStore } from '../store/deck-cards-store';
 import { buildSearchQuery } from '../lib/scryfall-queries';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { ColorIdentityChip } from './ColorIdentityChip';
@@ -45,6 +46,14 @@ export function CardSearchSection() {
   const partner = useCommanderStore(s => s.partnerCommander);
   const { filters, results, hasMore, status, error, setFilter, search, loadMore, reset } =
     useCardSearchStore();
+
+  // Deck cards store for (+) button wiring
+  const deckCards = useDeckCardsStore(s => s.cards);
+  const deckId = useDeckCardsStore(s => s.deckId);
+  const addCard = useDeckCardsStore(s => s.addCard);
+
+  // Track in-flight adds per card id
+  const [addingIds, setAddingIds] = useState<Set<string>>(new Set());
 
   const identity = useMemo(() => unionIdentity(primary, partner), [primary, partner]);
   const hasCommander = !!primary;
@@ -110,6 +119,20 @@ export function CardSearchSection() {
     void search(q);
   };
 
+  const handleAdd = async (card: Card) => {
+    if (deckId == null) return;
+    setAddingIds(prev => new Set(prev).add(card.id));
+    try {
+      await addCard(deckId, card);
+    } finally {
+      setAddingIds(prev => {
+        const next = new Set(prev);
+        next.delete(card.id);
+        return next;
+      });
+    }
+  };
+
   return (
     <div className="mt-8 space-y-4">
       <h2 className="text-xl font-semibold text-text-primary mb-4">Card Search</h2>
@@ -117,7 +140,7 @@ export function CardSearchSection() {
       {!hasCommander && (
         <div
           role="status"
-          className="text-sm text-text-secondary bg-surface border border-border rounded-lg p-3 mb-3"
+          className="text-sm text-text-secondary bg-surface border border-border rounded-lg p-2 mb-2"
         >
           Pick a commander first to start searching cards.
         </div>
@@ -126,7 +149,7 @@ export function CardSearchSection() {
       <ColorIdentityChip colorIdentity={hasCommander ? identity : null} />
 
       <div
-        className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 ${!hasCommander ? 'opacity-50 pointer-events-none' : ''}`}
+        className={`grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 ${!hasCommander ? 'opacity-50 pointer-events-none' : ''}`}
         aria-disabled={!hasCommander || undefined}
       >
         <input
@@ -136,7 +159,7 @@ export function CardSearchSection() {
           value={filters.name}
           onChange={e => setFilter('name', e.target.value)}
           disabled={!hasCommander}
-          className="bg-background border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary"
+          className="bg-background border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary"
         />
         <input
           type="text"
@@ -145,7 +168,7 @@ export function CardSearchSection() {
           value={filters.type}
           onChange={e => setFilter('type', e.target.value)}
           disabled={!hasCommander}
-          className="bg-background border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary"
+          className="bg-background border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary"
         />
         <input
           type="text"
@@ -154,7 +177,7 @@ export function CardSearchSection() {
           value={filters.oracleText}
           onChange={e => setFilter('oracleText', e.target.value)}
           disabled={!hasCommander}
-          className="bg-background border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary"
+          className="bg-background border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary placeholder-text-secondary"
         />
         <div className="flex items-center gap-2">
           {/* Read-only color-identity pip display — pips reflect commander identity. */}
@@ -183,7 +206,7 @@ export function CardSearchSection() {
       {hasCommander && status === 'error' && (
         <div
           role="alert"
-          className="border-l-4 border-danger bg-surface rounded-r-lg p-3 flex items-start gap-3"
+          className="border-l-4 border-danger bg-surface rounded-r-lg p-4 flex items-start gap-4"
         >
           <span className="text-danger" aria-hidden="true">
             ⚠
@@ -211,11 +234,21 @@ export function CardSearchSection() {
           <div
             data-testid="card-results-grid"
             aria-busy={status === 'loading'}
-            className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+            className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
           >
-            {results.map(card => (
-              <CardResultCell key={card.id} card={card} isInDeck={false} isAdding={false} onAdd={() => {}} />
-            ))}
+            {results.map(card => {
+              const isInDeck = deckCards.some(c => c.scryfallId === card.id);
+              const isAdding = addingIds.has(card.id);
+              return (
+                <CardResultCell
+                  key={card.id}
+                  card={card}
+                  isInDeck={isInDeck}
+                  isAdding={isAdding}
+                  onAdd={() => handleAdd(card)}
+                />
+              );
+            })}
           </div>
           {hasMore && (
             <div className="mt-6 flex justify-center">

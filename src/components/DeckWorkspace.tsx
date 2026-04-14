@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { useDeckStore } from '../store/deck-store'
 import { useCommanderStore } from '../store/commander-store'
 import { WorkspaceHeader } from './WorkspaceHeader'
-import { CommanderPanel } from './CommanderPanel'
 import { CardSearchSection } from './CardSearchSection'
+import { DeckColumn } from './DeckColumn'
 
 export function DeckWorkspace() {
   const { id } = useParams<{ id: string }>()
@@ -41,29 +41,21 @@ export function DeckWorkspace() {
   }
 
   return (
-    <div>
+    <div data-testid="deck-workspace">
       <WorkspaceHeader deckName={deck.name} />
-      <section
-        aria-label="Commander"
-        data-testid="commander-panel"
-        className="mt-6"
-      >
-        <h2 className="text-xl font-semibold text-text-primary mb-4">Commander</h2>
-        <CommanderPanel deckId={numericId} />
-      </section>
-      <section
-        aria-label="Card Search"
+      <div
         data-testid="card-search-section"
+        className="flex flex-col lg:flex-row gap-6 mt-6 items-start"
       >
-        <CardSearchSection />
-      </section>
-      <section
-        aria-label="Deck Cards"
-        data-testid="deck-placeholder"
-        className="mt-8 rounded-lg bg-surface border border-border border-dashed p-8 text-center"
-      >
-        <p className="text-text-secondary text-sm">Deck cards will appear here.</p>
-      </section>
+        {/* Search column — 60% */}
+        <div className="flex-[3] min-w-0">
+          <CardSearchSection />
+        </div>
+        {/* Deck column — 40%, sticky on desktop */}
+        <div className="flex-[2] min-w-0 lg:sticky lg:top-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
+          <DeckColumn deckId={numericId} />
+        </div>
+      </div>
     </div>
   )
 }

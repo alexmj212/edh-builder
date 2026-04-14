@@ -132,6 +132,37 @@ describe('CommanderPanel', () => {
     expect(useCommanderStore.getState().partnerCommander).toBeNull();
   });
 
+  it('variant="art_crop" renders img with art_crop src and commander-strip-image testid', () => {
+    useCommanderStore.setState({
+      primaryCommander: fakeCard({
+        name: 'ArtCropCommander',
+        image_uris: { art_crop: 'https://img/art_crop/commander.jpg', normal: 'https://img/normal/commander.jpg' },
+      }) as any,
+    });
+    render(<CommanderPanel deckId={1} variant="art_crop" />);
+    const img = screen.getByTestId('commander-strip-image') as HTMLImageElement;
+    expect(img.src).toContain('art_crop');
+  });
+
+  it('variant="art_crop" still flips DFC faces correctly', () => {
+    useCommanderStore.setState({
+      primaryCommander: fakeCard({
+        name: 'DFCCommander',
+        card_faces: [
+          { image_uris: { normal: 'face-front-normal', art_crop: 'face-front-artcrop' } },
+          { image_uris: { normal: 'face-back-normal', art_crop: 'face-back-artcrop' } },
+        ],
+      }) as any,
+    });
+    render(<CommanderPanel deckId={1} variant="art_crop" />);
+    const img = screen.getByTestId('commander-strip-image') as HTMLImageElement;
+    // Initially shows face 0 art_crop
+    expect(img.src).toContain('face-front-artcrop');
+    const flipBtn = screen.getByRole('button', { name: /Flip/i });
+    fireEvent.click(flipBtn);
+    expect(img.src).toContain('face-back-artcrop');
+  });
+
   it('loadForDeck rehydrates partner and CommanderPanel renders the restored partner FullCard on remount', async () => {
     const deckId = (await db.decks.add({
       name: 'Rehydrate Test',
