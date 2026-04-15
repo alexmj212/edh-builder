@@ -184,8 +184,9 @@ export function CardSearchSection() {
           {PIP_ORDER.map(letter => (
             <span
               key={letter}
-              aria-pressed={identity.includes(letter)}
-              aria-label={`${letter} (locked to commander identity)`}
+              aria-label={identity.includes(letter)
+                ? `${letter} (in commander identity)`
+                : `${letter} (not in commander identity)`}
               className={`w-6 h-6 rounded-sm text-xs font-semibold flex items-center justify-center ${
                 identity.includes(letter) ? 'ring-2 ring-accent' : 'opacity-50'
               }`}
