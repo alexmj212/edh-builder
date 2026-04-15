@@ -70,7 +70,7 @@ function FullCard({ card, actionLabel, onAction, variant = 'normal' }: FullCardP
           <button
             type="button"
             onClick={() => setFaceIndex(i => (i === 0 ? 1 : 0))}
-            className="text-sm text-text-secondary hover:text-text-primary"
+            className="text-sm text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-accent rounded"
             aria-label="Flip card to other face"
           >
             Flip
@@ -79,7 +79,7 @@ function FullCard({ card, actionLabel, onAction, variant = 'normal' }: FullCardP
         <button
           type="button"
           onClick={onAction}
-          className="text-sm text-text-secondary hover:text-text-primary"
+          className="text-sm text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-accent rounded"
         >
           {actionLabel}
         </button>
