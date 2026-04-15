@@ -9,7 +9,7 @@ export interface DeckGridViewProps {
   onRemove: (deckCardId: number) => void;
 }
 
-function GridCell({ card, onRemove }: { deckCard: DeckCard; card: Card; onRemove: () => void }) {
+function GridCell({ card, onRemove }: { card: Card; onRemove: () => void }) {
   const [loaded, setLoaded] = useState(false);
   return (
     <div className="relative rounded overflow-hidden bg-surface aspect-[146/204]">
@@ -47,7 +47,6 @@ export function DeckGridView({ cards, cardLookup, onRemove }: DeckGridViewProps)
         return (
           <GridCell
             key={dc.id}
-            deckCard={dc}
             card={card}
             onRemove={() => onRemove(dc.id!)}
           />
