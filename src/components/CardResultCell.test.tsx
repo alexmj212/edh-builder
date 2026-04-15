@@ -117,4 +117,22 @@ describe('CardResultCell', () => {
     await userEvent.click(btn, { pointerEventsCheck: 0 });
     expect(onAdd).not.toHaveBeenCalled();
   });
+
+  // --- Phase 03.1 UI polish tests (NEW) ---
+
+  describe('outer container focus state (Phase 03.1 UI polish)', () => {
+    it('outer container has focus:ring-2 focus:ring-accent classes', () => {
+      render(<CardResultCell card={fakeCard() as any} isInDeck={false} isAdding={false} onAdd={vi.fn()} />);
+      const container = screen.getByTestId('card-result-cell');
+      expect(container.className).toMatch(/focus:outline-none/);
+      expect(container.className).toMatch(/focus:ring-2/);
+      expect(container.className).toMatch(/focus:ring-accent/);
+    });
+
+    it('outer container preserves tabIndex=0', () => {
+      render(<CardResultCell card={fakeCard() as any} isInDeck={false} isAdding={false} onAdd={vi.fn()} />);
+      const container = screen.getByTestId('card-result-cell');
+      expect(container.getAttribute('tabindex')).toBe('0');
+    });
+  });
 });
