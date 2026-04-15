@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useDeckStore } from '../store/deck-store'
 import { useCommanderStore } from '../store/commander-store'
@@ -24,6 +24,11 @@ export function DeckWorkspace() {
     void loadForDeck(numericId, ctrl.signal)
     return () => { ctrl.abort() }
   }, [numericId, loadForDeck])
+
+  const outerScrollRef = useRef<HTMLDivElement>(null)
+  const handleViewToggle = useCallback(() => {
+    if (outerScrollRef.current) outerScrollRef.current.scrollTop = 0
+  }, [])
 
   if (loading) {
     return <div className="text-text-secondary text-center py-16">Loading deck...</div>
@@ -52,8 +57,8 @@ export function DeckWorkspace() {
           <CardSearchSection />
         </div>
         {/* Deck column — 40%, sticky on desktop */}
-        <div className="flex-[2] min-w-0 lg:sticky lg:top-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
-          <DeckColumn deckId={numericId} />
+        <div ref={outerScrollRef} className="flex-[2] min-w-0 lg:sticky lg:top-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
+          <DeckColumn deckId={numericId} onViewToggle={handleViewToggle} />
         </div>
       </div>
     </div>

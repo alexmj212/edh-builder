@@ -11,9 +11,11 @@ import { CommanderPanel } from './CommanderPanel';
 
 export interface DeckColumnProps {
   deckId: number;
+  /** Optional callback fired after a view-mode change so the parent can reset its own scroll. */
+  onViewToggle?: () => void;
 }
 
-export function DeckColumn({ deckId }: DeckColumnProps) {
+export function DeckColumn({ deckId, onViewToggle }: DeckColumnProps) {
   const cards = useDeckCardsStore(s => s.cards);
   const viewMode = useDeckCardsStore(s => s.viewMode);
   const loadForDeck = useDeckCardsStore(s => s.loadForDeck);
@@ -23,7 +25,6 @@ export function DeckColumn({ deckId }: DeckColumnProps) {
 
   const primaryCommander = useCommanderStore(s => s.primaryCommander);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
   const lastLoadedDeckIdRef = useRef<number | null>(null);
 
   // StrictMode-safe loadForDeck gate — mirrors CardSearchSection.tsx pattern
@@ -75,14 +76,13 @@ export function DeckColumn({ deckId }: DeckColumnProps) {
 
   function handleToggle(mode: 'grid' | 'list') {
     void setViewMode(deckId, mode);
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    onViewToggle?.();
   }
 
   return (
     <div
-      ref={scrollRef}
       data-testid="deck-column"
-      className="rounded-lg bg-surface border border-border p-4 overflow-y-auto"
+      className="rounded-lg bg-surface border border-border p-4"
     >
       {/* Header: title + card count + view toggle */}
       <div className="flex items-center justify-between mb-4">
