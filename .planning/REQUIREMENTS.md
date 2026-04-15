@@ -71,7 +71,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **UI-01**: Dark mode by default (toggleable to light)
 - [x] **UI-02**: Card images lazy-load with placeholder skeletons
 - [ ] **UI-03**: Responsive layout — usable on desktop and tablet
-- [ ] **UI-04**: Commander displayed prominently at top of deck view with art_crop image
+- [x] **UI-04**: Commander displayed prominently at top of deck view with art_crop image
 
 ## v2 Requirements
 
@@ -197,7 +197,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-01 | Phase 1 | Pending |
 | UI-02 | Phase 3 | Complete |
 | UI-03 | Phase 1 | Pending |
-| UI-04 | Phase 3 | Pending |
+| UI-04 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 40 total
