@@ -37,10 +37,10 @@ function fakeDeckCard(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function renderDeckColumn(deckId = 1) {
+function renderDeckColumn(deckId = 1, onViewToggle?: () => void) {
   return render(
     <MemoryRouter>
-      <DeckColumn deckId={deckId} />
+      <DeckColumn deckId={deckId} onViewToggle={onViewToggle} />
     </MemoryRouter>
   );
 }
@@ -139,18 +139,36 @@ describe('DeckColumn', () => {
     expect(setViewMode).toHaveBeenCalledWith(1, 'grid');
   });
 
-  it('resets scrollTop to 0 on view toggle', async () => {
-    useCommanderStore.setState({ primaryCommander: fakeCard() as any });
-    const setViewMode = vi.fn().mockResolvedValue(undefined);
-    useDeckCardsStore.setState({ setViewMode } as Partial<DeckCardsState>);
-    renderDeckColumn();
-    await screen.findByText('Your Deck');
-    const deckColumn = screen.getByTestId('deck-column');
-    // Pre-set scrollTop to simulate user having scrolled
-    Object.defineProperty(deckColumn, 'scrollTop', { writable: true, value: 200 });
-    const gridBtn = screen.getByRole('button', { name: 'Grid' });
-    fireEvent.click(gridBtn);
-    expect(deckColumn.scrollTop).toBe(0);
+  describe('view-toggle scroll reset (Phase 03.1 UI polish)', () => {
+    it('calls onViewToggle when user switches to Grid view', async () => {
+      useCommanderStore.setState({ primaryCommander: fakeCard() as any });
+      const setViewMode = vi.fn().mockResolvedValue(undefined);
+      useDeckCardsStore.setState({ viewMode: 'list', setViewMode, cards: [fakeDeckCard() as any] } as Partial<DeckCardsState>);
+      const onViewToggle = vi.fn();
+      renderDeckColumn(1, onViewToggle);
+      await screen.findByText('Your Deck');
+      const gridBtn = screen.getByRole('button', { name: 'Grid' });
+      fireEvent.click(gridBtn);
+      expect(onViewToggle).toHaveBeenCalledTimes(1);
+      // Regression guard: store wiring still intact
+      expect(setViewMode).toHaveBeenCalledTimes(1);
+      expect(setViewMode).toHaveBeenCalledWith(1, 'grid');
+    });
+
+    it('calls onViewToggle when user switches to List view', async () => {
+      useCommanderStore.setState({ primaryCommander: fakeCard() as any });
+      const setViewMode = vi.fn().mockResolvedValue(undefined);
+      useDeckCardsStore.setState({ viewMode: 'grid', setViewMode, cards: [fakeDeckCard() as any] } as Partial<DeckCardsState>);
+      const onViewToggle = vi.fn();
+      renderDeckColumn(1, onViewToggle);
+      await screen.findByText('Your Deck');
+      const listBtn = screen.getByRole('button', { name: 'List' });
+      fireEvent.click(listBtn);
+      expect(onViewToggle).toHaveBeenCalledTimes(1);
+      // Regression guard: store wiring still intact
+      expect(setViewMode).toHaveBeenCalledTimes(1);
+      expect(setViewMode).toHaveBeenCalledWith(1, 'list');
+    });
   });
 
   it('subscribes to store.error and renders error banner with role="alert"', async () => {
