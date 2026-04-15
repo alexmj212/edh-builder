@@ -113,8 +113,24 @@ export const useDeckCardsStore = create<DeckCardsState>()((set, get) => ({
     };
 
     try {
-      let newId!: number;
+      let newId: number | null = null;
       await db.transaction('rw', [db.deckCards, db.deckChanges, db.decks], async () => {
+        // Step 3a: Re-check duplicate INSIDE the transaction against Dexie truth
+        // rather than the in-memory snapshot captured before the Scryfall await.
+        // Architecture rule R-07: store-level duplicate guards must re-check
+        // from the authoritative source immediately before write, not before
+        // the async gap. Two rapid clicks race past the in-memory guard; this
+        // catches them.
+        if (!isBasicLand(card)) {
+          // Query by deckId index, then filter to scryfallId. A Commander deck
+          // is bounded to ~100 rows so this scan is trivial and does not need
+          // a compound index.
+          const existing = await db.deckCards
+            .where('deckId').equals(deckId)
+            .filter((dc) => dc.scryfallId === card.id)
+            .first();
+          if (existing) return; // abort transaction work; newId stays null
+        }
         newId = (await db.deckCards.add(row)) as number;
         await db.deckChanges.add({
           deckId,
@@ -126,9 +142,15 @@ export const useDeckCardsStore = create<DeckCardsState>()((set, get) => ({
         await db.decks.update(deckId, { updatedAt: now });
       });
 
+      // If the in-transaction dedupe caught a concurrent add, surface the
+      // already-in-deck reason just like the pre-await guard would.
+      if (newId === null) {
+        return { ok: false, reason: 'already-in-deck' };
+      }
+
       // Step 4: Update in-memory state post-commit
       set((s) => ({
-        cards: [...s.cards, { id: newId, ...row }],
+        cards: [...s.cards, { id: newId as number, ...row }],
       }));
 
       return { ok: true, deckCardId: newId };
