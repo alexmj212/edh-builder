@@ -1,43 +1,38 @@
 {
   "version": "1.0",
-  "timestamp": "2026-04-15T02:50:35.894Z",
-  "phase": "03.1",
-  "phase_name": "UI polish — Phase 3 follow-ups",
-  "phase_dir": ".planning/phases/03.1-ui-polish-phase-3-follow-ups",
-  "plan": null,
-  "task": null,
-  "total_tasks": null,
+  "timestamp": "2026-04-15T03:50:57.792Z",
+  "context": "bug-investigation",
+  "phase": "post-03.1",
+  "phase_name": "user-reported bug: second-open console",
+  "phase_dir": null,
   "status": "paused",
-  "previous_phase_complete": "03",
   "completed_tasks": [
-    {"phase": "03", "name": "Wave 1 — scaffolding + Dexie v4 + oracleid probe", "status": "done"},
-    {"phase": "03", "name": "Wave 2 — isBasicLand + categorizeCard (TDD, 35 tests)", "status": "done"},
-    {"phase": "03", "name": "Wave 3 — deck-cards-store atomic 3-table transactions (16 tests)", "status": "done"},
-    {"phase": "03", "name": "Wave 4 — ViewToggle + DeckListView + DeckGridView (28 tests, pure)", "status": "done"},
-    {"phase": "03", "name": "Wave 5 — Integration + Playwright spec 13-deck-building + human-verify (27 e2e)", "status": "done"},
-    {"phase": "03", "name": "Code review → auto-fix (4 warnings cleared: WR-01..WR-04)", "status": "done"},
-    {"phase": "03", "name": "Schema drift check", "status": "done"},
-    {"phase": "03", "name": "Phase goal verification — passed 11/11 must-haves", "status": "done"},
-    {"phase": "03", "name": "UI review — PASS 21/24 (3 advisory findings)", "status": "done"},
-    {"phase": "03", "name": "Phase complete marker + artifacts committed", "status": "done"},
-    {"phase": "03.1", "name": "Phase inserted with goal/success criteria", "status": "done"}
+    {"id": 1, "name": "Phase 03.1 execution — all 4 plans shipped, verified 5/5, committed", "status": "done"},
+    {"id": 2, "name": "Phase 03.1 code review — 0 critical, 2 warning (WR-01 cursor-pointer, WR-02 Deck-not-found flash), 4 info", "status": "done"},
+    {"id": 3, "name": "Reproduction harness set up (e2e/specs/99-repro-second-open.spec.ts) using stubScryfall fixtures", "status": "done"},
+    {"id": 4, "name": "Ran stubbed repro of user flow: create → open → commander (Atraxa) → add card (Sol Ring) → back → reopen. Console clean on second open.", "status": "done"}
   ],
   "remaining_tasks": [
-    {"name": "Run /gsd-plan-phase 03.1 to break the polish work into plans", "status": "not_started"},
-    {"name": "Fix CommanderPanel 'Change commander' + 'Remove partner' focus rings (CommanderPanel.tsx:74, 79-84)", "status": "not_started"},
-    {"name": "Fix DeckColumn scrollRef to target true scroll parent — currently silently no-ops at overflow (DeckColumn.tsx:78 + DeckWorkspace.tsx:55)", "status": "not_started"},
-    {"name": "Fix CardResultCell outer div tabIndex without focus state (CardResultCell.tsx:60-62)", "status": "not_started"},
-    {"name": "Rerun UI review — target full marks on Visuals, Spacing, Experience Design pillars", "status": "not_started"}
+    {"id": 5, "name": "Get actual console message from user (stubs don't reproduce — bug likely depends on real Scryfall response shape or untested state)", "status": "blocked_on_user"},
+    {"id": 6, "name": "Once message is known: target investigation at the specific warning/error", "status": "not_started"},
+    {"id": 7, "name": "Clean up scratch files (_repro.mjs, 99-repro-second-open.spec.ts) OR promote spec to proper regression test", "status": "not_started"}
   ],
-  "blockers": [],
-  "human_actions_pending": [],
+  "blockers": [
+    {"description": "Stubbed repro cannot reproduce — need actual console output from user's live browser", "type": "information_gap", "workaround": "User pastes console text, or reruns with a copy-friendly devtools snippet"}
+  ],
+  "human_actions_pending": [
+    {"action": "Share console message(s) seen during second-open — exact text, type (error/warning/info/log)", "context": "Stubbed flow produced clean console, so bug depends on real data or state the fixtures don't simulate", "blocking": true}
+  ],
   "decisions": [
-    {"decision": "Locked Scryfall prints operator to 'oracleid:' (not 'oracle_id:')", "rationale": "Both returned identical results; 'oracleid:' matches Scryfall's own prints_search_uri emission", "phase": "03"},
-    {"decision": "CommanderPanel moved above primaryCommander gate", "rationale": "Incidentally fixed 14 pre-existing e2e failures; commander search is always reachable", "phase": "03"},
-    {"decision": "Wave 4 components are pure — no store imports", "rationale": "Reusability + testability; DeckColumn (Wave 5) owns the store wiring", "phase": "03"},
-    {"decision": "Phase 03.1 queued for UI review advisory items instead of backlog", "rationale": "Three focus-ring / scroll-container issues are minor but measurable; run before Phase 4 to keep design contract tight", "phase": "03.1"}
+    {"decision": "Wrote spec as Playwright test (not raw node script) using project's stubScryfall + commanderFlows + deckBuildingFlows helpers", "rationale": "Matches existing e2e patterns; if bug is reproducible, spec can be promoted to regression coverage directly"},
+    {"decision": "Did NOT try real Scryfall yet", "rationale": "Would hit live network and rate limits; better to target once the symptom is known"}
   ],
-  "uncommitted_files": [],
-  "next_action": "Run /clear, then /gsd-plan-phase 03.1 to generate the polish plan. The 3 specific fixes and success criteria are already documented in ROADMAP.md under Phase 03.1 and in 03-UI-REVIEW.md's 'Top 3 Fixes' section.",
-  "context_notes": "Phase 3 shipped clean — 281/281 unit + 27/27 e2e + code review clean + goal verified. Only residue is 3 advisory UI polish items from the retroactive 6-pillar audit. Phase 03.1 exists on disk with customized goal + success criteria; just needs /gsd-plan-phase to generate its plans. No blockers. No pending human actions."
+  "uncommitted_files": [
+    "e2e/specs/99-repro-second-open.spec.ts (scratch repro harness — clean green against stubs)",
+    "_repro.mjs (failed standalone node repro — superseded by the spec, delete on resume)",
+    ".planning/.next-call-count (pre-existing untracked)",
+    ".planning/ui-reviews/ (pre-existing untracked)"
+  ],
+  "next_action": "Ask user for exact console message. If they have it → target investigation at that symptom. If not → walk through live browser with them to capture it.",
+  "context_notes": "Phase 03.1 shipped cleanly. User reported bug immediately after. Stubbed repro of their exact flow (create→open→commander→add→back→reopen) came back clean — no errors, warnings, or unexpected output on second open. Strong signal that the bug depends on real Scryfall API response shape, a card the fixtures don't cover, or a state transition the stubs don't exercise (e.g., oracle_id resolution, Dexie hydration edge cases). Context warning fired at 80%, user requested handoff before burning more exploring blind variations."
 }
