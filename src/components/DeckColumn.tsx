@@ -36,17 +36,18 @@ export function DeckColumn({ deckId }: DeckColumnProps) {
   // Card lookup map: populated from search results (warm) + on-demand fetchCardById
   const [lookupMap, setLookupMap] = useState<Map<string, Card>>(new Map());
 
-  // Seed from search store results (already warm from the session)
+  // Seed from search store results reactively — subscribes so new results warm
+  // the map even when the card list hasn't changed.
+  const searchResults = useCardSearchStore(s => s.results);
   useEffect(() => {
-    const results = useCardSearchStore.getState().results;
-    if (results.length > 0) {
+    if (searchResults.length > 0) {
       setLookupMap(prev => {
         const next = new Map(prev);
-        for (const c of results) next.set(c.id, c);
+        for (const c of searchResults) next.set(c.id, c);
         return next;
       });
     }
-  }, [cards]);
+  }, [searchResults]);
 
   // Fetch any missing cards by Scryfall id
   useEffect(() => {
@@ -68,8 +69,7 @@ export function DeckColumn({ deckId }: DeckColumnProps) {
       });
     })();
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards]);
+  }, [cards, lookupMap]);
 
   const cardLookup = (id: string) => lookupMap.get(id);
 
