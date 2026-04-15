@@ -138,21 +138,24 @@ export const useDeckCardsStore = create<DeckCardsState>()((set, get) => ({
     if (!row) return;
 
     const now = Date.now();
-    await db.transaction('rw', [db.deckCards, db.deckChanges, db.decks], async () => {
-      await db.deckCards.delete(deckCardId);
-      await db.deckChanges.add({
-        deckId: row.deckId,
-        type: 'remove',
-        cardName: row.cardName,
-        scryfallId: row.scryfallId,
-        timestamp: now,
+    try {
+      await db.transaction('rw', [db.deckCards, db.deckChanges, db.decks], async () => {
+        await db.deckCards.delete(deckCardId);
+        await db.deckChanges.add({
+          deckId: row.deckId,
+          type: 'remove',
+          cardName: row.cardName,
+          scryfallId: row.scryfallId,
+          timestamp: now,
+        });
+        await db.decks.update(row.deckId, { updatedAt: now });
       });
-      await db.decks.update(row.deckId, { updatedAt: now });
-    });
-
-    set((s) => ({
-      cards: s.cards.filter((c) => c.id !== deckCardId),
-    }));
+      set((s) => ({
+        cards: s.cards.filter((c) => c.id !== deckCardId),
+      }));
+    } catch (err) {
+      set({ error: 'Could not remove card. Check your browser storage settings and try again.' });
+    }
   },
 
   setViewMode: async (deckId: number, mode: 'grid' | 'list') => {
