@@ -203,6 +203,26 @@ Plans:
 
 ---
 
+### Phase 03.1: UI polish — Phase 3 follow-ups (INSERTED)
+
+**Goal:** Resolve the three advisory findings from Phase 3's UI review (03-UI-REVIEW.md, PASS 21/24) so keyboard and scroll behavior match the rest of the design contract before Phase 4.
+
+**Requirements:** No new requirement IDs — closes advisory items from 03-UI-REVIEW.md.
+
+**Depends on:** Phase 3
+
+**Success criteria:**
+- CommanderPanel "Change commander" and "Remove partner" buttons have visible `focus:ring-2 focus:ring-accent` focus rings (matches ViewToggle pattern)
+- View-switch scroll reset in DeckColumn works at deck sizes that overflow the flex container — `scrollRef` targets the true scroll parent, not the inner div (current `DeckColumn.tsx:78` silently no-ops at overflow)
+- Search result cards expose a visible focus state — either add `focus:ring-2 focus:ring-accent` to the `CardResultCell` outer div, or drop `tabIndex={0}` from the container and rely on the inner `(+)` button's tab stop
+- `bun test` and `bun run test:e2e` still green; no regressions in specs 01-13
+- UI review rerun passes all three pillars previously docked (Visuals, Spacing, Experience Design)
+
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 03.1 to break down)
+
 ## Phase 4: Live Validation Checklist
 
 **Goal:** Real-time validation sidebar that checks all Commander format rules as the deck is built.

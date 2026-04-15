@@ -179,6 +179,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 - Phase 02.1 inserted after Phase 02: Partner commander Dexie persistence — survive reload and deck re-entry (URGENT, gap found during Phase 02 human-verify checkpoint)
 - Phase 02.2 inserted after Phase 02: Playwright E2E infrastructure + Phase 02.1 backfill — stands up e2e harness so Claude can self-verify interactive UAT, retroactively covers 02.1 browser-side flows; establishes standing rule that every subsequent phase ships with E2E coverage (URGENT)
+- Phase 03.1 inserted after Phase 03: UI polish — three advisory findings from 03-UI-REVIEW.md (CommanderPanel focus rings, DeckColumn scrollRef targets wrong container, CardResultCell tabIndex without focus state). Not urgent — Phase 3 shipped PASS 21/24; run before Phase 4 to keep the design contract tight.
 
 ---
-*Last updated: 2026-04-12*
+*Last updated: 2026-04-15*
