@@ -163,6 +163,51 @@ describe('CommanderPanel', () => {
     expect(img.src).toContain('face-back-artcrop');
   });
 
+  describe('focus rings (Phase 03.1 UI polish)', () => {
+    it('Change commander button has focus:ring-2 focus:ring-accent classes', () => {
+      useCommanderStore.setState({ primaryCommander: fakeCard({ name: 'Atraxa' }) as any });
+      render(<CommanderPanel deckId={1} />);
+      const btn = screen.getByRole('button', { name: 'Change commander' });
+      expect(btn.className).toMatch(/focus:outline-none/);
+      expect(btn.className).toMatch(/focus:ring-2/);
+      expect(btn.className).toMatch(/focus:ring-accent/);
+      expect(btn.className).toMatch(/\brounded\b/);
+    });
+
+    it('Remove partner button has focus:ring-2 focus:ring-accent classes', () => {
+      const primary = fakeCard({ id: 'primary-id', name: 'Primary', keywords: ['Partner'] });
+      const partner = fakeCard({ id: 'partner-id', name: 'Partner Card', keywords: ['Partner'] });
+      useCommanderStore.setState({
+        primaryCommander: primary as any,
+        partnerCommander: partner as any,
+      });
+      render(<CommanderPanel deckId={1} />);
+      const btn = screen.getByRole('button', { name: 'Remove partner' });
+      expect(btn.className).toMatch(/focus:outline-none/);
+      expect(btn.className).toMatch(/focus:ring-2/);
+      expect(btn.className).toMatch(/focus:ring-accent/);
+      expect(btn.className).toMatch(/\brounded\b/);
+    });
+
+    it('Flip button has focus:ring-2 focus:ring-accent classes when commander is double-faced', () => {
+      useCommanderStore.setState({
+        primaryCommander: fakeCard({
+          name: 'TwoFace',
+          card_faces: [
+            { image_uris: { normal: 'face-front' } },
+            { image_uris: { normal: 'face-back' } },
+          ],
+        }) as any,
+      });
+      render(<CommanderPanel deckId={1} />);
+      const btn = screen.getByRole('button', { name: /Flip/i });
+      expect(btn.className).toMatch(/focus:outline-none/);
+      expect(btn.className).toMatch(/focus:ring-2/);
+      expect(btn.className).toMatch(/focus:ring-accent/);
+      expect(btn.className).toMatch(/\brounded\b/);
+    });
+  });
+
   it('loadForDeck rehydrates partner and CommanderPanel renders the restored partner FullCard on remount', async () => {
     const deckId = (await db.decks.add({
       name: 'Rehydrate Test',
