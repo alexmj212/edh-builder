@@ -15,7 +15,7 @@ export interface DeckCardsState {
   viewMode: 'grid' | 'list';
   loading: boolean;
   error: string | null;
-  loadForDeck: (deckId: number) => Promise<void>;
+  loadForDeck: (deckId: number, signal?: AbortSignal) => Promise<void>;
   addCard: (deckId: number, card: Card) => Promise<AddResult>;
   removeCard: (deckCardId: number) => Promise<void>;
   setViewMode: (deckId: number, mode: 'grid' | 'list') => Promise<void>;
@@ -69,10 +69,16 @@ export const useDeckCardsStore = create<DeckCardsState>()((set, get) => ({
   loading: false,
   error: null,
 
-  loadForDeck: async (deckId: number) => {
-    set({ loading: true, error: null });
+  loadForDeck: async (deckId: number, signal?: AbortSignal) => {
+    // deckId MUST be set synchronously before the first await — mirrors
+    // commander-store's loadedDeckId pattern so any subscriber that reads
+    // `deckId` between this call and its resolution sees the target deck,
+    // not the previously-loaded one. See architecture rule R-03.
+    set({ deckId, loading: true, error: null });
     const deck = await db.decks.get(deckId);
+    if (signal?.aborted) return;
     const cards = await db.deckCards.where('deckId').equals(deckId).toArray();
+    if (signal?.aborted) return;
     set({
       deckId,
       cards,

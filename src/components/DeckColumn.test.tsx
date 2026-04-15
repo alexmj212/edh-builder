@@ -189,7 +189,11 @@ describe('DeckColumn', () => {
     expect(img.getAttribute('src')).toMatch(/art_crop/);
   });
 
-  it('loadForDeck fires exactly once under React.StrictMode (guards lastLoadedDeckIdRef)', async () => {
+  it('loadForDeck is StrictMode-safe: first invocation aborts, second runs for real', async () => {
+    // The abort-based dedup contract (mirroring commander-store) means the
+    // effect IS called twice under StrictMode, but the first invocation's
+    // AbortController fires before its first await checkpoint, so it no-ops.
+    // Architecture rule R-05: do not combine ref-dedup with abort-on-cleanup.
     const loadForDeck = vi.fn().mockResolvedValue(undefined);
     useDeckCardsStore.setState({ loadForDeck } as Partial<DeckCardsState>);
     render(
@@ -199,9 +203,16 @@ describe('DeckColumn', () => {
         </MemoryRouter>
       </React.StrictMode>
     );
-    // Await microtask/flush so the effect runs through StrictMode's double-invoke.
     await waitFor(() => expect(loadForDeck.mock.calls.length).toBeGreaterThan(0));
-    expect(loadForDeck.mock.calls.length).toBe(1);
-    expect(loadForDeck).toHaveBeenCalledWith(1);
+    expect(loadForDeck.mock.calls.length).toBe(2);
+    // Both calls target deckId=1 with an AbortSignal
+    expect(loadForDeck).toHaveBeenNthCalledWith(1, 1, expect.any(AbortSignal));
+    expect(loadForDeck).toHaveBeenNthCalledWith(2, 1, expect.any(AbortSignal));
+    // First call's signal must be aborted (the StrictMode cleanup fired)
+    const firstSignal = loadForDeck.mock.calls[0][1] as AbortSignal;
+    expect(firstSignal.aborted).toBe(true);
+    // Second call's signal must still be live
+    const secondSignal = loadForDeck.mock.calls[1][1] as AbortSignal;
+    expect(secondSignal.aborted).toBe(false);
   });
 });
