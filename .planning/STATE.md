@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 1
-status: Executing Phase 03
-last_updated: "2026-04-14T04:26:37.535Z"
+current_plan: 5
+status: Phase 03 Complete — human-verify approved
+last_updated: "2026-04-14T12:00:00.000Z"
 progress:
   total_phases: 10
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 26
-  completed_plans: 25
-  percent: 96
+  completed_plans: 26
+  percent: 100
 ---
 
 # Project State: EDH Deck Builder
@@ -20,19 +20,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** You can build a valid Commander deck with confidence — the app tells you in real time whether your deck meets every format rule.
-**Current focus:** Phase 03 — Deck Building & Card Display
+**Current focus:** Phase 03 COMPLETE — human-verify approved 2026-04-14
 
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
-- **Active phase:** 02.2-playwright-e2e-harness (COMPLETE)
-- **Current Plan:** 1
-- **Phases planned:** 5
+- **Active phase:** 03-deck-building-card-display (COMPLETE — human-verify approved)
+- **Current Plan:** 5/5
+- **Phases planned:** 5 (Phase 03 closed)
 - **Requirements:** 37 v1, 10 v2
 
 ## Completed Phases
 
 (Phase 01 complete)
+(Phase 03 complete — human-verify approved 2026-04-14)
 
 ## Completed Plans (Phase 02)
 
@@ -43,6 +44,16 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 02-03 | Wave 2 Zustand Stores (commander-store, card-search-store) | 2026-04-12 |
 | 02-04 | Wave 3 Routing & DeckWorkspace Shell | 2026-04-12 |
 | 02-05 | Wave 4 Commander Selection UX | 2026-04-12 |
+
+## Completed Plans (Phase 03)
+
+| Plan | Name | Completed |
+|------|------|-----------|
+| 03-01 | Wave 1: Dexie v4 migration + type extensions + typed scaffolds + oracleid probe | 2026-04-14 |
+| 03-02 | Wave 2: isBasicLand + categorizeCard pure libs | 2026-04-14 |
+| 03-03 | Wave 3: deck-cards-store (addCard, removeCard, singleton enforcement, deckChanges, originalReleaseDate) | 2026-04-14 |
+| 03-04 | Wave 4: ViewToggle, DeckListView, DeckGridView UI components | 2026-04-14 |
+| 03-05 | Wave 5: Integration — CardResultCell (+), DeckColumn, DeckWorkspace 60/40, Playwright spec 13-deck-building.spec.ts | 2026-04-14 |
 
 ## Decisions
 
@@ -102,6 +113,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 03]: DeckListView remove: opacity-0 default (keyboard accessible), opacity-100 on group-hover/focus
 - [Phase 03]: DeckGridView remove: always visible (no opacity-0), absolute top-2 right-2 per UI-SPEC grid rule
 - [Phase 03]: GridCell carries own useState(loaded) for skeleton-fade — pure local state, no Zustand
+- [Phase 03-05]: CommanderPanel always rendered at top of DeckColumn regardless of primaryCommander — enables commander search input to be accessible at all times (fixed 14 pre-existing e2e failures as a side effect)
+- [Phase 03-05]: CardResultCell props isInDeck/isAdding/onAdd kept pure (no store subscription) — CardSearchSection is the composing parent
+- [Phase 03-05]: addCardToDeck helper waits for card text in deck-column (not .or() which caused strict-mode violations)
+- [Phase 03-05]: DeckWorkspace.test.tsx beforeEach stubs deck-cards-store.loadForDeck to prevent DatabaseClosedError from async Dexie access after db.delete()
 
 ## Performance Metrics
 
@@ -129,6 +144,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 03 P02 | 2min | 2 tasks | 4 files |
 | Phase 03 P03-03 | 15min | 1 tasks | 2 files |
 | Phase 03 P04 | 4min | 3 tasks | 6 files |
+| Phase 03 P05 | ~30min | 3 tasks | 14 files |
 
 ## Session Log
 
@@ -152,6 +168,10 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-12 | Completed 02.3-05: Phase 02.3 CLOSED — added e2e/specs/07-card-search.spec.ts with Load-more click + grid-growth (SRCH-07 E2E); deleted scryfall-client.ts + .test.ts; uninstalled @scryfall/api-types; removed tsconfig.app.json exclude bridge; restored 'tsc -b && vite build'; WR-01 retired; 170 unit + 8 e2e green post-deletion |
 | 2026-04-13 | Housekeeping sweep: closed BOOK-1 (retroactive 02-06-SUMMARY.md + tick ROADMAP; f2ace20) and FLAKE-1 (consoleGate accepts @vite/client as valid location — Vite dev wraps console.warn, breaking the storage.ts pin; 3e37665). 176 unit + 15 e2e green. FU-2/3/4 remain as nice-to-haves. |
 | 2026-04-14 | Completed 03-01: Dexie v4 additive migration + 16 Wave 2-4 typed scaffolds + live Scryfall probe; oracleid: operator locked as canonical prints-lookup operator; BUILD-08 requirement ticked |
+| 2026-04-14 | Completed 03-02: isBasicLand + categorizeCard pure libs |
+| 2026-04-14 | Completed 03-03: deck-cards-store addCard/removeCard/singleton enforcement/deckChanges/originalReleaseDate |
+| 2026-04-14 | Completed 03-04: ViewToggle (aria-pressed), DeckListView (7 categories), DeckGridView (aspect-[146/204] skeletons) |
+| 2026-04-14 | Completed 03-05: Integration — CardResultCell (+) wired, DeckColumn composed, DeckWorkspace 60/40, Playwright spec 13-deck-building.spec.ts (12 tests). Fixed 14 pre-existing e2e failures as side-effect. 281 unit + 27 e2e passing. Human-verify APPROVED. Phase 03 COMPLETE. |
 
 ## Accumulated Context
 
