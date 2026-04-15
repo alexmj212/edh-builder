@@ -57,7 +57,7 @@ export function CardResultCell({ card, isInDeck, isAdding, onAdd }: CardResultCe
   return (
     <div
       data-testid="card-result-cell"
-      className="relative rounded-lg overflow-hidden bg-surface border border-border cursor-pointer group"
+      className="relative rounded-lg overflow-hidden bg-surface border border-border cursor-pointer group focus:outline-none focus:ring-2 focus:ring-accent"
       tabIndex={0}
     >
       <img
