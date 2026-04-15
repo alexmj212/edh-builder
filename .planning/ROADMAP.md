@@ -218,13 +218,13 @@ Plans:
 - `bun test` and `bun run test:e2e` still green; no regressions in specs 01-13
 - UI review rerun passes all three pillars previously docked (Visuals, Spacing, Experience Design)
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [x] 03.1-01-PLAN.md — CommanderPanel focus rings on FullCard action buttons (Flip, Change commander, Remove partner) + regression tests
 - [x] 03.1-02-PLAN.md — Lift DeckColumn view-toggle scroll-reset ref to DeckWorkspace outer flex-[2] wrapper; drop inner overflow-y-auto + regression tests
 - [x] 03.1-03-PLAN.md — Add focus ring to CardResultCell outer tabbable container; preserve tabIndex=0 + regression tests
-- [ ] 03.1-04-PLAN.md — Playwright spec 14-ui-polish.spec.ts: browser-level regression for focus rings (computed box-shadow) + scroll reset at overflow
+- [x] 03.1-04-PLAN.md — Playwright spec 14-ui-polish.spec.ts: browser-level regression for focus rings (computed box-shadow) + scroll reset at overflow
 
 ## Phase 4: Live Validation Checklist
 

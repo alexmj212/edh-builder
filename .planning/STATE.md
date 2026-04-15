@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 4
 status: Executing Phase 03.1
-last_updated: "2026-04-15T03:31:02.346Z"
+last_updated: "2026-04-15T03:35:50.612Z"
 progress:
   total_phases: 11
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 30
-  completed_plans: 29
-  percent: 97
+  completed_plans: 30
+  percent: 100
 ---
 
 # Project State: EDH Deck Builder
@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
-- **Active phase:** 03-deck-building-card-display (COMPLETE — human-verify approved)
-- **Current Plan:** 4
+- **Active phase:** 03.1-ui-polish-phase-3-follow-ups (COMPLETE — all 4 plans shipped)
+- **Current Plan:** 4 (Phase 03.1 COMPLETE)
 - **Phases planned:** 5 (Phase 03 closed)
 - **Requirements:** 37 v1, 10 v2
 
@@ -34,6 +34,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 (Phase 01 complete)
 (Phase 03 complete — human-verify approved 2026-04-14)
+(Phase 03.1 complete — UI polish follow-ups shipped 2026-04-15)
 
 ## Completed Plans (Phase 02)
 
@@ -62,6 +63,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 03.1-01 | CommanderPanel focus rings (UI-REVIEW Fix #1, WCAG 2.1 2.4.7) | 2026-04-15 |
 | 03.1-02 | DeckColumn scrollRef lift to DeckWorkspace outer wrapper (UI-REVIEW Fix #2 + Pillar 5) | 2026-04-15 |
 | 03.1-03 | CardResultCell outer container focus ring (UI-REVIEW Fix #3, WCAG 2.1 2.4.7) | 2026-04-15 |
+| 03.1-04 | E2E regression spec (Playwright 14-ui-polish.spec.ts, 3 tests) — Phase 03.1 COMPLETE | 2026-04-15 |
 
 ## Decisions
 
@@ -128,6 +130,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 03.1]: Plan 03.1-01: Reused ViewToggle focus-ring pattern (non-inset variant + rounded) for standalone text buttons in CommanderPanel FullCard — closes UI-REVIEW #1 WCAG 2.1 2.4.7
 - [Phase 03.1]: [Phase 03.1-02] Lifted view-toggle scroll-reset ref from DeckColumn's inner div to DeckWorkspace's flex-[2] outer wrapper — closes UI-REVIEW Fix #2 (scrollTop no-op when deck overflows). Inner overflow-y-auto removed (Pillar 5 double-scroll advisory). 285 unit tests green.
 - [Phase 03.1]: Plan 03.1-03: CardResultCell outer div gains focus:outline-none focus:ring-2 focus:ring-accent; tabIndex={0} preserved (tab stop pairs with focus-within overlay reveal). UI-REVIEW #3 closed, WCAG 2.1 2.4.7 compliant. 287 unit tests green.
+- [Phase 03.1]: Plan 03.1-04: Playwright spec 14-ui-polish shipped (3 tests) — Phase 03.1 COMPLETE. 30 e2e + 287 unit green. Asserts computed box-shadow (not just class presence) for focus rings; synthetic 2000px spacer for scroll-reset test. Standing rule satisfied.
 
 ## Performance Metrics
 
@@ -159,6 +162,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 03.1 P01 | 3min | 2 tasks | 2 files |
 | Phase 03.1 P02 | 2 min | 2/2 tasks tasks | 3 files files |
 | Phase 03.1 P03 | 3 min | 2/2 tasks | 2 files |
+| Phase 03.1 P04 | 5min | 2/2 tasks | 1 files |
 
 ## Session Log
 
@@ -189,6 +193,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-15 | Completed 03.1-01: CommanderPanel FullCard Flip/Change commander/Remove partner buttons now carry focus:outline-none focus:ring-2 focus:ring-accent rounded — closes UI-REVIEW #1 (WCAG 2.1 2.4.7). 284 unit tests green (281 baseline + 3 regression). |
 | 2026-04-15 | Completed 03.1-02: Lifted view-toggle scroll-reset ref to DeckWorkspace outer flex-[2] wrapper; removed redundant inner overflow-y-auto from DeckColumn — closes UI-REVIEW Fix #2 + Pillar 5 advisory. 285 unit tests green (+2 new onViewToggle tests, −1 obsolete scrollTop test). |
 | 2026-04-15 | Completed 03.1-03: Added focus:outline-none focus:ring-2 focus:ring-accent to CardResultCell outer div; preserved tabIndex={0} (outer tab stop pairs with focus-within overlay reveal). Closes UI-REVIEW Fix #3 WCAG 2.1 2.4.7. 287 unit tests green (+2 regression tests). |
+| 2026-04-15 | Completed 03.1-04: Playwright spec 14-ui-polish.spec.ts shipped (3 tests) — browser-level regression coverage for all three UI-REVIEW fixes with computed-box-shadow focus-ring assertions + synthetic-overflow scroll-reset test. 30 e2e + 287 unit green. Standing rule (E2E per phase) satisfied. **Phase 03.1 COMPLETE.** |
 
 ## Accumulated Context
 
