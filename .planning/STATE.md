@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-last_updated: "2026-04-15T02:09:48.825Z"
+current_plan: 2
+status: Executing Phase 03.1
+last_updated: "2026-04-15T03:24:21.787Z"
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 6
-  total_plans: 26
-  completed_plans: 26
-  percent: 100
+  total_plans: 30
+  completed_plans: 27
+  percent: 90
 ---
 
 # Project State: EDH Deck Builder
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** You can build a valid Commander deck with confidence — the app tells you in real time whether your deck meets every format rule.
-**Current focus:** Phase 03 COMPLETE — human-verify approved 2026-04-14
+**Current focus:** Phase 03.1 — ui-polish-phase-3-follow-ups
 
 ## Current Status
 
 - **Milestone:** v1.0 — Core Deck Builder
 - **Active phase:** 03-deck-building-card-display (COMPLETE — human-verify approved)
-- **Current Plan:** Not started
+- **Current Plan:** 2
 - **Phases planned:** 5 (Phase 03 closed)
 - **Requirements:** 37 v1, 10 v2
 
@@ -117,6 +117,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 - [Phase 03-05]: CardResultCell props isInDeck/isAdding/onAdd kept pure (no store subscription) — CardSearchSection is the composing parent
 - [Phase 03-05]: addCardToDeck helper waits for card text in deck-column (not .or() which caused strict-mode violations)
 - [Phase 03-05]: DeckWorkspace.test.tsx beforeEach stubs deck-cards-store.loadForDeck to prevent DatabaseClosedError from async Dexie access after db.delete()
+- [Phase 03.1]: Plan 03.1-01: Reused ViewToggle focus-ring pattern (non-inset variant + rounded) for standalone text buttons in CommanderPanel FullCard — closes UI-REVIEW #1 WCAG 2.1 2.4.7
 
 ## Performance Metrics
 
@@ -145,6 +146,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | Phase 03 P03-03 | 15min | 1 tasks | 2 files |
 | Phase 03 P04 | 4min | 3 tasks | 6 files |
 | Phase 03 P05 | ~30min | 3 tasks | 14 files |
+| Phase 03.1 P01 | 3min | 2 tasks | 2 files |
 
 ## Session Log
 
@@ -172,6 +174,7 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 | 2026-04-14 | Completed 03-03: deck-cards-store addCard/removeCard/singleton enforcement/deckChanges/originalReleaseDate |
 | 2026-04-14 | Completed 03-04: ViewToggle (aria-pressed), DeckListView (7 categories), DeckGridView (aspect-[146/204] skeletons) |
 | 2026-04-14 | Completed 03-05: Integration — CardResultCell (+) wired, DeckColumn composed, DeckWorkspace 60/40, Playwright spec 13-deck-building.spec.ts (12 tests). Fixed 14 pre-existing e2e failures as side-effect. 281 unit + 27 e2e passing. Human-verify APPROVED. Phase 03 COMPLETE. |
+| 2026-04-15 | Completed 03.1-01: CommanderPanel FullCard Flip/Change commander/Remove partner buttons now carry focus:outline-none focus:ring-2 focus:ring-accent rounded — closes UI-REVIEW #1 (WCAG 2.1 2.4.7). 284 unit tests green (281 baseline + 3 regression). |
 
 ## Accumulated Context
 
