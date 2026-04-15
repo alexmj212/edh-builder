@@ -80,4 +80,4 @@ can be marked complete.
   gate; other specs do not enforce the console policy by default (D-15).
 
 ---
-*Last updated: 2026-04-13 after Phase 02.3 completion — `scryfall-api` migration shipped, `@scryfall/api-types` removed, `tsc -b` restored to build, CI typecheck gate added (WR-01 closed).*
+*Last updated: 2026-04-15 after Phase 03.1 completion — UI polish follow-ups from Phase 03 UI review: CommanderPanel action-button focus rings, DeckColumn scroll-reset ref lifted to DeckWorkspace outer wrapper, CardResultCell outer container focus ring. All three Phase 03 advisory findings closed; unit 287/287 + e2e 30/30 + typecheck green.*
